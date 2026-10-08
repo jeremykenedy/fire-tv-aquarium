@@ -11,18 +11,16 @@
 <p align="center">
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases"><img src="https://img.shields.io/github/downloads/jeremykenedy/fire-tv-aquarium/total?label=Downloads" alt="Total release asset downloads"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest"><img src="https://img.shields.io/github/v/release/jeremykenedy/fire-tv-aquarium?label=Release" alt="Latest stable release"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml/badge.svg" alt="Code style"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml/badge.svg" alt="Documentation"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml/badge.svg" alt="Security"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml/badge.svg" alt="GitGuardian scan"></a>
-    <a href="https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/sonarcloud.yml/badge.svg" alt="SonarQube Cloud scan"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml/badge.svg?branch=main" alt="Code style"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml/badge.svg?branch=main" alt="Documentation"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml/badge.svg?branch=main" alt="Security"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml/badge.svg?branch=main" alt="GitGuardian scan"></a>
+    <a href="https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/sonarcloud.yml/badge.svg?branch=main" alt="SonarQube Cloud scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=alert_status" alt="Quality Gate Status"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=coverage" alt="Coverage"></a>
     <a href="https://www.codefactor.io/repository/github/jeremykenedy/fire-tv-aquarium"><img src="https://www.codefactor.io/repository/github/jeremykenedy/fire-tv-aquarium/badge" alt="CodeFactor"></a>
     <a href="https://app.codacy.com/gh/jeremykenedy/fire-tv-aquarium/dashboard"><img src="https://app.codacy.com/project/badge/Grade/68dd126aa1d24b81808768dffa2f0df3" alt="Codacy Badge"></a>
-    <a href="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/build-status/main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/badges/build.png?b=main" alt="Scrutinizer Build Status"></a>
-    <a href="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/?branch=main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/badges/quality-score.png?b=main" alt="Scrutinizer Code Quality"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
@@ -351,8 +349,9 @@ stable application key.
 GitGuardian and SonarQube Cloud scans are enabled. Sonar analyzes the Java and
 Python source with compiled Android classes and measured Java/Python coverage,
 and CI waits for its processed quality gate. Codacy, CodeFactor, and Aikido are
-registered for this public repository. Scrutinizer's requested badges use this
-repository's URLs, but its import remains blocked by provider errors.
+registered for this public repository. Scrutinizer configuration is prepared,
+but its repository import fails with a provider-side gateway timeout. Its build
+and quality badges are omitted until registration and analysis succeed.
 Checks that require a paid plan and badges for unrelated technology are omitted.
 See [CI](docs/CI.md) for workflow details, scan scope, and external service setup.
 

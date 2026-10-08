@@ -75,6 +75,24 @@ registration. External checks still require service registration and any
 credentials used by their workflows. Configuration files alone do not establish
 an active service or a passing quality gate.
 
+The applicable checks from `amazon-fire-tv-fixes` are accounted for here:
+
+| Reference integration | Aquarium integration | README badge |
+|---|---|---|
+| Tests | Linux/macOS Python tests, Android build, and strict Java/Python coverage | Tests |
+| GitGuardian | Enabled with this repository's secret and variable | GitGuardian scan |
+| SonarQube Cloud | Enabled; waits for the processed quality gate | Scan, quality gate, and measured coverage |
+| Codacy | Registered for this repository | This project's own grade badge |
+| Aikido | Registered for daily automatic `main` scans | This project's own dashboard link |
+| Scrutinizer | Configuration prepared; public repository import returns a provider-side 504 | Omitted until registration and analysis succeed |
+| MIT license | Root `LICENSE` | MIT |
+
+CodeFactor, code style, documentation, and independent security checks provide
+additional checks for this project's Java and Python source. GitHub Actions
+badges explicitly select `main`, while pull request checks validate their own
+reviewed commits. A passing Actions run does not stand in for a missing
+Scrutinizer build or grade.
+
 ### GitGuardian
 
 Add `GITGUARDIAN_API_KEY` under repository Actions secrets, then set the Actions
@@ -137,11 +155,12 @@ shell. Individual false-positive classifications record this evidence and retain
 scanning for future calls. PATH and ANDROID_HOME select local development tools;
 they are not inputs from a remote application service.
 Scrutinizer import is currently blocked by gateway and third-party service
-errors on its repository import page. The README includes the requested build
-and quality badge URLs for this repository's `main` branch. They may be
-unavailable until the provider completes registration; they do not establish
-a successful build or quality rating. This is a provider import failure,
-not a confirmed paid-plan restriction.
+errors on its repository import page. The build and quality badges return 404
+because the project has not been registered, so they are omitted from the README.
+After registration succeeds, run the prepared configuration against the
+triggering checkout, resolve its findings, and add this repository's own build
+and quality badges only after they return actual results. This is a provider
+import failure, not a confirmed paid-plan restriction.
 
 ### CodeFactor
 
@@ -157,9 +176,10 @@ The README's Aikido badge links directly to that dashboard. The app has no
 third-party runtime dependencies, but source, manifest, development dependency,
 secret, and license scans remain useful. The badge identifies the integration;
 it does not claim that no findings remain.
-Branch Quick Scan requires a paid Aikido plan and is omitted. This integration
-uses the scans available for the repository's configured `main` branch; no
-paid branch-scan job or upgrade is required.
+Branch Quick Scan and manual rescanning require a paid Aikido plan and are
+omitted. The free integration scans the configured `main` branch automatically
+each day. Findings fixed in a merged commit remain visible until that scheduled
+scan processes the new code. No paid scan job or upgrade is required.
 
 The launcher activity and screensaver service intentionally remain exported.
 Android must be able to open the TV launcher and bind the screensaver. The
