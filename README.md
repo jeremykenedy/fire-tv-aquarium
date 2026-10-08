@@ -9,8 +9,8 @@
 <p align="center">An offline 4K aquarium screensaver for Fire TV, Android TV, and Google TV with customizable fish, sea life, backgrounds, and sunlight.</p>
 
 <p align="center">
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases"><img src="https://img.shields.io/badge/Downloads-private-lightgrey" alt="Downloads: private repository"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest"><img src="https://img.shields.io/badge/Release-v1.3.0-blue" alt="Latest stable version: v1.3.0"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases"><img src="https://img.shields.io/github/downloads/jeremykenedy/fire-tv-aquarium/total?label=Downloads" alt="Total release asset downloads"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest"><img src="https://img.shields.io/github/v/release/jeremykenedy/fire-tv-aquarium?label=Release" alt="Latest stable release"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml/badge.svg" alt="Code style"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml/badge.svg" alt="Documentation"></a>
@@ -69,7 +69,7 @@ restrictions can still affect automatic idle activation. See
 - A physical 4K display and compatible decoder for native 4K footage.
 - A computer with Python 3.10 or newer and Android Platform Tools (`adb`).
 - ADB debugging enabled on the TV and a connection from your computer.
-- GitHub access to this repository to download its private releases.
+- An internet connection on your computer to download the public release assets.
 
 The app has been tested on a Fire TV running Android API 30 with a 4K panel.
 Android TV and Google TV emulator checks are documented in verification.
@@ -82,7 +82,7 @@ Clone the repository, download the signed APK and its checksum, and connect to
 ADB. Replace `DEVICE_IP` with your TV's address:
 
 ```bash
-git clone git@github.com:jeremykenedy/fire-tv-aquarium.git
+git clone https://github.com/jeremykenedy/fire-tv-aquarium.git
 cd fire-tv-aquarium
 mkdir -p build
 gh release download --repo jeremykenedy/fire-tv-aquarium \
@@ -95,6 +95,11 @@ The installer verifies the checksum, installs or upgrades Aquarium 4K, and
 selects it as the idle screensaver. It keeps your existing idle and sleep
 timeouts and saves the original screensaver settings in ignored
 `device-state.json`. Keep that backup to restore your previous screensaver.
+
+The repository and releases are public. You can download the APK and checksum
+directly from the [latest release](https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest)
+without repository access or a GitHub account. GitHub CLI commands require CLI
+authentication; the release page provides a browser download alternative.
 
 See [Installation](INSTALLATION.md) for developer mode, upgrades, restoring the
 previous screensaver, and removing the app.

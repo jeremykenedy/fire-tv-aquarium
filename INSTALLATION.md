@@ -71,11 +71,12 @@ a different device is rejected before installation or restoration.
 
 ## Download and install
 
-The repository and releases are private, so authenticate the GitHub CLI with an
-account that can access them. The installer uses Python 3.10 or newer.
+The repository and releases are public. Browser downloads do not require a
+GitHub account or repository access. The GitHub CLI commands below require CLI
+authentication. The installer uses Python 3.10 or newer.
 
 ```bash
-git clone git@github.com:jeremykenedy/fire-tv-aquarium.git
+git clone https://github.com/jeremykenedy/fire-tv-aquarium.git
 cd fire-tv-aquarium
 mkdir -p build
 gh release download --repo jeremykenedy/fire-tv-aquarium \
@@ -83,8 +84,9 @@ gh release download --repo jeremykenedy/fire-tv-aquarium \
 python3 install.py --device DEVICE_IP:5555
 ```
 
-You can also download both files from the latest release page and place them
-in `build/`. The installer validates the APK checksum before installation.
+You can also download both files from the
+[latest release page](https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest)
+and place them in `build/`. The installer validates the APK checksum before installation.
 
 It records the first observed values of `screensaver_components`,
 `screensaver_enabled`, and `screensaver_activate_on_sleep` in `device-state.json`,
