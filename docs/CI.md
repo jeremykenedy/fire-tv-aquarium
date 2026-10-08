@@ -44,7 +44,7 @@ python3 check_apk.py
 
 ## External services
 
-The new private repo does not inherit another repository's secrets or service
+This private repo does not inherit another repository's secrets or service
 registration. External checks require access to this repository and a service
 plan supporting private projects. Configuration files alone do not establish
 an active service or a passing quality gate.
