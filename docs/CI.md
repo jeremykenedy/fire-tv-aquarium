@@ -4,7 +4,7 @@
 
 | Workflow | Checks | Credentials |
 |---|---|---|
-| Tests | Java swimming/configuration and Python tooling tests on macOS and Linux with Python 3.10 and 3.13; Android build; signature and APK privacy verification; 100% Java/Python coverage gate | None |
+| Tests | Java swimming/configuration and Python tooling tests on macOS and Linux with Python 3.10 and 3.13; Android build; signature and APK privacy verification; 100% Java/Python coverage gate | None for checks; `CODACY_PROJECT_TOKEN` for explicitly enabled reporting |
 | Code style | Google Java Format in AOSP style, Ruff lint/format, ShellCheck | None |
 | Documentation | Local links, contents, banner XML, MIT license wording, immutable action pins | None |
 | Security | Strict development dependency vulnerability audit, Bandit installer analysis, and Gitleaks source/history scan | None |
@@ -121,6 +121,13 @@ use the triggering checkout rather than cloning another branch's `main`.
 Codacy is registered for this repository and has completed its initial source
 analysis. Its README badge uses this project's own ID. Source findings remain
 visible in the dashboard; registration does not imply they are all resolved.
+The Tests workflow can upload the real Java and Python coverage reports using
+a repository-scoped `CODACY_PROJECT_TOKEN` secret and `CODACY_ENABLED=true`.
+The reporter is pinned to version 14.1.3 with its published SHA-256 verified
+before execution. Java paths receive the actual `src/` prefix; Python paths
+come directly from coverage.py. Both reports are finalized for the checked-out
+commit, and fork and Dependabot pull requests cannot access this secret.
+This reporting feature is available for public open-source repositories.
 Scrutinizer import is currently blocked by gateway and third-party service
 errors on its repository import page. The README includes the requested build
 and quality badge URLs for this repository's `main` branch. They may be
@@ -142,6 +149,9 @@ The README's Aikido badge links directly to that dashboard. The app has no
 third-party runtime dependencies, but source, manifest, development dependency,
 secret, and license scans remain useful. The badge identifies the integration;
 it does not claim that no findings remain.
+Branch Quick Scan requires a paid Aikido plan and is omitted. This integration
+uses the scans available for the repository's configured `main` branch; no
+paid branch-scan job or upgrade is required.
 
 The launcher activity and screensaver service intentionally remain exported.
 Android must be able to open the TV launcher and bind the screensaver. The

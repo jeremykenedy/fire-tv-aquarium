@@ -36,6 +36,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
         with:
           distribution: temurin
@@ -61,3 +62,11 @@ jobs:
       - name: Enforce complete application and tooling coverage
         timeout-minutes: 20
         run: bash scripts/test-coverage.sh
+      - name: Report measured coverage to Codacy
+        if: >-
+          vars.CODACY_ENABLED == 'true' &&
+          github.actor != 'dependabot[bot]' &&
+          (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: bash scripts/report-codacy-coverage.sh
