@@ -100,3 +100,28 @@ clock to 40% brightness. Your choice is saved for preview and idle screensaving.
 The lighting color and sunlight shimmer remain independent settings. This is a
 manual switch and does not change the TV's system brightness or idle timeouts.
 The clock remains available.
+
+## Random selection
+
+Use Left / Right or Select to reach Random after the fixed options on any
+setting. Mode offers Random version, which selects one enabled Shuffle version
+with equal probability. Seven switches at the bottom of settings include or
+exclude each animated look and the original footage. At least one stays enabled.
+Look is selected by that shuffle and its separate control is disabled while
+Random version is active. To shuffle only animated looks, keep Mode on Animated
+aquarium and choose Look: Random instead.
+
+Random background, species, speed, size, lighting, bubbles, shimmer, each sea-life
+switch, clock, and Day / Night are independent. Keep Day / Night on Night for a
+consistently dim aquarium even when the other settings shuffle.
+
+Population and exact Fish count describe the same population: adjusting Fish
+selects Custom and clears random Population; selecting a preset or Random
+Population clears random Fish. Random Population chooses among A few, A handful,
+A lot, A ton, and Schools with their defined counts. Random Fish chooses 0-60.
+
+Values are resolved when the app opens, when settings change, when Show aquarium
+is pressed, and when a dream starts. They remain stable during that showing;
+randomization does not run every frame. Resolved values never overwrite saved
+Random choices. Fixed settings and excluded versions remain respected on later
+showings. A random result can repeat by chance.

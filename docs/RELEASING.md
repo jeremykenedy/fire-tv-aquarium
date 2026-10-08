@@ -21,10 +21,10 @@ python3 scripts/check-docs.py
 bash build.sh
 python3 check_apk.py
 
-gh release create v1.2.0 \
+gh release create v1.3.0 \
   build/aquarium-4k.apk build/aquarium-4k.apk.sha256 \
   --repo jeremykenedy/fire-tv-aquarium \
-  --target "$(git rev-parse HEAD)" --title 'Aquarium 4K 1.2.0' \
+  --target "$(git rev-parse HEAD)" --title 'Aquarium 4K 1.3.0' \
   --notes-file build/release-notes.txt
 ```
 

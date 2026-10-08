@@ -5,7 +5,7 @@
 Check the TV's debugging authorization prompt and accept the expected computer.
 Confirm both devices are reachable on the same network. Reconnect with
 `adb connect DEVICE_IP:5555` and check `adb devices`. Menu names and connection
-support depend on the Fire TV model and Fire OS version.
+support depend on the TV model, Android version, and vendor firmware.
 
 ## Checksum mismatch
 
@@ -22,7 +22,7 @@ to replace the signing identity.
 
 ## Screensaver does not appear in Settings
 
-Some Fire OS versions do not list third-party screensavers. Use the supplied
+Some Fire OS and Google TV versions do not list third-party screensavers. Use the supplied
 installer to select AquariumDreamService through ADB. Confirm the saved value:
 
 ```bash
@@ -37,7 +37,7 @@ this app changed them.
 ## Controls appear disabled
 
 Fish and environment controls apply to Animated aquarium mode. Switch Mode back
-to Animated aquarium. Clock remains available in Real 4K footage mode.
+to Animated aquarium. Clock remains available in Original 4K footage mode.
 
 ## Animation slows down
 
@@ -63,3 +63,25 @@ model when reporting a reproducible issue.
 Use the same device identity recorded by this clone's `device-state.json`.
 The installer rejects a mismatched serial rather than applying another device's
 settings. Maintain separate clones or backups for separate TVs.
+
+## Random choices seem unchanged
+
+Random values stay steady while the aquarium is visible. Press Show aquarium
+again or let the next idle session start to roll again. A result can repeat.
+Check the Shuffle switches when Mode is Random version; excluded versions are
+never selected. At least one version must remain enabled. For random scenery
+with a fixed appearance, keep Mode and Look fixed and set Background to Random.
+
+## Multiple TVs reject a backup
+
+Use --state-file device-states/TV_NAME.json with a different name for each TV.
+Use that same file for later upgrades and restoration. Do not overwrite the
+first TV's backup to install another TV. The default device-state.json is kept
+for existing installations.
+
+## A 1080p TV or decoder shows smaller footage
+
+This is the bundled offline fallback. Native 4K requires both a supported physical
+4K display and a compatible decoder. A 4K playback failure retries 1080p once.
+Animated backgrounds use the physical display size independently of the video
+codec. No media is streamed or downloaded.

@@ -9,7 +9,77 @@ public final class AquariumTest {
         if (!condition) throw new AssertionError(message);
     }
 
+    private static void randomChoices() {
+        AquariumOptions defaults = AquariumOptions.defaults();
+        java.util.Random random = new java.util.Random(12345);
+        for (int control = 0; control < 20; control++) {
+            AquariumOptions selected = defaults;
+            for (int i = 0; i <= defaults.choiceCount(control); i++) {
+                check(!selected.isRandom(control), "Fixed choices remain fixed");
+                selected = selected.adjust(control, 1);
+                if (selected.isRandom(control)) break;
+            }
+            check(selected.isRandom(control), "Every setting can select Random");
+            check(!selected.adjust(control, -1).isRandom(control), "Left exits Random");
+            check(!selected.adjust(control, 1).isRandom(control), "Right exits Random");
+            for (int sample = 0; sample < 100; sample++) {
+                AquariumOptions resolved = AquariumRandomizer.resolve(selected, random);
+                check(resolved.randomMask == 0, "Rendering receives concrete choices");
+                for (int other = 0; other < 20; other++) {
+                    check(
+                            resolved.choice(other) >= 0
+                                    && resolved.choice(other) < resolved.choiceCount(other),
+                            "Resolved choice within bounds");
+                    if (other != control
+                            && !(control == 0 && other == 18)
+                            && !(control == 1 && other == 2))
+                        check(
+                                resolved.choice(other) == selected.choice(other),
+                                "Fixed choices preserved");
+                }
+                check(selected.isRandom(control), "Resolution never replaces saved Random choice");
+            }
+        }
+        AquariumOptions all = defaults.withMask((1 << 20) - 1);
+        boolean[] seen = new boolean[7];
+        for (int sample = 0; sample < 1000; sample++) {
+            AquariumOptions resolved = AquariumRandomizer.resolve(all, random);
+            seen[resolved.mode == 1 ? 6 : resolved.look] = true;
+            check(
+                    resolved.count == AquariumOptions.POPULATION_COUNTS[resolved.population],
+                    "Random presets match counts");
+            check(
+                    resolved.population > 0 && resolved.population < 6,
+                    "Random population chooses a preset");
+        }
+        for (boolean version : seen) check(version, "All seven versions reachable");
+        AquariumOptions pool = all;
+        for (int version = 0; version < 7; version++) {
+            if (version != 2 && version != 6) pool = pool.toggleVersion(version);
+        }
+        for (int sample = 0; sample < 100; sample++) {
+            AquariumOptions resolved = AquariumRandomizer.resolve(pool, random);
+            check(
+                    resolved.mode == 1 || resolved.look == 2,
+                    "Excluded shuffle versions never selected");
+        }
+        pool = pool.toggleVersion(2);
+        check(pool.toggleVersion(6).versions == 64, "At least one shuffle version remains enabled");
+        check(
+                all.adjust(2, 1).population == 0 && !all.adjust(2, 1).isRandom(1),
+                "Exact fish count takes priority over population");
+        check(
+                all.adjust(1, -1).count == 48 && !all.adjust(1, -1).isRandom(2),
+                "Population takes priority over exact fish count");
+        AquariumOptions fixed = AquariumRandomizer.resolve(defaults, random);
+        for (int control = 0; control < 20; control++)
+            check(
+                    fixed.choice(control) == defaults.choice(control),
+                    "Default settings never randomized");
+    }
+
     public static void main(String[] args) {
+        randomChoices();
         check(AquariumOptions.defaults().look == 0, "Realistic is the default appearance");
         check(AquariumOptions.defaults().time == 0, "Day is the default brightness");
         for (int time = -1; time <= 2; time++) {

@@ -6,11 +6,11 @@
     </picture>
 </p>
 
-<p align="center">An offline 4K aquarium screensaver for Fire TV with customizable fish, sea life, backgrounds, and sunlight.</p>
+<p align="center">An offline 4K aquarium screensaver for Fire TV, Android TV, and Google TV with customizable fish, sea life, backgrounds, and sunlight.</p>
 
 <p align="center">
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases"><img src="https://img.shields.io/badge/Downloads-private-lightgrey" alt="Downloads: private repository"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest"><img src="https://img.shields.io/badge/Release-v1.2.0-blue" alt="Latest stable version: v1.2.0"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest"><img src="https://img.shields.io/badge/Release-v1.3.0-blue" alt="Latest stable version: v1.3.0"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml/badge.svg" alt="Code style"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml/badge.svg" alt="Documentation"></a>
@@ -25,6 +25,7 @@
 
 ## Table of Contents
 
+- [TV Support](#tv-support)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -38,15 +39,30 @@
 - [Media License](#media-license)
 - [License](#license)
 
+## TV Support
+
+The same APK runs on Fire TV, Android TV, and Google TV using Android platform
+APIs, a TV launcher entry, D-pad controls, and a system DreamService. Android API
+23 or newer and OpenGL ES 2.0 are required. Physical 4K TVs use a native 3840x2160
+surface; other TVs render at their supported display resolution. Original footage
+uses a bundled 1080p copy when 4K decoding is unavailable or fails.
+
+Some Google TV models hide third-party screensaver selection in their settings.
+The ADB installer selects the service and verifies the saved values. Vendor
+restrictions can still affect automatic idle activation. See
+[Installation](INSTALLATION.md) and [device verification](docs/VERIFICATION.md).
+
 ## Requirements
 
-- A 4K Fire TV with OpenGL ES 2.0 and Android API 23 or newer.
+- A Fire TV, Android TV, or Google TV with OpenGL ES 2.0 and Android API 23 or newer.
+- A physical 4K display and compatible decoder for native 4K footage.
 - A computer with Python 3.10 or newer and Android Platform Tools (`adb`).
 - ADB debugging enabled on the TV and a connection from your computer.
 - GitHub access to this repository to download its private releases.
 
 The app has been tested on a Fire TV running Android API 30 with a 4K panel.
-Other models and Fire OS versions need device verification. Build requirements
+Android TV and Google TV emulator checks are documented in verification.
+Additional physical models and OS versions need device verification. Build requirements
 are listed in [Building](docs/BUILDING.md).
 
 ## Installation
@@ -74,7 +90,7 @@ previous screensaver, and removing the app.
 
 ## Quick Start
 
-Open **Aquarium 4K** from the Fire TV app list.
+Open **Aquarium 4K** from your TV app list.
 
 | Remote button | Action |
 |---|---|
@@ -85,12 +101,16 @@ Open **Aquarium 4K** from the Fire TV app list.
 | Back | Return to settings, or exit when settings are already visible |
 
 Changes are saved immediately. **Show aquarium** opens the full-screen preview.
-The same saved aquarium appears when the TV starts its idle screensaver. A remote
+Random settings are picked again on Show aquarium and on each idle activation.
+Fixed choices stay fixed. A remote
 key exits the idle screensaver. **Reset aquarium** restores the default options.
 
 ## Features
 
-- Native 3840x2160 animated rendering and a bundled silent 4K video loop.
+- Native 3840x2160 output on 4K TVs, with lower-resolution display and video fallbacks.
+- One APK for Fire TV, Android TV, and Google TV.
+- Random version selection with an editable pool of the six looks and original footage.
+- Random choices for every aquarium setting, chosen once per showing.
 - Realistic, Classic Windows aquarium, Animated 3D, Cartoon, Finding Nemo inspired,
   and Little Mermaid inspired appearances.
 - Reef, Fish tank, Ocean, Kelp forest, and Deep sea backgrounds.
@@ -117,7 +137,7 @@ the fish and scenery controls apply to animated mode. The clock works in both.
 
 | Setting | Options | Default |
 |---|---|---|
-| Mode | Animated aquarium, Original 4K footage | Animated aquarium |
+| Mode | Animated aquarium, Original 4K footage, Random version | Animated aquarium |
 | Look | Realistic, Classic Windows aquarium, Animated 3D, Cartoon, Finding Nemo inspired, Little Mermaid inspired | Realistic |
 | Day / Night | Day, Night (40% brightness) | Day |
 | Population | Custom, A few, A handful, A lot, A ton, Schools | A handful |
@@ -132,6 +152,14 @@ the fish and scenery controls apply to animated mode. The clock works in both.
 | Sharks, Whales, Octopuses, Turtles, Rays, Dolphins, Jellyfish | Independent On / Off switches | Off |
 | Clock | Hidden, 12-hour, 24-hour | Hidden |
 
+Every aquarium setting offers **Random** after its fixed choices. **Random version**
+uses the enabled **Shuffle** switches to choose a look or original footage; at
+least one version must remain enabled. **Look: Random** shuffles only animated
+looks while keeping Mode fixed. Random population chooses one of the five presets;
+Random Fish chooses an exact 0-60 count and selects Custom. Random changes take
+effect in the live preview and roll again on each showing. Choices stay steady
+throughout that session and are saved as Random for the next session.
+
 **A few** uses 6 fish, **A handful** 16, **A lot** 32, **A ton** 60, and
 **Schools** 48 fish in three coordinated groups. Adjusting the exact count
 selects **Custom**. Large animals are additional to this ordinary fish count.
@@ -141,10 +169,14 @@ school behavior, and the sea-life switches.
 
 ## Screenshots
 
-These are captures from the Fire TV. Its screenshot output is 1920x1080; the
+Most images are captures from the Fire TV. Its screenshot output is 1920x1080; the
 actual aquarium surface and display composition were verified at 3840x2160.
 
 <table>
+    <tr>
+        <td valign="top" width="50%"><img src="docs/screenshots/random-settings.png" alt="Random version selection on the Google TV emulator" width="100%"><br>Google TV: Random version</td>
+        <td valign="top" width="50%"><img src="docs/screenshots/android-tv-footage.png" alt="Local 1080p footage fallback on the Android TV emulator" width="100%"><br>Android TV: local footage fallback</td>
+    </tr>
     <tr>
         <td valign="top" width="50%"><img src="docs/screenshots/settings.png" alt="Remote-operated aquarium settings with live reef preview" width="100%"><br>Settings and live preview</td>
         <td valign="top" width="50%"><img src="docs/screenshots/night.png" alt="Night mode dims the aquarium while settings remain readable" width="100%"><br>Night mode</td>
@@ -167,7 +199,8 @@ actual aquarium surface and display composition were verified at 3840x2160.
     </tr>
 </table>
 
-Settings and video images are Fire TV screen captures. The six appearance
+Random selection and fallback images are emulator captures, as labeled.
+The remaining settings and video images are Fire TV screen captures. The six appearance
 images were rendered on the same TV's GPU into native 3840x2160 offscreen
 surfaces. All documentation images are 1920x1080. See [Verification](docs/VERIFICATION.md).
 
@@ -194,7 +227,8 @@ python3 check_apk.py
 ```
 
 The tests cover installer integrity, rollback, settings bounds, species
-selection, long-running swimming paths, and school formation. APK verification
+selection, random bounds, fixed-choice preservation, shuffle exclusions,
+long-running swimming paths, and school formation. APK verification
 checks the package, absence of requested permissions, bundled video storage,
 and signature through the build. Device testing covers the remote controls,
 persistence, preview, idle activation, exit, and actual 4K display composition.

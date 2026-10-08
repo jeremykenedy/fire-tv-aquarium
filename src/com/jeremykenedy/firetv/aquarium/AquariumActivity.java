@@ -21,7 +21,7 @@ public final class AquariumActivity extends Activity {
     private AquariumDisplay aquarium;
     private LinearLayout panel;
     private Button preview;
-    private final Button[] controls = new Button[20];
+    private final Button[] controls = new Button[27];
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -30,7 +30,7 @@ public final class AquariumActivity extends Activity {
         preferences = new AquariumPreferences(this);
         options = preferences.read();
         FrameLayout root = new FrameLayout(this);
-        aquarium = new AquariumDisplay(this, options);
+        aquarium = new AquariumDisplay(this, AquariumRandomizer.resolve(options));
         root.addView(aquarium, new FrameLayout.LayoutParams(-1, -1));
         panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
@@ -47,7 +47,9 @@ public final class AquariumActivity extends Activity {
         title.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
         panel.addView(title);
         TextView hint = new TextView(this);
-        hint.setText("Left / Right to adjust. Menu opens settings.");
+        hint.setText(
+                "Left / Right to adjust. Menu opens settings.\n"
+                        + "Random choices refresh on each showing.");
         hint.setTextSize(12);
         hint.setTextColor(0xFF91B6BD);
         hint.setPadding(0, dp(6), 0, dp(12));
@@ -62,6 +64,7 @@ public final class AquariumActivity extends Activity {
         for (int position = 0; position < controls.length; position++) {
             final int index = controlAt(position);
             Button control = button("");
+            if (index >= 20) control.setTextSize(13);
             controls[index] = control;
             LinearLayout.LayoutParams row = new LinearLayout.LayoutParams(-1, dp(43));
             row.bottomMargin = dp(3);
@@ -96,6 +99,7 @@ public final class AquariumActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        aquarium.configure(AquariumRandomizer.resolve(options));
                         panel.setVisibility(View.GONE);
                     }
                 });
@@ -118,7 +122,7 @@ public final class AquariumActivity extends Activity {
                         if (key != KeyEvent.KEYCODE_DPAD_UP && key != KeyEvent.KEYCODE_DPAD_DOWN)
                             return false;
                         if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                            if (key == KeyEvent.KEYCODE_DPAD_UP) controls[17].requestFocus();
+                            if (key == KeyEvent.KEYCODE_DPAD_UP) focusControl(controls.length, -1);
                             else reset.requestFocus();
                         }
                         return true;
@@ -158,6 +162,7 @@ public final class AquariumActivity extends Activity {
 
     private Button button(String text) {
         Button result = new Button(this);
+        result.setFocusableInTouchMode(true);
         result.setText(text);
         result.setTextSize(15);
         result.setTextColor(0xFFE7F2EE);
@@ -173,94 +178,21 @@ public final class AquariumActivity extends Activity {
     }
 
     private void adjust(int index, int delta) {
-        int mode = options.mode,
-                count = options.count,
-                species = options.species,
-                scene = options.scene,
-                speed = options.speed,
-                size = options.size,
-                light = options.light,
-                clock = options.clock,
-                population = options.population,
-                creatures = options.creatures,
-                look = options.look,
-                time = options.time;
-        boolean bubbles = options.bubbles, shimmer = options.rays;
-        switch (index) {
-            case 0:
-                mode = AquariumOptions.cycle(mode, delta, AquariumOptions.MODES.length);
-                break;
-            case 1:
-                population =
-                        AquariumOptions.cycle(
-                                population, delta, AquariumOptions.POPULATIONS.length);
-                if (population != 0) count = AquariumOptions.POPULATION_COUNTS[population];
-                break;
-            case 2:
-                count = AquariumOptions.bounded(count + delta, 0, AquariumOptions.MAX_FISH);
-                population = 0;
-                break;
-            case 3:
-                species = AquariumOptions.cycle(species, delta, AquariumOptions.SPECIES.length);
-                break;
-            case 4:
-                scene = AquariumOptions.cycle(scene, delta, AquariumOptions.SCENES.length);
-                break;
-            case 5:
-                speed = AquariumOptions.cycle(speed, delta, AquariumOptions.SPEEDS.length);
-                break;
-            case 6:
-                size = AquariumOptions.cycle(size, delta, AquariumOptions.SIZES.length);
-                break;
-            case 7:
-                light = AquariumOptions.cycle(light, delta, AquariumOptions.LIGHTS.length);
-                break;
-            case 8:
-                bubbles = !bubbles;
-                break;
-            case 9:
-                shimmer = !shimmer;
-                break;
-            case 17:
-                clock = AquariumOptions.cycle(clock, delta, AquariumOptions.CLOCKS.length);
-                break;
-            case 18:
-                look = AquariumOptions.cycle(look, delta, AquariumOptions.LOOKS.length);
-                break;
-            case 19:
-                time = AquariumOptions.cycle(time, delta, AquariumOptions.TIMES.length);
-                break;
-            default:
-                if (index < 10 || index > 16) throw new IllegalArgumentException("Unknown control");
-                creatures ^= 1 << (index - 10);
-        }
-        options =
-                new AquariumOptions(
-                        mode,
-                        count,
-                        species,
-                        scene,
-                        speed,
-                        size,
-                        light,
-                        clock,
-                        bubbles,
-                        shimmer,
-                        population,
-                        creatures,
-                        look,
-                        time);
+        options = index >= 20 ? options.toggleVersion(index - 20) : options.adjust(index, delta);
         changed();
     }
 
     private void changed() {
         preferences.save(options);
-        aquarium.configure(options);
+        aquarium.configure(AquariumRandomizer.resolve(options));
         updateLabels();
     }
 
     private void focusControl(int index, int direction) {
-        int position = index == 18 ? 1 : index == 19 ? 2 : index == 0 ? 0 : index + 2;
+        int position =
+                index >= 20
+                        ? index
+                        : index == 18 ? 1 : index == 19 ? 2 : index == 0 ? 0 : index + 2;
         int target = position + direction;
         while (target >= 0 && target < controls.length && !controls[controlAt(target)].isEnabled())
             target += direction;
@@ -269,7 +201,9 @@ public final class AquariumActivity extends Activity {
     }
 
     private int controlAt(int position) {
-        return position == 1 ? 18 : position == 2 ? 19 : position == 0 ? 0 : position - 2;
+        return position >= 20
+                ? position
+                : position == 1 ? 18 : position == 2 ? 19 : position == 0 ? 0 : position - 2;
     }
 
     private void updateLabels() {
@@ -301,8 +235,27 @@ public final class AquariumActivity extends Activity {
                             + ": "
                             + (options.hasCreature(1 << i) ? "On" : "Off");
         for (int i = 0; i < controls.length; i++) {
+            if (i < 20 && options.isRandom(i)) {
+                labels[i] =
+                        labels[i].substring(0, labels[i].indexOf(":") + 2)
+                                + (i == 0 ? "Random version" : "Random");
+            }
+            if (i == 18 && options.isRandom(0)) labels[i] = "Look: Random (by mode)";
+            if (i >= 20) {
+                String name = i == 26 ? "Original footage" : AquariumOptions.LOOKS[i - 20];
+                controls[i].setText(
+                        "Shuffle "
+                                + name
+                                + ": "
+                                + ((options.versions & (1 << (i - 20))) != 0 ? "On" : "Off"));
+                controls[i].setEnabled(options.isRandom(0));
+                controls[i].setAlpha(options.isRandom(0) ? 1 : .45f);
+                continue;
+            }
             controls[i].setText(labels[i]);
-            boolean enabled = options.mode == 0 || i == 0 || i == 17 || i == 19;
+            boolean enabled =
+                    options.mode == 0 || options.isRandom(0) || i == 0 || i == 17 || i == 19;
+            if (i == 18 && options.isRandom(0)) enabled = false;
             controls[i].setEnabled(enabled);
             controls[i].setAlpha(enabled ? 1 : 0.45f);
         }

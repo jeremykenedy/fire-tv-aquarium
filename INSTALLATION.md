@@ -3,6 +3,8 @@
 ## Contents
 
 - [Prepare the TV](#prepare-the-tv)
+- [Android TV and Google TV](#android-tv-and-google-tv)
+- [Multiple TVs](#multiple-tvs)
 - [Download and install](#download-and-install)
 - [Upgrade](#upgrade)
 - [Restore the previous screensaver](#restore-the-previous-screensaver)
@@ -22,6 +24,48 @@ adb devices
 
 Accept the computer's debugging authorization on the TV. For a USB-connected
 device, use its serial in place of `DEVICE_IP:5555` in the commands below.
+
+## Android TV and Google TV
+
+Enable Developer options by selecting the Android TV OS build under About
+repeatedly, then enable USB debugging or Wireless debugging. Menu names vary by
+vendor. Authorize the computer on the TV. The same APK and installer are used on
+all three platforms. No Google account is required by Aquarium.
+
+For Wireless debugging with pairing, use the pairing and connection addresses
+shown on the TV; their ports can differ:
+
+```bash
+adb pair TV_IP:PAIRING_PORT
+adb connect TV_IP:DEBUG_PORT
+python3 install.py --device TV_IP:DEBUG_PORT --state-file device-states/living-room.json
+```
+
+For USB, substitute the serial shown by `adb devices`. A TV exposing ordinary
+network ADB may use port 5555 instead. Android TV often provides a Screen saver
+menu under Device Preferences. Some Google TV versions show only Ambient Mode;
+the installer selects Aquarium using ADB and reads back its screensaver settings.
+Check actual idle activation on your model, as a vendor can restrict or replace
+third-party dreams. Full-screen Show aquarium remains available from the app.
+
+The app uses native 4K surfaces on a supported 4K display. On other displays it
+uses the physical display size. Original footage uses a bundled 1080p fallback
+when the device lacks a compatible hardware 4K decoder or 4K playback fails.
+
+## Multiple TVs
+
+Use a separate private backup for each TV and keep the same path when upgrading,
+restoring, or uninstalling that TV:
+
+```bash
+python3 install.py --device FIRST_TV --state-file device-states/first-tv.json
+python3 install.py --device SECOND_TV --state-file device-states/second-tv.json
+python3 install.py --device SECOND_TV --state-file device-states/second-tv.json --restore
+```
+
+The directory is ignored by Git, and backups have mode 0600. Without --state-file,
+the original device-state.json is used for compatibility. A backup belonging to
+a different device is rejected before installation or restoration.
 
 ## Download and install
 
