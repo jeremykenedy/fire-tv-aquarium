@@ -1,0 +1,17 @@
+Aquarium footage
+
+Source: https://pixabay.com/videos/fish-cichlid-aquarium-africa-150227/
+Contributor: BAEHYOYEOL
+Original: https://cdn.pixabay.com/video/2023/02/11/150227-798230288.mp4
+License: Pixabay Content License
+License reference: https://pixabay.com/service/license-summary/
+Retrieved: 2026-10-08
+
+The source is native 3840x2160 H.264 at 24 frames per second. The bundled
+version retains that resolution, removes audio, and blends the final two
+seconds into the opening two seconds to make a continuous aquarium loop.
+No code or assets from the supplied APK/XAPK apps are included.
+
+The footage has its own license and is not covered by the repository's
+software license. Do not redistribute the source footage on a standalone
+basis. See the linked Pixabay license for its terms.

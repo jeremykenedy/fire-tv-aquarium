@@ -1,0 +1,10 @@
+build/
+device-state.json
+__pycache__/
+.DS_Store
+*.jks
+*.keystore
+*.pass
+.env
+.verity/*
+!.verity/standard.yaml
