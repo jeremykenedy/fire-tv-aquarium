@@ -8,6 +8,8 @@ import android.view.WindowManager;
 
 /** Uses the physical TV mode, which can differ from the resolution of the launcher UI. */
 final class AquariumOutput {
+    private AquariumOutput() {}
+
     static int[] size(Context context) {
         Display display =
                 ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))

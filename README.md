@@ -17,12 +17,16 @@
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml/badge.svg" alt="Security"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml/badge.svg" alt="GitGuardian scan"></a>
     <a href="https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/sonarcloud.yml/badge.svg" alt="SonarQube Cloud scan"></a>
+    <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=alert_status" alt="Quality Gate Status"></a>
+    <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=coverage" alt="Coverage"></a>
+    <a href="https://app.codacy.com/gh/jeremykenedy/fire-tv-aquarium/dashboard"><img src="https://app.codacy.com/project/badge/Grade/68dd126aa1d24b81808768dffa2f0df3" alt="Codacy Badge"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
 <p align="center">
     <a href="https://github.com/jeremykenedy"><img src="https://img.shields.io/github/followers/jeremykenedy?label=Follow%20me&amp;style=social" alt="Follow me on GitHub"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium" title="Open the repository and click Star"><img src="https://img.shields.io/badge/Star-this%20repo-yellow?logo=github&amp;style=social" alt="Star this repo"></a>
+    <a href="https://github.com/sponsors/jeremykenedy" title="Sponsor jeremykenedy"><img src="https://img.shields.io/badge/Sponsor-jeremykenedy-ea4aaa?logo=githubsponsors&amp;logoColor=white" alt="Sponsor jeremykenedy"></a>
 </p>
 
 ## Table of Contents
@@ -302,6 +306,7 @@ See [Troubleshooting](docs/TROUBLESHOOTING.md) for diagnostics and
 bash test.sh
 bash build.sh
 python3 check_apk.py
+bash scripts/test-coverage.sh
 ```
 
 The tests cover installer integrity, rollback, settings bounds, species
@@ -311,6 +316,22 @@ checks the package, absence of requested permissions, bundled video storage,
 and signature through the build. Device testing covers the remote controls,
 persistence, preview, idle activation, exit, and actual 4K display composition.
 
+The coverage suite exercises every Java application source file and each Python
+installer and verification script. CI requires 100% line and branch coverage.
+Android tests cover lifecycle callbacks, remote navigation, every rendering
+style, shader and artwork failures, muted local playback, and UHD-to-HD fallback.
+JaCoCo measures the actual app classes; coverage.py measures the Python scripts.
+The gate also checks source-file membership so an omitted file cannot inflate
+the result. Generated Android resource classes are excluded.
+
+Coverage tests require JDK 21, Android SDK 36, Python 3.10 or newer, and network
+access for the first tool download. The runner verifies the pinned Gradle
+archive and keeps dependencies and reports under `build/coverage/`. Its Gradle,
+JUnit, and Robolectric dependencies are used only for testing. The shipping APK
+continues to use Android platform APIs without third-party runtime libraries.
+Open `build/coverage/java-html/index.html` for the Java report; `coverage.xml`
+contains the Python report. Coverage does not replace tests on a real TV.
+
 ## Continuous Integration
 
 GitHub Actions runs the test suite, Android build, APK verification, code style,
@@ -319,7 +340,7 @@ to immutable commits. CI builds use temporary signing keys; release APKs use the
 stable application key.
 
 GitGuardian and SonarQube Cloud scans are enabled. Sonar analyzes the Java and
-Python source with compiled Android classes and real installer test coverage.
+Python source with compiled Android classes and measured Java/Python coverage.
 See [CI](docs/CI.md) for workflow details, scan scope, and external service setup.
 
 ## Privacy

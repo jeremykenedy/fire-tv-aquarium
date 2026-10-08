@@ -4,18 +4,18 @@
 
 | Workflow | Checks | Credentials |
 |---|---|---|
-| Tests | Java swimming/configuration tests, installer tests on macOS and Linux with Python 3.10 and 3.13; Android build; signature and APK privacy verification | None |
+| Tests | Java swimming/configuration and Python tooling tests on macOS and Linux with Python 3.10 and 3.13; Android build; signature and APK privacy verification; 100% Java/Python coverage gate | None |
 | Code style | Google Java Format in AOSP style, Ruff lint/format, ShellCheck | None |
 | Documentation | Local links, contents, banner XML, MIT license wording, immutable action pins | None |
 | Security | Bandit installer analysis and Gitleaks source/history scan | None |
 | GitGuardian scan | The same GitGuardian service used in the Fire TV tooling repo | `GITGUARDIAN_API_KEY`, enabled explicitly |
-| SonarQube Cloud Scan | Java/Python analysis with compiled Android classes and installer coverage | `SONAR_TOKEN`, enabled explicitly |
+| SonarQube Cloud Scan | Java/Python analysis with compiled Android classes and measured line/branch coverage | `SONAR_TOKEN`, enabled explicitly |
 
 Actions use full commit SHA pins. The Java formatter and Gitleaks releases are
 pinned and checked against their published SHA-256 digests before execution.
 Their downloads and redirects are restricted to HTTPS.
 Python development tools are version-pinned. Dependabot watches action pins and
-Python development dependencies. No development tool is bundled in the APK.
+Python and Gradle development dependencies. No development tool is bundled in the APK.
 
 The installer test matrix retains Python 3.10 and 3.13 on Linux and macOS.
 macOS jobs use GitHub's standard `macos-15-intel` image to avoid the ARM runner
@@ -41,7 +41,26 @@ bandit -q -ll install.py
 bash scripts/check-secrets.sh
 bash build.sh
 python3 check_apk.py
+bash scripts/test-coverage.sh
 ```
+
+The Android build job runs the isolated coverage project in `coverage/`.
+Gradle 8.14.3 is downloaded over HTTPS and checked against a pinned SHA-256
+before use. JUnit and Robolectric execute the real Android application classes
+with platform shadows; JaCoCo writes `build/coverage/jacoco.xml` and an HTML
+report under `build/coverage/java-html/`. Only generated `R` and `BuildConfig`
+classes are excluded. Every source file under `src/` must appear in the report,
+with zero missed lines and branches. Test dependencies never enter the
+production build, which still uses `build.sh`.
+
+The same runner creates a local Python test environment and measures
+`install.py`, `check_apk.py`, and every Python script under `scripts/`.
+It requires 100% line and branch coverage and verifies the XML report contains
+every expected source file. Fixtures exercise disconnected devices, rollback,
+invalid serials, package identity, permission violations, missing media,
+documentation errors, and mutable action pins. Shell scripts receive ShellCheck
+and functional CI execution; they are not assigned synthetic coverage results.
+Device checks remain necessary for decoder performance and actual display output.
 
 ## External services
 
@@ -64,16 +83,18 @@ The public project is registered in the `jeremykenedy-12345` organization with
 project key `jeremykenedy_fire-tv-aquarium`. Add an analysis token as the Actions
 secret `SONAR_TOKEN`, then set `SONAR_ENABLED` to `true`. The workflow compiles
 Android classes before analysis and supplies the SDK library to SonarJava.
-Installer coverage comes from the actual Python tests; renderer device checks
-are documented separately and are not represented as synthetic line coverage.
-The coverage filter selects `install.py` by file path because the tests load it
-with `importlib` under the name `aquarium_install`.
+Java coverage is imported from the JaCoCo XML report, and Python coverage from
+`coverage.xml`. Both come from the strict coverage runner used by the core Tests
+job. Python coverage selects files by path because some tests load them with
+`importlib` under descriptive module names. Renderer device checks are
+documented separately and do not manufacture coverage data.
 
 View analysis results and quality gates in this repository's
 [SonarQube Cloud project](https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium).
 A successful scanner upload does not by itself establish a passing quality gate;
 check the processed result for the same branch or pull request and commit.
-The README's Sonar badge shows the Actions scan status.
+The README includes separate Sonar badges for Actions upload status, the
+processed quality gate, and measured overall coverage.
 Manual runs explicitly pass the selected branch to Sonar so a branch scan does
 not replace the `main` result. Push and pull request runs use automatic detection.
 
@@ -90,6 +111,12 @@ Import the public repository into the respective existing accounts.
 Their repository configuration excludes generated build output and
 binary media, while retaining application code for analysis. Scrutinizer must
 use the triggering checkout rather than cloning another branch's `main`.
+Codacy is registered for this repository and has completed its initial source
+analysis. Its README badge uses this project's own ID. Source findings remain
+visible in the dashboard; registration does not imply they are all resolved.
+Scrutinizer import is currently blocked by gateway and third-party service
+errors on its repository import page. Its badge will be added after the
+repository is registered successfully.
 
 ### Aikido
 
@@ -111,6 +138,9 @@ set a variable to `false` to disable its job. A disabled or skipped job is not
 a completed scan. Add provider status badges
 only after the specific repository integration is active; do not reuse badge
 IDs from another project.
+
+The Sponsor badge links to `https://github.com/sponsors/jeremykenedy`.
+GitHub sanitizes README HTML, so it uses a linked image rather than an iframe.
 
 The downloads badge shows the total number of release asset downloads, including
 APK and checksum files across all releases. It does not count installations or
