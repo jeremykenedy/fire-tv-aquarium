@@ -26,6 +26,7 @@ final class AquariumPlayback extends FrameLayout
     private MediaPlayer player;
     private boolean active;
     private boolean surfaceReady;
+    private boolean hd;
 
     AquariumPlayback(Context context) {
         super(context);
@@ -34,7 +35,9 @@ final class AquariumPlayback extends FrameLayout
         addView(video, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         video.getHolder().addCallback(this);
         // Fire TV can keep its UI at 1080p while the video surface is native UHD.
-        video.getHolder().setFixedSize(3840, 2160);
+        int[] output = AquariumOutput.size(context);
+        video.getHolder().setFixedSize(output[0], output[1]);
+        hd = !AquariumOutput.supportsUhdVideo(context);
         error = new TextView(context);
         error.setTextColor(Color.WHITE);
         error.setTextSize(24);
@@ -79,7 +82,8 @@ final class AquariumPlayback extends FrameLayout
         error.setVisibility(View.GONE);
         MediaPlayer next = new MediaPlayer();
         player = next;
-        try (AssetFileDescriptor clip = getResources().openRawResourceFd(R.raw.aquarium)) {
+        try (AssetFileDescriptor clip =
+                getResources().openRawResourceFd(hd ? R.raw.aquarium_hd : R.raw.aquarium)) {
             next.setDataSource(clip.getFileDescriptor(), clip.getStartOffset(), clip.getLength());
             next.setDisplay(video.getHolder());
             next.setVolume(0, 0);
@@ -89,7 +93,7 @@ final class AquariumPlayback extends FrameLayout
             next.prepareAsync();
         } catch (Exception exception) {
             Log.e(TAG, "Cannot open bundled aquarium footage", exception);
-            showError("Aquarium video could not be opened. Press Back to exit.");
+            fallbackOrError("Aquarium video could not be opened. Press Back to exit.");
         }
     }
 
@@ -110,8 +114,17 @@ final class AquariumPlayback extends FrameLayout
 
     @Override
     public boolean onError(MediaPlayer failed, int what, int extra) {
-        if (player == failed) showError("Playback failed (" + what + ", " + extra + ")");
+        if (player == failed) fallbackOrError("Playback failed (" + what + ", " + extra + ")");
         return true;
+    }
+
+    private void fallbackOrError(String message) {
+        releasePlayer();
+        if (!hd) {
+            hd = true;
+            Log.i(TAG, "Retrying with bundled 1080p footage");
+            prepareIfReady();
+        } else showError(message);
     }
 
     private void showError(String message) {

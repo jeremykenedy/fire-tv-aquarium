@@ -13,7 +13,7 @@ find "$OUT/classes" -name '*.class' > "$OUT/classes.txt"
 "$TOOLS/d8" --release --lib "$ANDROID_JAR" --classpath "$HERE/build/classes" \
   --min-api 23 --output "$OUT/dex" @"$OUT/classes.txt"
 "$TOOLS/aapt2" link -o "$OUT/unsigned.apk" -I "$ANDROID_JAR" \
-  --manifest "$HERE/device-tests/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 30
+  --manifest "$HERE/device-tests/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 36
 (cd "$OUT/dex" && zip -q -j "$OUT/unsigned.apk" classes.dex)
 "$TOOLS/zipalign" -f 4 "$OUT/unsigned.apk" "$OUT/aligned.apk"
 "$TOOLS/apksigner" sign --ks "$HOME/.android/firetv-aquarium.jks" \

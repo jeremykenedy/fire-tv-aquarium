@@ -9,11 +9,20 @@ permissions, runtime services, ad libraries, analytics, or tracking. Avoid addin
 runtime dependencies for functionality already available in Android.
 
 Run the commands in [Testing](README.md#testing) and [CI](docs/CI.md), then verify
-behavior changes on a Fire TV. Check both directions of remote navigation,
+behavior changes on the relevant Fire TV, Android TV, and Google TV environments.
+Check both directions of remote navigation,
 persistence after restarting the process, preview, mode switching, automatic
 idle activation, remote exit, and actual native 4K composition where relevant.
 
 Follow the existing Java, Python, shell, documentation, and banner conventions.
 Keep signing keys and device state out of Git. Include relevant validation in
 change descriptions. Report device-specific limits with the device model and
-Fire OS/API version rather than claiming every Fire TV is verified.
+firmware and Android API version rather than claiming every TV is verified.
+Separate emulator results from physical hardware results. For Random changes,
+verify fixed choices, excluded versions, saved Random preferences, and refresh
+on a new showing. Restore the first observed system settings after device tests.
+
+Documentation changes should keep the README contents, installation examples,
+settings tables, screenshots, and release notes consistent. Use the project's
+README, badge, and banner skills where applicable. Dependabot updates must align
+tool pins and validate the actual proposed version on the reviewed commit.

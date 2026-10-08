@@ -24,7 +24,7 @@ python3 check_apk.py
 
 `build.sh` compiles resources with AAPT2, Java with `javac`, and DEX with D8,
 aligns the APK, signs it, verifies the signature, and creates the checksum.
-No Gradle or external Android libraries are required. The app targets API 30
+No Gradle or external Android libraries are required. The app targets API 36
 and supports API 23 or newer. The SDK platform used to compile is API 36.
 
 Outputs:
@@ -36,7 +36,9 @@ Outputs:
 | `build/classes/` | Compiled application classes |
 | `build/tests/` | Compiled platform-independent tests |
 
-The bundled video must be H.264 at exactly 3840x2160. Build validation rejects
+The original bundled video must be H.264 at exactly 3840x2160.
+The local fallback must be H.264 at 1920x1080. It is a derivative of the same loop,
+encoded at level 4.1 with a 4 Mbps maximum rate and no audio. Build validation rejects
 lower-resolution or incompatible footage. The video is stored uncompressed
 in the APK for native resource-file playback.
 

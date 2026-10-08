@@ -1,5 +1,6 @@
 build/
 device-state.json
+device-states/
 __pycache__/
 .DS_Store
 *.jks

@@ -7,6 +7,8 @@ services. Its package is `com.jeremykenedy.firetv.aquarium`.
 |---|---|
 | `AquariumActivity` | Remote-operated settings and full-screen preview |
 | `AquariumOptions` | Immutable, validated configuration and population presets |
+| `AquariumRandomizer` | Resolve saved random choices once per session without persisting results |
+| `AquariumOutput` | Physical display size and local H.264 decoder capabilities |
 | `AquariumPreferences` | Private on-device settings storage |
 | `AquariumDisplay` | Switch between animated and video content; display clock |
 | `AquariumSceneView` | Native 4K OpenGL surface and frame requests |
@@ -36,11 +38,17 @@ background changes. See [Artwork](ARTWORK.md).
 
 ## Resolution
 
-Both animated and video surfaces request a fixed 3840x2160 buffer. The window
+Both animated and video surfaces request a fixed 3840x2160 buffer on a TV with
+a supported 4K mode; other TVs use their physical display size, capped at 4K. The window
 prefers a supported 4K display mode. Fire TV can render its UI at 1080p while
 compositing that separate aquarium surface at 4K. Device verification checks
 actual SurfaceFlinger buffer, crop, display frame, and hardware composition;
 a manifest declaration alone does not establish native 4K output.
+
+Original video checks local codec capabilities before choosing UHD or the bundled
+1080p derivative. A failed UHD playback retries the HD copy once. Both are muted
+and local. The app has Java bytecode only, with no architecture-specific native
+libraries, so one APK covers 32-bit and 64-bit TV platforms.
 
 ## Offline operation
 

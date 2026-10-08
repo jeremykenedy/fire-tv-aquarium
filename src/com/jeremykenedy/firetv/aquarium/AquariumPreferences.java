@@ -26,7 +26,9 @@ final class AquariumPreferences {
                 integer("population", store.contains("count") ? 0 : d.population),
                 integer("creatures", d.creatures),
                 integer("look", d.look),
-                integer("time", d.time));
+                integer("time", d.time),
+                integer("randomMask", 0),
+                integer("versions", 127));
     }
 
     private int integer(String name, int fallback) {
@@ -59,6 +61,8 @@ final class AquariumPreferences {
                 .putInt("creatures", options.creatures)
                 .putInt("look", options.look)
                 .putInt("time", options.time)
+                .putInt("randomMask", options.randomMask)
+                .putInt("versions", options.versions)
                 .putBoolean("bubbles", options.bubbles)
                 .putBoolean("rays", options.rays)
                 .apply();

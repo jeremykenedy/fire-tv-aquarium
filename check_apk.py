@@ -16,6 +16,7 @@ badging = subprocess.check_output([str(aapt), "dump", "badging", str(apk)], text
 assert "package: name='com.jeremykenedy.firetv.aquarium'" in badging
 with zipfile.ZipFile(apk) as archive:
     assert archive.getinfo("res/raw/aquarium.mp4").compress_type == zipfile.ZIP_STORED
+    assert archive.getinfo("res/raw/aquarium_hd.mp4").compress_type == zipfile.ZIP_STORED
     assert "classes.dex" in archive.namelist()
     packaged = {Path(name).name for name in archive.namelist()}
     for family in ("realistic", "cinematic", "drawn"):

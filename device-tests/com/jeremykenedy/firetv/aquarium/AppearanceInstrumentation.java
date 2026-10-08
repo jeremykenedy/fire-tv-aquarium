@@ -162,6 +162,7 @@ public final class AppearanceInstrumentation extends Instrumentation {
                         "Appearance and independent preferences persist");
             } finally {
                 preferences.save(original);
+                getTargetContext().getSharedPreferences("aquarium", 0).edit().commit();
             }
             result.putString(
                     "stream",

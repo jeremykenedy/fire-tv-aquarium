@@ -16,6 +16,19 @@ pinned and checked against their published SHA-256 digests before execution.
 Python development tools are version-pinned. Dependabot watches action pins and
 Python development dependencies. No development tool is bundled in the APK.
 
+The installer test matrix retains Python 3.10 and 3.13 on Linux and macOS.
+macOS jobs use GitHub's standard `macos-15-intel` image to avoid the ARM runner
+capacity cancellations observed during this release; local ARM64 macOS and
+Android TV emulator checks are documented separately. Android build-tool
+installation uses Ubuntu's main archive mirror with bounded retries, download
+timeouts, and a ten-minute step limit. Package signature checks remain enabled.
+
+For dependency PRs, compare the full diff, verify action SHAs against official
+releases, and check CI for the exact reviewed head. A passing check that installs
+an older tool does not validate a proposed update. Ruff's dependency pin,
+`pyproject.toml` required version, and style-workflow install must agree. Re-run
+checks after a repair or head change before approving and merging.
+
 Run the local checks with JDK 21, Python, and ShellCheck installed:
 
 ```bash
@@ -31,7 +44,7 @@ python3 check_apk.py
 
 ## External services
 
-The new private repo does not inherit another repository's secrets or service
+This private repo does not inherit another repository's secrets or service
 registration. External checks require access to this repository and a service
 plan supporting private projects. Configuration files alone do not establish
 an active service or a passing quality gate.

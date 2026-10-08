@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.0 - 2026-10-08
+
+- Support Fire TV, Android TV, and Google TV with one offline APK.
+- Target Android SDK 36 while retaining Android API 23 compatibility.
+- Use physical display resolution and a local 1080p video fallback where needed.
+- Add Random to every aquarium setting, resolved once per showing.
+- Add Random version with switches to include or exclude each look and footage.
+- Keep fixed choices, saved Random preferences, and existing settings during upgrades.
+- Add --state-file for independent screensaver restore backups on multiple TVs.
+- Preserve the application package and signing key; no breaking setting changes.
+- Upgrade by installing the signed APK with adb install -r or install.py.
+
 ## 1.2.0
 
 - Preserve the first installed aquarium video as Original 4K footage.

@@ -49,6 +49,8 @@ final class AquariumOptions {
             look,
             time;
     final boolean bubbles, rays;
+    final int randomMask, versions;
+    static final int CONTROL_COUNT = 20;
 
     AquariumOptions(
             int mode,
@@ -139,6 +141,78 @@ final class AquariumOptions {
             int creatures,
             int look,
             int time) {
+        this(
+                mode,
+                count,
+                species,
+                scene,
+                speed,
+                size,
+                light,
+                clock,
+                bubbles,
+                rays,
+                population,
+                creatures,
+                look,
+                time,
+                0);
+    }
+
+    AquariumOptions(
+            int mode,
+            int count,
+            int species,
+            int scene,
+            int speed,
+            int size,
+            int light,
+            int clock,
+            boolean bubbles,
+            boolean rays,
+            int population,
+            int creatures,
+            int look,
+            int time,
+            int randomMask) {
+        this(
+                mode,
+                count,
+                species,
+                scene,
+                speed,
+                size,
+                light,
+                clock,
+                bubbles,
+                rays,
+                population,
+                creatures,
+                look,
+                time,
+                randomMask,
+                127);
+    }
+
+    AquariumOptions(
+            int mode,
+            int count,
+            int species,
+            int scene,
+            int speed,
+            int size,
+            int light,
+            int clock,
+            boolean bubbles,
+            boolean rays,
+            int population,
+            int creatures,
+            int look,
+            int time,
+            int randomMask,
+            int versions) {
+        this.versions = (versions & 127) == 0 ? 127 : versions & 127;
+        this.randomMask = randomMask & ((1 << CONTROL_COUNT) - 1);
         this.population = bounded(population, 0, POPULATIONS.length - 1);
         this.creatures = creatures & 127;
         this.mode = bounded(mode, 0, MODES.length - 1);
@@ -153,6 +227,158 @@ final class AquariumOptions {
         this.rays = rays;
         this.look = bounded(look, 0, LOOKS.length - 1);
         this.time = bounded(time, 0, TIMES.length - 1);
+    }
+
+    boolean isRandom(int control) {
+        return (randomMask & (1 << control)) != 0;
+    }
+
+    int choiceCount(int control) {
+        switch (control) {
+            case 0:
+                return MODES.length;
+            case 1:
+                return POPULATIONS.length;
+            case 2:
+                return MAX_FISH + 1;
+            case 3:
+                return SPECIES.length;
+            case 4:
+                return SCENES.length;
+            case 5:
+                return SPEEDS.length;
+            case 6:
+                return SIZES.length;
+            case 7:
+                return LIGHTS.length;
+            case 17:
+                return CLOCKS.length;
+            case 18:
+                return LOOKS.length;
+            case 19:
+                return TIMES.length;
+            default:
+                if (control < 8 || control > 16)
+                    throw new IllegalArgumentException("Unknown control");
+                return 2;
+        }
+    }
+
+    int choice(int control) {
+        switch (control) {
+            case 0:
+                return mode;
+            case 1:
+                return population;
+            case 2:
+                return count;
+            case 3:
+                return species;
+            case 4:
+                return scene;
+            case 5:
+                return speed;
+            case 6:
+                return size;
+            case 7:
+                return light;
+            case 8:
+                return bubbles ? 1 : 0;
+            case 9:
+                return rays ? 1 : 0;
+            case 17:
+                return clock;
+            case 18:
+                return look;
+            case 19:
+                return time;
+            default:
+                if (control < 10 || control > 16)
+                    throw new IllegalArgumentException("Unknown control");
+                return hasCreature(1 << (control - 10)) ? 1 : 0;
+        }
+    }
+
+    AquariumOptions adjust(int control, int delta) {
+        int length = choiceCount(control);
+        int next = cycle(isRandom(control) ? length : choice(control), delta, length + 1);
+        int mask = next == length ? randomMask | (1 << control) : randomMask & ~(1 << control);
+        AquariumOptions values = next == length ? this : withChoice(control, next, mask);
+        if (control == 2) {
+            mask &= ~(1 << 1);
+            values = values.withChoice(1, 0, mask);
+        } else if (control == 1 && (next == length || next != 0)) {
+            mask &= ~(1 << 2);
+            if (next != length) values = values.withChoice(2, POPULATION_COUNTS[next], mask);
+        }
+        return values.withMask(mask);
+    }
+
+    AquariumOptions toggleVersion(int version) {
+        int allowed = versions ^ (1 << version);
+        if (allowed == 0) return this;
+        return new AquariumOptions(
+                mode,
+                count,
+                species,
+                scene,
+                speed,
+                size,
+                light,
+                clock,
+                bubbles,
+                rays,
+                population,
+                creatures,
+                look,
+                time,
+                randomMask,
+                allowed);
+    }
+
+    AquariumOptions withMask(int mask) {
+        return new AquariumOptions(
+                mode,
+                count,
+                species,
+                scene,
+                speed,
+                size,
+                light,
+                clock,
+                bubbles,
+                rays,
+                population,
+                creatures,
+                look,
+                time,
+                mask,
+                versions);
+    }
+
+    AquariumOptions withChoice(int control, int value, int mask) {
+        int visitors = creatures;
+        if (control >= 10 && control <= 16) {
+            int bit = 1 << (control - 10);
+            visitors = value == 1 ? visitors | bit : visitors & ~bit;
+        }
+        return new AquariumOptions(
+                control == 0 ? value : mode,
+                control == 2 ? value : count,
+                control == 3 ? value : species,
+                control == 4 ? value : scene,
+                control == 5 ? value : speed,
+                control == 6 ? value : size,
+                control == 7 ? value : light,
+                control == 17 ? value : clock,
+                control == 8 ? value == 1 : bubbles,
+                control == 9 ? value == 1 : rays,
+                control == 1 ? value : population,
+                visitors,
+                control == 18 ? value : look,
+                control == 19 ? value : time,
+                mask,
+                versions);
     }
 
     static AquariumOptions defaults() {

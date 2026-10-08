@@ -30,6 +30,7 @@ def save_original(device, path):
         "device": device,
         "settings": {key: adb(device, "shell", "settings", "get", "secure", key) for key in KEYS},
     }
+    path.parent.mkdir(parents=True, exist_ok=True)
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, "w") as file:
         json.dump(saved, file, indent=2)
@@ -79,13 +80,19 @@ def install(device, path):
         restore(device, path)
         raise
     print("Aquarium 4K selected. Existing screensaver and sleep timeouts are preserved.")
-    print(f"Restore: python3 install.py --device {device} --restore")
+    print(
+        f"Restore: python3 install.py --device {device} "
+        f"--state-file {shlex.quote(str(path))} --restore"
+    )
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--device", required=True, help="ADB device serial or IP:port")
     parser.add_argument("--restore", action="store_true", help="Restore the original screensaver")
+    parser.add_argument(
+        "--state-file", type=Path, help="Separate original-settings backup for this TV"
+    )
     args = parser.parse_args()
     if not args.device or any(
         char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-"
@@ -93,7 +100,7 @@ def main():
     ):
         parser.error("Invalid device serial")
     adb(args.device, "get-state")
-    state = HERE / "device-state.json"
+    state = args.state_file or HERE / "device-state.json"
     if args.restore:
         restore(args.device, state)
     else:

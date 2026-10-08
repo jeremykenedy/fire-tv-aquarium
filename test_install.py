@@ -49,6 +49,25 @@ class InstallTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), saved_bytes)
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
 
+    def test_multiple_tv_backups_remain_independent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "device-states"
+            first, second = root / "first.json", root / "second.json"
+            with patch.object(installer, "adb", side_effect=["first/.Dream", "1", "0"]):
+                installer.save_original("first", first)
+            first_bytes = first.read_bytes()
+            with patch.object(installer, "adb", side_effect=["second/.Dream", "0", "null"]):
+                installer.save_original("second", second)
+            self.assertEqual(first.read_bytes(), first_bytes)
+            self.assertEqual(json.loads(second.read_text())["device"], "second")
+            with patch.object(installer, "set_setting") as setting:
+                installer.restore("second", second)
+                self.assertEqual(
+                    setting.call_args_list[0].args,
+                    ("second", "screensaver_components", "second/.Dream"),
+                )
+            self.assertEqual(first.read_bytes(), first_bytes)
+
     def test_restore_deletes_originally_unset_setting(self):
         with patch.object(installer, "adb", side_effect=["", "null"]) as adb:
             installer.set_setting("tv", "screensaver_components", "null")

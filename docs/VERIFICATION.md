@@ -1,18 +1,45 @@
 # Device verification
 
-Aquarium 4K 1.2.0 verification, October 8, 2026
+Aquarium 4K 1.3.0 verification, October 8, 2026
 
 ## Local checks
 
-- Six installer tests passed, including checksum rejection, shell quoting,
+- Seven installer tests passed, including checksum rejection, shell quoting,
   preservation of the original settings, wrong-device rejection, and rollback.
-- 491,068 Java assertions passed for corrupt settings, population and appearance
-  bounds, day/night brightness, species distribution, school direction and
+- 575,155 Java assertions passed for corrupt settings, population and appearance
+  bounds, random choices, shuffle exclusions, fixed-option preservation, day/night brightness, species distribution, school direction and
   spacing, and day-long swim paths.
 - Android SDK build succeeded; APK signature verification succeeded.
 - Built APK requests zero permissions and stores the video uncompressed.
 - Java/Python formatting, ShellCheck, documentation links, Bandit, and Gitleaks
   checks passed for the documentation and CI setup.
+
+## Version 1.3.0 platform checks
+
+| Platform | Environment | Result |
+|---|---|---|
+| Fire TV | Physical API 30 TV with 4K panel | Remote controls, Random settings and shuffle exclusions, preferences, UHD video playback, native 4K display composition, automatic idle activation and Back exit |
+| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Native settings and preview, day/night, random controls and persistence, 1080p rendering and local video playback, automatic idle activation and Back exit |
+| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Native settings and preview, day/night, random controls and persistence, 1080p rendering and local video playback, automatic idle activation and Back exit |
+
+Android TV and Google TV are verified on emulators; additional physical TV models
+still need hardware testing. Both emulators reported and played muted, looping
+1920x1080 footage. Physical Fire TV detection selected UHD. The APK targets SDK
+36, installs on both emulators without the older-target Play Protect warning,
+and has the same signing certificate as version 1.2.0.
+
+Idle checks temporarily used a 15-second timeout, confirmed the aquarium's active
+DreamService and Dreaming power state, and checked the return to Awake after Back.
+Screensaver selections, idle timeouts, and stay-awake settings were restored.
+Screenshots confirmed rendered aquarium content in both emulator dreams.
+
+The physical Fire TV was temporarily awakened for final screen captures. Its
+animated dream used a 3840x2160 SurfaceView buffer, full 3840x2160 source and
+physical display frame, and hardware composition. The player reported muted,
+looping 3840x2160 footage. Native controls, random preferences, shuffle exclusions,
+and reopening passed while the screen was awake. The TV's original asleep state
+was restored afterward. The fallback on an actual UHD decoder error is implemented
+but was not induced during these checks.
 
 ## Fire TV checks
 

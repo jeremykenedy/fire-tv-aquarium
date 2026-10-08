@@ -10,6 +10,8 @@ Retrieved: 2026-10-08
 The source is native 3840x2160 H.264 at 24 frames per second. The bundled
 version retains that resolution, removes audio, and blends the final two
 seconds into the opening two seconds to make a continuous aquarium loop.
+A bundled 1920x1080 H.264 derivative of that loop provides the local fallback
+for displays and decoders that cannot play UHD. The same video license applies.
 No code or assets from the supplied APK/XAPK apps are included.
 
 The footage has its own license and is not covered by the repository's

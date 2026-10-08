@@ -28,6 +28,14 @@ if streams[0].get("codec_name") != "h264":
     sys.exit("The bundled aquarium video must use H.264.")
 '
 
+ffprobe -v error -select_streams v:0 -show_entries stream=width,height,codec_name \
+  -of json "$HERE/res/raw/aquarium_hd.mp4" | python3 -c '
+import json, sys
+stream = json.load(sys.stdin)["streams"][0]
+if (stream.get("width"), stream.get("height"), stream.get("codec_name")) != (1920, 1080, "h264"):
+    sys.exit("The fallback video must be 1920x1080 H.264.")
+'
+
 mkdir -p "$OUT" "$HOME/.android"
 rm -rf "$OUT/classes" "$OUT/dex" "$OUT/generated"
 mkdir -p "$OUT/classes" "$OUT/dex"
@@ -42,8 +50,8 @@ fi
 
 "$BUILD_TOOLS/aapt2" compile --dir "$HERE/res" -o "$OUT/res.zip"
 "$BUILD_TOOLS/aapt2" link -o "$OUT/unsigned.apk" -I "$ANDROID_JAR" \
-  --manifest "$HERE/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 30 \
-  --version-code 3 --version-name 1.2.0 -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
+  --manifest "$HERE/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 36 \
+  --version-code 4 --version-name 1.3.0 -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
 find "$HERE/src" "$OUT/generated" -name '*.java' > "$OUT/sources.txt"
 javac -nowarn -Xlint:-options -source 8 -target 8 -bootclasspath "$ANDROID_JAR" \
   -d "$OUT/classes" @"$OUT/sources.txt"
