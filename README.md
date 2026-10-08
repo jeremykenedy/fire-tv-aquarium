@@ -15,6 +15,8 @@
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml/badge.svg" alt="Code style"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml/badge.svg" alt="Documentation"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml/badge.svg" alt="Security"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml/badge.svg" alt="GitGuardian scan"></a>
+    <a href="https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/sonarcloud.yml/badge.svg" alt="SonarQube Cloud scan"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
@@ -316,7 +318,9 @@ static analysis, secret detection, and documentation checks. Actions are pinned
 to immutable commits. CI builds use temporary signing keys; release APKs use the
 stable application key.
 
-See [CI](docs/CI.md) for workflow details and external service setup.
+GitGuardian and SonarQube Cloud scans are enabled. Sonar analyzes the Java and
+Python source with compiled Android classes and real installer test coverage.
+See [CI](docs/CI.md) for workflow details, scan scope, and external service setup.
 
 ## Privacy
 

@@ -9,7 +9,10 @@ permissions:
   contents: read
 jobs:
   sonarqube:
-    if: vars.SONAR_ENABLED == 'true'
+    if: >-
+      vars.SONAR_ENABLED == 'true' &&
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -28,18 +31,25 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: test -n "$SONAR_TOKEN"
       - name: Install build tools
+        timeout-minutes: 10
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg
+          if [[ -f /etc/apt/apt-mirrors.txt ]]; then
+            sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+          fi
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update -qq
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y --no-install-recommends ffmpeg
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0'
           python -m pip install coverage==7.16.2
       - name: Compile and test
         run: |
           bash test.sh
           bash build.sh
-          coverage run --source=install -m unittest test_install.py
+          coverage run --include=install.py -m unittest test_install.py
           coverage xml
           printf 'sonar.java.libraries=%s/platforms/android-36/android.jar\n' "$ANDROID_HOME" >> sonar-project.properties
+          if [[ "$GITHUB_EVENT_NAME" == 'workflow_dispatch' ]]; then
+            printf 'sonar.branch.name=%s\n' "$GITHUB_REF_NAME" >> sonar-project.properties
+          fi
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9
         env:

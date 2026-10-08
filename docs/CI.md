@@ -13,6 +13,7 @@
 
 Actions use full commit SHA pins. The Java formatter and Gitleaks releases are
 pinned and checked against their published SHA-256 digests before execution.
+Their downloads and redirects are restricted to HTTPS.
 Python development tools are version-pinned. Dependabot watches action pins and
 Python development dependencies. No development tool is bundled in the APK.
 
@@ -53,19 +54,35 @@ an active service or a passing quality gate.
 
 Add `GITGUARDIAN_API_KEY` under repository Actions secrets, then set the Actions
 variable `GITGUARDIAN_ENABLED` to `true`. The workflow fails if enabled without
-credentials. Run it manually once and verify the result. Secret scanning with
-Gitleaks already runs independently of this integration.
+credentials. This integration is enabled for this repository. Its authenticated
+manual scan completed without secret findings. It scans the commits selected
+for each CI event; Gitleaks independently scans source and history.
 
 ### SonarQube Cloud
 
-Import this public repository into the existing `jeremykenedy-12345` organization.
-Public visibility removes the private-project restriction noted during initial
-setup; confirm the imported project's access and service status before enabling
-analysis. Add an analysis token as the Actions
+The public project is registered in the `jeremykenedy-12345` organization with
+project key `jeremykenedy_fire-tv-aquarium`. Add an analysis token as the Actions
 secret `SONAR_TOKEN`, then set `SONAR_ENABLED` to `true`. The workflow compiles
 Android classes before analysis and supplies the SDK library to SonarJava.
 Installer coverage comes from the actual Python tests; renderer device checks
 are documented separately and are not represented as synthetic line coverage.
+The coverage filter selects `install.py` by file path because the tests load it
+with `importlib` under the name `aquarium_install`.
+
+View analysis results and quality gates in this repository's
+[SonarQube Cloud project](https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium).
+A successful scanner upload does not by itself establish a passing quality gate;
+check the processed result for the same branch or pull request and commit.
+The README's Sonar badge shows the Actions scan status.
+Manual runs explicitly pass the selected branch to Sonar so a branch scan does
+not replace the `main` result. Push and pull request runs use automatic detection.
+
+Both integrations are enabled for main pushes, manual runs, and pull requests
+from branches in this repository. Their authenticated Actions jobs skip fork
+and Dependabot pull requests because those events cannot use repository Actions
+secrets. Tests, code style, documentation, Bandit, and Gitleaks still run on those
+pull requests. Merged changes are scanned by both services on `main`. These jobs
+do not use `pull_request_target` to expose credentials to pull request code.
 
 ### Scrutinizer and Codacy
 
@@ -89,8 +106,9 @@ its open-source PHP configuration does not cover this app. Enable the project
 only if the existing account supports it, and use this repository's own ID for
 any StyleCI badge.
 
-External scan jobs stay explicitly disabled until credentials and access are
-configured. A disabled job is not a completed scan. Add provider status badges
+The two authenticated scan jobs are controlled by their repository variables;
+set a variable to `false` to disable its job. A disabled or skipped job is not
+a completed scan. Add provider status badges
 only after the specific repository integration is active; do not reuse badge
 IDs from another project.
 
