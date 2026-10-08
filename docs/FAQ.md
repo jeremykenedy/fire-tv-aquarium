@@ -4,8 +4,9 @@
 
 Download `aquarium-4k.apk` and `aquarium-4k.apk.sha256` from the
 [latest GitHub release](https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest).
-The repository is private, so your GitHub account needs access. This project
-currently distributes a sideloaded APK. See [Installation](../INSTALLATION.md).
+The repository and releases are public; browser downloads do not require a
+GitHub account or repository access. This project currently distributes a
+sideloaded APK. See [Installation](../INSTALLATION.md).
 
 ## Does one APK work on all three TV platforms?
 

@@ -1,8 +1,9 @@
 # Releasing
 
-Keep the release version badge in `README.md` in sync with the released version.
-The downloads badge identifies this as a private repository because public badge
-services cannot read its download counts. Never put access tokens in badge URLs.
+The README's live badges show the latest stable GitHub release and total release
+asset downloads across all releases. Download counts include the APK and checksum
+assets; they are not installation or active-user counts. Check that both badges
+resolve after publishing. Never put access tokens in badge URLs.
 
 Release APKs use the stable local signing key. CI builds are validation builds
 and use temporary keys.

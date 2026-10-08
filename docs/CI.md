@@ -44,9 +44,9 @@ python3 check_apk.py
 
 ## External services
 
-This private repo does not inherit another repository's secrets or service
-registration. External checks require access to this repository and a service
-plan supporting private projects. Configuration files alone do not establish
+This public repo does not inherit another repository's secrets or service
+registration. External checks still require service registration and any
+credentials used by their workflows. Configuration files alone do not establish
 an active service or a passing quality gate.
 
 ### GitGuardian
@@ -58,10 +58,10 @@ Gitleaks already runs independently of this integration.
 
 ### SonarQube Cloud
 
-Import this repository into the existing `jeremykenedy-12345` organization,
-retaining private project visibility. At setup, the organization's OSS plan
-allowed public projects only; private analysis requires a compatible plan.
-Add an analysis token as the Actions
+Import this public repository into the existing `jeremykenedy-12345` organization.
+Public visibility removes the private-project restriction noted during initial
+setup; confirm the imported project's access and service status before enabling
+analysis. Add an analysis token as the Actions
 secret `SONAR_TOKEN`, then set `SONAR_ENABLED` to `true`. The workflow compiles
 Android classes before analysis and supplies the SDK library to SonarJava.
 Installer coverage comes from the actual Python tests; renderer device checks
@@ -69,15 +69,15 @@ are documented separately and are not represented as synthetic line coverage.
 
 ### Scrutinizer and Codacy
 
-Import the repository into the respective existing accounts with private-repo
-access. Their repository configuration excludes generated build output and
+Import the public repository into the respective existing accounts.
+Their repository configuration excludes generated build output and
 binary media, while retaining application code for analysis. Scrutinizer must
 use the triggering checkout rather than cloning another branch's `main`.
 
 ### Aikido
 
-Add this repository to the existing GitHub integration in the Aikido dashboard
-if the account supports private repository access. The app has no third-party
+Add this repository to the existing GitHub integration in the Aikido dashboard.
+The app has no third-party
 runtime dependencies, but source and development dependency scanning remain
 useful. Verify the repository's own dashboard before adding its badge.
 
@@ -94,10 +94,11 @@ configured. A disabled job is not a completed scan. Add provider status badges
 only after the specific repository integration is active; do not reuse badge
 IDs from another project.
 
-The downloads badge identifies the private repository rather than showing an
-unavailable public download count. The release badge records the current version
-and is updated with each release. GitHub workflow badges link to this
-repository's own checks.
+The downloads badge shows the total number of release asset downloads, including
+APK and checksum files across all releases. It does not count installations or
+active users. The release badge follows the latest stable GitHub release
+automatically. Both use public repository data without embedded credentials.
+GitHub workflow badges link to this repository's own checks.
 
 ## Release signing
 
