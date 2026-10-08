@@ -28,11 +28,13 @@
 - [TV Support](#tv-support)
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Upgrades and Restoration](#upgrades-and-restoration)
 - [Quick Start](#quick-start)
 - [Features](#features)
 - [Configuration](#configuration)
 - [Screenshots](#screenshots)
 - [Documentation](#documentation)
+- [Troubleshooting](#troubleshooting)
 - [Testing](#testing)
 - [Continuous Integration](#continuous-integration)
 - [Privacy](#privacy)
@@ -46,6 +48,15 @@ APIs, a TV launcher entry, D-pad controls, and a system DreamService. Android AP
 23 or newer and OpenGL ES 2.0 are required. Physical 4K TVs use a native 3840x2160
 surface; other TVs render at their supported display resolution. Original footage
 uses a bundled 1080p copy when 4K decoding is unavailable or fails.
+
+| Platform | Installation and controls | Verified environment |
+|---|---|---|
+| Fire TV | ADB install, TV app entry, remote settings, system idle screensaver | Physical API 30 Fire TV with native 4K display composition |
+| Android TV | Same APK and installer, D-pad settings, system idle screensaver | Official API 31 emulator at 1080p |
+| Google TV | Same APK and installer, D-pad settings, ADB screensaver selection | Official API 34 emulator at 1080p |
+
+Android TV and Google TV hardware testing is still needed. Emulator results do
+not establish automatic idle activation or native 4K output on every vendor's TV.
 
 Some Google TV models hide third-party screensaver selection in their settings.
 The ADB installer selects the service and verifies the saved values. Vendor
@@ -87,6 +98,36 @@ timeouts and saves the original screensaver settings in ignored
 
 See [Installation](INSTALLATION.md) for developer mode, upgrades, restoring the
 previous screensaver, and removing the app.
+
+For a second TV, use `--state-file device-states/bedroom.json` with a unique path
+and reuse that path for upgrades and restoration. Paired wireless ADB can use
+ports other than 5555; use the connected serial shown by `adb devices`.
+
+## Upgrades and Restoration
+
+Download both assets from the same release before upgrading:
+
+```bash
+gh release download --repo jeremykenedy/fire-tv-aquarium \
+  --pattern aquarium-4k.apk --pattern aquarium-4k.apk.sha256 --dir build --clobber
+python3 install.py --device DEVICE_IP:5555
+```
+
+The installer uses an in-place upgrade. Matching package and signing identity
+retain aquarium preferences, and the first saved screensaver backup remains the
+restore baseline. Version 1.3.0 keeps the signing identity and minimum Android
+version of 1.2.0. Existing choices remain fixed until you select Random.
+
+To select the previous screensaver again:
+
+```bash
+python3 install.py --device DEVICE_IP:5555 --restore
+```
+
+If installation used `--state-file`, include the same flag when restoring.
+Restore leaves Aquarium installed. To remove it, restore first and then follow
+the [uninstall instructions](INSTALLATION.md#uninstall). Uninstalling deletes
+aquarium preferences. Idle and sleep timeouts are preserved throughout.
 
 ## Quick Start
 
@@ -167,6 +208,20 @@ selects **Custom**. Large animals are additional to this ordinary fish count.
 See [Configuration](docs/CONFIGURATION.md) for backgrounds, saved settings,
 school behavior, and the sea-life switches.
 
+Common combinations:
+
+| Goal | Settings |
+|---|---|
+| Different versions each time | Mode: Random version; enable the Shuffle versions you want |
+| Original footage every time | Mode: Original 4K footage; optionally choose Night and Clock |
+| Same look, different scenery | Mode: Animated aquarium; fixed Look; Background: Random |
+| A dim aquarium with changing fish | Day / Night: Night; Species: Random; Population: Random |
+| Only two animated looks | Mode: Random version; enable those two Shuffle switches and disable the other five |
+
+Shuffle exclusions apply to **Mode: Random version**. **Look: Random** uses all
+six animated looks. Fish controls customize generated animation; they cannot
+change the animals or scenery inside recorded footage.
+
 ## Screenshots
 
 Most images are captures from the Fire TV. Its screenshot output is 1920x1080; the
@@ -209,6 +264,7 @@ surfaces. All documentation images are 1920x1080. See [Verification](docs/VERIFI
 - [Installation, upgrades, restore, and uninstall](INSTALLATION.md)
 - [Build tools and signing keys](docs/BUILDING.md)
 - [Aquarium configuration](docs/CONFIGURATION.md)
+- [Frequently asked questions](docs/FAQ.md)
 - [Appearance artwork and rendering](docs/ARTWORK.md)
 - [Architecture and lifecycle](docs/ARCHITECTURE.md)
 - [CI and quality checks](docs/CI.md)
@@ -217,6 +273,21 @@ surfaces. All documentation images are 1920x1080. See [Verification](docs/VERIFI
 - [Device verification](docs/VERIFICATION.md)
 - [Contributing](CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
+
+## Troubleshooting
+
+| Symptom | First check |
+|---|---|
+| TV is unauthorized or offline | Accept its ADB authorization prompt and confirm its serial with `adb devices` |
+| Aquarium is missing from screensaver settings | Use the installer, then verify actual idle activation on that TV |
+| Fish or scenery settings are disabled | They apply to animation; switch Mode to Animated aquarium |
+| Look is disabled in Random version | The enabled Shuffle switches choose the look instead |
+| Random choices repeat | Choices hold for one showing and can repeat by chance; Show aquarium rolls again |
+| Video looks lower resolution | The offline 1080p fallback is selected when UHD display or decoding is unavailable |
+| Upgrade reports a signature mismatch | Use the release APK or the original signing key; uninstalling removes preferences |
+
+See [Troubleshooting](docs/TROUBLESHOOTING.md) for diagnostics and
+[FAQ](docs/FAQ.md) for capability and privacy details.
 
 ## Testing
 

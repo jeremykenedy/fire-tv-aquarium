@@ -4,6 +4,37 @@ Settings are saved immediately in private Android preferences. The launch
 activity and idle DreamService both read the same configuration. Settings use
 validated bounds, and unreadable preference types fall back to defaults.
 
+Use Up / Down to focus an option and Left / Right or Select to change it. The
+live preview reflects changes immediately. Show aquarium starts a full-screen
+preview; Back or Menu returns to settings. Reset aquarium restores defaults,
+clears every Random choice, and enables all seven Shuffle versions. It does not
+restore the TV's previous screensaver or change its system timeouts.
+
+## Available settings
+
+| Setting | Fixed choices | Random behavior | Applies to |
+|---|---|---|---|
+| Mode | Animated aquarium, Original 4K footage | Picks one enabled Shuffle version | Both |
+| Look | Six animated appearances | Picks any animated look | Animation; disabled with Random version |
+| Day / Night | Day, Night | Picks either brightness | Both |
+| Population | Custom and five presets | Picks one of the five presets | Animation |
+| Fish | 0-60 | Picks an exact count and uses Custom | Animation |
+| Species | Mixed and six species | Picks one fixed species choice, including Mixed | Animation |
+| Background | Five environments | Picks one environment | Animation |
+| Swimming | Calm, Gentle, Lively | Picks one speed | Animation |
+| Fish size | Small, Medium, Large | Picks one size | Animation |
+| Lighting | Daylight, Warm, Moonlight | Picks one lighting color | Animation |
+| Bubbles | On, Off | Picks either state | Animation |
+| Sunlight shimmer | On, Off | Picks either state | Animation |
+| Each sea-life switch | On, Off | Picks either state independently | Animation |
+| Clock | Hidden, 12-hour, 24-hour | Picks one clock mode | Both |
+
+The seven Shuffle switches have On / Off choices. They define the eligible pool
+for Random version and are not randomized themselves. They do not filter Look:
+Random, which chooses among all six animated looks. Fixed Original footage
+disables animation controls while retaining their saved values. Random version
+keeps those controls available for sessions that choose animation.
+
 ## Population and species
 
 | Population | Fish count | Swimming behavior |
@@ -125,3 +156,25 @@ is pressed, and when a dream starts. They remain stable during that showing;
 randomization does not run every frame. Resolved values never overwrite saved
 Random choices. Fixed settings and excluded versions remain respected on later
 showings. A random result can repeat by chance.
+
+## Recipes
+
+For a realistic aquarium whose fish and background change, set Mode to Animated
+aquarium, Look to Realistic, and choose Random for Species and Background.
+Set Population to Random for preset counts, or Fish to Random for any count
+including zero. Keep Day / Night on Night if you always want a dim screen.
+
+For a shuffle between Classic Windows aquarium and original footage, select
+Random version, leave only those two Shuffle switches enabled, and keep Clock
+fixed if you want the same clock in both. Animated settings affect only sessions
+that choose Classic. To restrict a shuffle to one version, leave only that
+version enabled; per-setting Random choices still work in animated sessions.
+
+## Saved preferences and upgrades
+
+Preferences are private app data shared by settings, preview, and the idle dream.
+Closing the app, exiting a dream, or installing a same-key upgrade retains them.
+Random is saved as a choice; the randomly resolved result is not saved over it.
+Reset aquarium returns app choices to defaults. Clearing Android app data or
+uninstalling also removes preferences. The computer's screensaver backup is
+separate and is not used to store aquarium choices.

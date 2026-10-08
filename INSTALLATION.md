@@ -7,6 +7,8 @@
 - [Multiple TVs](#multiple-tvs)
 - [Download and install](#download-and-install)
 - [Upgrade](#upgrade)
+- [Verify installation](#verify-installation)
+- [Installer options](#installer-options)
 - [Restore the previous screensaver](#restore-the-previous-screensaver)
 - [Uninstall](#uninstall)
 
@@ -106,6 +108,51 @@ python3 install.py --device DEVICE_IP:5555
 
 The existing backup remains the restore baseline. Do not replace the signing key
 when building your own upgrades. See [Building](docs/BUILDING.md).
+
+Upgrades from 1.2.0 to 1.3.0 preserve fixed settings. Random choices and the
+Shuffle pool are opt-in. If using a custom `--state-file`, include it with every
+installer command for that TV. Do not delete the backup after a successful upgrade.
+
+## Verify installation
+
+Open **Aquarium 4K** from the TV's app list. Adjust a setting, open **Show aquarium**,
+press Back to return, and reopen the app to confirm the setting was retained.
+The selection can be read through ADB:
+
+```bash
+adb -s DEVICE_IP:5555 shell settings get secure screensaver_components
+adb -s DEVICE_IP:5555 shell settings get secure screensaver_enabled
+adb -s DEVICE_IP:5555 shell settings get secure screensaver_activate_on_sleep
+```
+
+The values should be `com.jeremykenedy.firetv.aquarium/.AquariumDreamService`,
+`1`, and `1`. These values confirm selection, not automatic idle activation.
+Leave the TV idle long enough to pass its existing screensaver interval, confirm
+Aquarium appears, and press a remote button to exit. Do not change timeouts just
+to match another TV. Vendor power-management behavior can prevent a third-party
+screensaver from starting even when its selection was saved.
+
+## Installer options
+
+```bash
+python3 install.py --help
+```
+
+| Option | Required | Purpose |
+|---|---|---|
+| `--device SERIAL` | Yes | Exact connected ADB serial, including the port for network ADB |
+| `--state-file PATH` | No | Backup path for this TV; defaults to this clone's `device-state.json` |
+| `--restore` | No | Restore the backup rather than install or select Aquarium |
+
+The APK and checksum are read from this repository's `build/` directory.
+Relative custom backup paths are resolved from the directory where the command
+runs. Use an absolute backup path if running from different directories. Backup
+files include the device identity and original settings; keep them private.
+
+Wireless ADB addresses can change. If the serial no longer matches the original
+backup, reconnect using the original identity if available and confirm you are
+working with the correct TV. The installer rejects different identities and
+does not automatically rewrite backups or apply one TV's settings to another.
 
 ## Restore the previous screensaver
 
