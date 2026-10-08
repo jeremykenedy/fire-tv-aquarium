@@ -5,7 +5,6 @@ import importlib.util
 import io
 import json
 import runpy
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -108,7 +107,7 @@ class InstallTests(unittest.TestCase):
         with (
             patch.object(sys, "argv", ["install.py", "--device", "unsafe;serial"]),
             patch.object(sys, "stderr", io.StringIO()),
-            patch.object(subprocess, "check_output") as adb,
+            patch("subprocess.check_output") as adb,
         ):
             with self.assertRaises(SystemExit):
                 runpy.run_path(str(Path(__file__).with_name("install.py")), run_name="__main__")
@@ -127,7 +126,7 @@ class InstallTests(unittest.TestCase):
             self.assertFalse((root / "state.json").exists())
 
     def test_shell_values_are_quoted(self):
-        with patch.object(subprocess, "check_output", return_value="1\n") as run:
+        with patch("subprocess.check_output", return_value="1\n") as run:
             installer.adb("tv", "shell", "settings", "put", "secure", "key", "x; echo injected")
             self.assertEqual(
                 run.call_args.args[0],
@@ -135,7 +134,7 @@ class InstallTests(unittest.TestCase):
             )
 
     def test_adb_state_arguments_are_not_shell_commands(self):
-        with patch.object(subprocess, "check_output", return_value="device\n") as run:
+        with patch("subprocess.check_output", return_value="device\n") as run:
             self.assertEqual(installer.adb("tv", "get-state"), "device")
             self.assertEqual(run.call_args.args[0], ["adb", "-s", "tv", "get-state"])
             installer.adb("tv")

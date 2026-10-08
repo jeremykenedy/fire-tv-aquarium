@@ -63,12 +63,6 @@ public final class OutputPolicyTest {
             if (broken) throw new IllegalStateException("Incomplete vendor reporting");
             return Shadow.directlyOn(list, MediaCodecList.class, "getCodecInfos");
         }
-
-        @Implementation
-        protected static int native_getCodecCount() {
-            if (broken) throw new IllegalStateException("Incomplete vendor reporting");
-            return ShadowMediaCodecList.native_getCodecCount();
-        }
     }
 
     @Implements(MediaCodecInfo.class)
@@ -190,6 +184,11 @@ public final class OutputPolicyTest {
         assertFalse(
                 "incomplete reporting",
                 AquariumOutput.supportsUhdVideo(RuntimeEnvironment.getApplication()));
+    }
+
+    @Test
+    public void decoderResolutionAndBrokenVendorReportingSelectFallback() {
+        DisplayModes.supported = new Display.Mode[] {mode(7, 3840, 2160)};
         ShadowMediaCodecList.reset();
         ShadowMediaCodecList.addCodec(
                 codec(

@@ -2,6 +2,7 @@ package com.jeremykenedy.firetv.aquarium;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 
@@ -10,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.util.ReflectionHelpers;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 28)
@@ -34,7 +36,10 @@ public final class AndroidCoverageTest {
 
     @Test
     public void swimmingAndRandomSettingsKeepTheirContracts() {
+        int previous = ReflectionHelpers.getStaticField(AquariumTest.class, "checks");
         AquariumTest.main(new String[0]);
+        int completed = ReflectionHelpers.getStaticField(AquariumTest.class, "checks");
+        assertTrue("The standalone suite must execute its assertions", completed > previous);
     }
 
     @Test

@@ -4,7 +4,6 @@ import contextlib
 import importlib.util
 import io
 import runpy
-import subprocess
 import tempfile
 import unittest
 import zipfile
@@ -45,7 +44,7 @@ class PackagingTests(unittest.TestCase):
             with (
                 zipfile.ZipFile(apk) as archive,
                 patch.object(zipfile, "ZipFile", return_value=archive),
-                patch.object(subprocess, "check_output", side_effect=[permission, badging]),
+                patch("subprocess.check_output", side_effect=[permission, badging]),
                 contextlib.redirect_stdout(io.StringIO()),
             ):
                 runpy.run_path(str(ROOT / "check_apk.py"))

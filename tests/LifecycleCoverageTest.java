@@ -82,6 +82,10 @@ public final class LifecycleCoverageTest {
             key(controls[index], KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT);
             controls[index].performClick();
         }
+        verifyPreviewAndReset(activity);
+    }
+
+    private void verifyPreviewAndReset(AquariumActivity activity) {
         Button preview = ReflectionHelpers.getField(activity, "preview");
         LinearLayout panel = ReflectionHelpers.getField(activity, "panel");
         Button reset = (Button) panel.getChildAt(panel.getChildCount() - 2);

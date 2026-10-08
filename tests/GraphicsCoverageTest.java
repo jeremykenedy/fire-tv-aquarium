@@ -33,8 +33,12 @@ public final class GraphicsCoverageTest {
 
     @Implements(GLES20.class)
     public static class Graphics extends ShadowGLES20 {
-        static boolean compile = true, link = true;
-        static int textureLimit = 2048, error, draws, deletedTextures;
+        static boolean compile = true;
+        static boolean link = true;
+        static int textureLimit = 2048;
+        static int error;
+        static int draws;
+        static int deletedTextures;
 
         @Resetter
         public static void clear() {
