@@ -157,9 +157,10 @@ The README's Aikido badge links directly to that dashboard. The app has no
 third-party runtime dependencies, but source, manifest, development dependency,
 secret, and license scans remain useful. The badge identifies the integration;
 it does not claim that no findings remain.
-Branch Quick Scan requires a paid Aikido plan and is omitted. This integration
-uses the scans available for the repository's configured `main` branch; no
-paid branch-scan job or upgrade is required.
+Branch Quick Scan and manual rescanning require a paid Aikido plan and are
+omitted. The free integration scans the configured `main` branch automatically
+each day. Findings fixed in a merged commit remain visible until that scheduled
+scan processes the new code. No paid scan job or upgrade is required.
 
 The launcher activity and screensaver service intentionally remain exported.
 Android must be able to open the TV launcher and bind the screensaver. The
