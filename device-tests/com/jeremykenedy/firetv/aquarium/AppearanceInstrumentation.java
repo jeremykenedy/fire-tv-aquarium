@@ -15,6 +15,7 @@ import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 
 import java.io.File;
@@ -134,10 +135,8 @@ public final class AppearanceInstrumentation extends Instrumentation {
                 }
                 for (int creature = 0; creature < 7; creature++) {
                     renderer.configure(options(look, 2, 0, 0, 1 << creature));
-                    renderer.onDrawFrame(null);
-                    read(pixels);
                     check(
-                            changed(pixels, baseline) > 1000,
+                            visitorAppears(renderer, pixels, baseline),
                             AquariumOptions.LOOKS[look]
                                     + " "
                                     + AquariumOptions.CREATURE_NAMES[creature]);
@@ -186,6 +185,21 @@ public final class AppearanceInstrumentation extends Instrumentation {
             int look, int scene, int count, int species, int creatures) {
         return new AquariumOptions(
                 0, count, species, scene, 1, 1, 0, 0, false, false, 0, creatures, look);
+    }
+
+    private static boolean visitorAppears(
+            AquariumAppearanceRenderer renderer, ByteBuffer pixels, byte[] baseline)
+            throws Exception {
+        // Visitors can swim completely out of frame. Give them time to return
+        // rather than requiring visibility at an arbitrary capture instant.
+        long deadline = SystemClock.elapsedRealtime() + 60000;
+        do {
+            renderer.onDrawFrame(null);
+            read(pixels);
+            if (changed(pixels, baseline) > 1000) return true;
+            Thread.sleep(250);
+        } while (SystemClock.elapsedRealtime() < deadline);
+        return false;
     }
 
     private void check(boolean success, String name) {

@@ -13,3 +13,4 @@ __pycache__/
 coverage.xml
 .ruff_cache/
 .venv/
+coverage/.gradle/

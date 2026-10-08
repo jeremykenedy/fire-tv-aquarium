@@ -53,3 +53,6 @@ jobs:
           bash build.sh
           python3 check_apk.py
           bash scripts/build-device-checks.sh
+      - name: Enforce complete application and tooling coverage
+        timeout-minutes: 20
+        run: bash scripts/test-coverage.sh

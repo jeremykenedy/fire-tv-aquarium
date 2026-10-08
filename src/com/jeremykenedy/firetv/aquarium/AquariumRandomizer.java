@@ -4,6 +4,8 @@ import java.util.Random;
 
 /** Resolves saved random choices once, without changing preferences or animating the choices. */
 final class AquariumRandomizer {
+    private AquariumRandomizer() {}
+
     static AquariumOptions resolve(AquariumOptions saved) {
         return resolve(saved, new Random());
     }
@@ -24,10 +26,9 @@ final class AquariumRandomizer {
         if (saved.isRandom(0)) {
             // Each animated look and the original footage have an equal chance.
             int remaining = random.nextInt(Integer.bitCount(saved.versions));
-            int version = 0;
-            for (; version < AquariumOptions.LOOKS.length + 1; version++) {
-                if ((saved.versions & (1 << version)) != 0 && remaining-- == 0) break;
-            }
+            int versions = saved.versions;
+            while (remaining-- > 0) versions &= versions - 1;
+            int version = Integer.numberOfTrailingZeros(versions);
             result = result.withChoice(0, version == AquariumOptions.LOOKS.length ? 1 : 0, 0);
             if (result.mode == 0) result = result.withChoice(18, version, 0);
         }

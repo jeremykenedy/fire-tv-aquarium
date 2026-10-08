@@ -2,6 +2,8 @@ package com.jeremykenedy.firetv.aquarium;
 
 /** Stable swimming paths: fish leave the visible tank before wrapping around. */
 final class FishMotion {
+    private FishMotion() {}
+
     static float phase(int index) {
         return (index * 0.6180339887f) % 1f;
     }
