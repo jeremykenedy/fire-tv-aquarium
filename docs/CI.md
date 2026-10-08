@@ -68,6 +68,12 @@ are documented separately and are not represented as synthetic line coverage.
 The coverage filter selects `install.py` by file path because the tests load it
 with `importlib` under the name `aquarium_install`.
 
+View analysis results and quality gates in this repository's
+[SonarQube Cloud project](https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium).
+A successful scanner upload does not by itself establish a passing quality gate;
+check the processed result for the same branch or pull request and commit.
+The README's Sonar badge shows the Actions scan status.
+
 Both integrations are enabled for main pushes, manual runs, and pull requests
 from branches in this repository. Their authenticated Actions jobs skip fork
 and Dependabot pull requests because those events cannot use repository Actions
