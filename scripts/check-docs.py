@@ -4,7 +4,7 @@
 import re
 from pathlib import Path
 
-from defusedxml import ElementTree as ET
+from defusedxml import ElementTree
 
 ROOT = Path(__file__).resolve().parent.parent
 README = "README.md"
@@ -53,7 +53,7 @@ def check_readme():
 
 def check_banners():
     for mode in ("light", "dark"):
-        banner = ET.parse(ROOT / f"art/banner-{mode}.svg", forbid_dtd=True).getroot()
+        banner = ElementTree.parse(ROOT / f"art/banner-{mode}.svg", forbid_dtd=True).getroot()
         if banner.get("viewBox") != "0 0 800 200":
             raise SystemExit(f"Unexpected {mode} banner dimensions")
 

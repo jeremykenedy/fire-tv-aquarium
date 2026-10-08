@@ -128,6 +128,14 @@ before execution. Java paths receive the actual `src/` prefix; Python paths
 come directly from coverage.py. Both reports are finalized for the checked-out
 commit, and fork and Dependabot pull requests cannot access this secret.
 This reporting feature is available for public open-source repositories.
+Subprocess findings require a review of the actual arguments rather than a
+blanket rule exclusion. The installer invokes a trusted local `adb` executable
+with an argument list, validates device serials at the CLI and helper boundaries,
+and quotes remote-shell values with `shlex.join`. The APK verifier invokes the
+local SDK's `aapt` with fixed commands and package paths. Neither enables a host
+shell. Individual false-positive classifications record this evidence and retain
+scanning for future calls. PATH and ANDROID_HOME select local development tools;
+they are not inputs from a remote application service.
 Scrutinizer import is currently blocked by gateway and third-party service
 errors on its repository import page. The README includes the requested build
 and quality badge URLs for this repository's `main` branch. They may be

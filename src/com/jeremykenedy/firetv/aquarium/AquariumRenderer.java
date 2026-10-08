@@ -160,23 +160,21 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
             transform(18, -4.2f, -7, .7f, 2.5f, .65f);
             solid(rock, .14f, .20f, .22f, 0);
         }
+        vegetation(settings.scene);
+    }
+
+    private void vegetation(int scene) {
         for (int i = 0; i < 28; i++) {
             float x = -23 + FishMotion.phase(i + 13) * 46;
-            float height = (settings.scene == 3 ? 5.0f : 1.8f) + FishMotion.phase(i + 4) * 3.0f;
-            transform(
-                    x,
-                    -7.1f,
-                    -5 - FishMotion.phase(i) * 3,
-                    settings.scene == 0 ? 1.8f : 1,
-                    height,
-                    1);
+            float height = (scene == 3 ? 5.0f : 1.8f) + FishMotion.phase(i + 4) * 3.0f;
+            transform(x, -7.1f, -5 - FishMotion.phase(i) * 3, scene == 0 ? 1.8f : 1, height, 1);
             Matrix.rotateM(model, 0, (i % 3 - 1) * 14f, 0, 0, 1);
             float[] color =
-                    settings.scene != 0
+                    scene != 0
                             ? new float[] {0.16f, 0.48f, 0.28f}
                             : new float[] {0.66f, 0.28f + FishMotion.phase(i) * 0.15f, 0.35f};
             shader.object(model, color[0], color[1], color[2], 1, 0, 0, 2, i * 1.2f);
-            shader.draw(settings.scene != 0 ? leaf : coral);
+            shader.draw(scene != 0 ? leaf : coral);
         }
     }
 
