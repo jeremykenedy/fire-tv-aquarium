@@ -16,8 +16,10 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 /** Local, muted, hardware-decoded UHD playback, with no third-party libraries. */
-final class AquariumPlayback extends FrameLayout implements SurfaceHolder.Callback,
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
+final class AquariumPlayback extends FrameLayout
+        implements SurfaceHolder.Callback,
+                MediaPlayer.OnPreparedListener,
+                MediaPlayer.OnErrorListener {
     private static final String TAG = "Aquarium4K";
     private final SurfaceView video;
     private final TextView error;
@@ -43,10 +45,14 @@ final class AquariumPlayback extends FrameLayout implements SurfaceHolder.Callba
 
     static void configureWindow(Window window) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        window.getDecorView()
+                .setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         Display display = window.getWindowManager().getDefaultDisplay();
         WindowManager.LayoutParams attributes = window.getAttributes();
         for (Display.Mode mode : display.getSupportedModes()) {
@@ -90,8 +96,15 @@ final class AquariumPlayback extends FrameLayout implements SurfaceHolder.Callba
     @Override
     public void onPrepared(MediaPlayer prepared) {
         if (player != prepared || !active) return;
-        Log.i(TAG, "Playing " + prepared.getVideoWidth() + "x" + prepared.getVideoHeight()
-            + ", duration=" + prepared.getDuration() + "ms, muted, looping");
+        Log.i(
+                TAG,
+                "Playing "
+                        + prepared.getVideoWidth()
+                        + "x"
+                        + prepared.getVideoHeight()
+                        + ", duration="
+                        + prepared.getDuration()
+                        + "ms, muted, looping");
         prepared.start();
     }
 

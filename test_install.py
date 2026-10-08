@@ -1,13 +1,16 @@
 """Checks for installation integrity, setting rollback, and shell quoting."""
+
 import importlib.util
 import json
-from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
-spec = importlib.util.spec_from_file_location("aquarium_install", Path(__file__).with_name("install.py"))
+spec = importlib.util.spec_from_file_location(
+    "aquarium_install", Path(__file__).with_name("install.py")
+)
 installer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(installer)
 
@@ -28,8 +31,10 @@ class InstallTests(unittest.TestCase):
     def test_shell_values_are_quoted(self):
         with patch.object(subprocess, "check_output", return_value="1\n") as run:
             installer.adb("tv", "shell", "settings", "put", "secure", "key", "x; echo injected")
-            self.assertEqual(run.call_args.args[0],
-                             ["adb", "-s", "tv", "shell", "settings put secure key 'x; echo injected'"])
+            self.assertEqual(
+                run.call_args.args[0],
+                ["adb", "-s", "tv", "shell", "settings put secure key 'x; echo injected'"],
+            )
 
     def test_backup_preserves_first_observed_settings(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -47,8 +52,10 @@ class InstallTests(unittest.TestCase):
     def test_restore_deletes_originally_unset_setting(self):
         with patch.object(installer, "adb", side_effect=["", "null"]) as adb:
             installer.set_setting("tv", "screensaver_components", "null")
-            self.assertEqual(adb.call_args_list[0].args,
-                             ("tv", "shell", "settings", "delete", "secure", "screensaver_components"))
+            self.assertEqual(
+                adb.call_args_list[0].args,
+                ("tv", "shell", "settings", "delete", "secure", "screensaver_components"),
+            )
 
     def test_wrong_device_restore_does_not_change_settings(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -61,6 +68,7 @@ class InstallTests(unittest.TestCase):
 
     def test_failed_activation_restores_original_settings(self):
         import hashlib
+
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "build").mkdir()
@@ -68,11 +76,13 @@ class InstallTests(unittest.TestCase):
             (root / "build/aquarium-4k.apk").write_bytes(data)
             (root / "build/aquarium-4k.apk.sha256").write_text(hashlib.sha256(data).hexdigest())
             failure = RuntimeError("device disconnected")
-            with patch.object(installer, "HERE", root), \
-                    patch.object(installer, "save_original"), \
-                    patch.object(installer, "adb", return_value="Success"), \
-                    patch.object(installer, "set_setting", side_effect=[None, failure]), \
-                    patch.object(installer, "restore") as restore:
+            with (
+                patch.object(installer, "HERE", root),
+                patch.object(installer, "save_original"),
+                patch.object(installer, "adb", return_value="Success"),
+                patch.object(installer, "set_setting", side_effect=[None, failure]),
+                patch.object(installer, "restore") as restore,
+            ):
                 with self.assertRaisesRegex(RuntimeError, "disconnected"):
                     installer.install("tv", root / "state.json")
                 restore.assert_called_once_with("tv", root / "state.json")

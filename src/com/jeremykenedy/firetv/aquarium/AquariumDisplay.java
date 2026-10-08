@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -33,8 +34,16 @@ final class AquariumDisplay extends FrameLayout implements Runnable {
         boolean replace = options == null || options.mode != next.mode;
         options = next;
         if (replace) {
-            if (scene != null) { scene.stop(); removeView(scene); scene = null; }
-            if (footage != null) { footage.stop(); removeView(footage); footage = null; }
+            if (scene != null) {
+                scene.stop();
+                removeView(scene);
+                scene = null;
+            }
+            if (footage != null) {
+                footage.stop();
+                removeView(footage);
+                footage = null;
+            }
             if (options.mode == 0) {
                 scene = new AquariumSceneView(getContext(), options);
                 addView(scene, 0, new LayoutParams(-1, -1));
@@ -55,18 +64,25 @@ final class AquariumDisplay extends FrameLayout implements Runnable {
         if (footage != null) footage.start();
         post(this);
     }
+
     void stop() {
         active = false;
         removeCallbacks(this);
         if (scene != null) scene.stop();
         if (footage != null) footage.stop();
     }
+
     private void updateClock() {
         clock.setVisibility(options.clock == 0 ? GONE : VISIBLE);
-        if (options.clock != 0) clock.setText(new SimpleDateFormat(
-            options.clock == 1 ? "h:mm a" : "HH:mm", Locale.getDefault()).format(new Date()));
+        if (options.clock != 0)
+            clock.setText(
+                    new SimpleDateFormat(
+                                    options.clock == 1 ? "h:mm a" : "HH:mm", Locale.getDefault())
+                            .format(new Date()));
     }
-    @Override public void run() {
+
+    @Override
+    public void run() {
         if (!active) return;
         updateClock();
         postDelayed(this, 1000);

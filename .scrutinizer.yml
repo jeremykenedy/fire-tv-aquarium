@@ -1,0 +1,34 @@
+build:
+  nodes:
+    analysis:
+      environment:
+        python: '3.13.7'
+      project_setup:
+        override: true
+      tests:
+        override:
+          - py-scrutinizer-run
+    tests:
+      environment:
+        python: '3.13.7'
+        sdkman:
+          - 'java@21.0.12-tem'
+      dependencies:
+        override: true
+      project_setup:
+        override: true
+      tests:
+        override:
+          - bash test.sh
+checks:
+  java: true
+  python:
+    code_rating: true
+    duplicate_code: true
+filter:
+  excluded_paths:
+    - 'build/'
+    - 'res/'
+    - 'art/'
+    - 'docs/screenshots/'
+    - '.verity/'

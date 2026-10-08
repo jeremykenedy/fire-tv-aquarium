@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Install Aquarium 4K or restore the previous screensaver without losing settings."""
+
 import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
 import shlex
 import subprocess
+from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 COMPONENT = "com.jeremykenedy.firetv.aquarium/.AquariumDreamService"
@@ -86,7 +87,10 @@ def main():
     parser.add_argument("--device", required=True, help="ADB device serial or IP:port")
     parser.add_argument("--restore", action="store_true", help="Restore the original screensaver")
     args = parser.parse_args()
-    if not args.device or any(char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-" for char in args.device):
+    if not args.device or any(
+        char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-"
+        for char in args.device
+    ):
         parser.error("Invalid device serial")
     adb(args.device, "get-state")
     state = HERE / "device-state.json"

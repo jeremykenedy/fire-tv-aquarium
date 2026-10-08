@@ -1,0 +1,8 @@
+[tool.ruff]
+required-version = "0.15.4"
+target-version = "py310"
+line-length = 100
+exclude = ["build", ".git", ".verity"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

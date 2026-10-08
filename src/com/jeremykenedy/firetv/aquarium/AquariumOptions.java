@@ -3,12 +3,24 @@ package com.jeremykenedy.firetv.aquarium;
 /** Validated, immutable settings shared by the renderer and the remote controls. */
 final class AquariumOptions {
     static final String[] MODES = {"Animated aquarium", "Real 4K footage"};
-    static final String[] SPECIES = {"Mixed", "Clownfish", "Yellow tang", "Blue tang", "Angelfish", "Neon tetra", "Betta"};
+    static final String[] SPECIES = {
+        "Mixed", "Clownfish", "Yellow tang", "Blue tang", "Angelfish", "Neon tetra", "Betta"
+    };
     static final String[] SCENES = {"Reef", "Fish tank", "Ocean", "Kelp forest", "Deep sea"};
-    static final String[] POPULATIONS = {"Custom", "A few", "A handful", "A lot", "A ton", "Schools"};
+    static final String[] POPULATIONS = {
+        "Custom", "A few", "A handful", "A lot", "A ton", "Schools"
+    };
     static final int[] POPULATION_COUNTS = {0, 6, 16, 32, 60, 48};
-    static final String[] CREATURE_NAMES = {"Sharks", "Whales", "Octopuses", "Turtles", "Rays", "Dolphins", "Jellyfish"};
-    static final int SHARK = 1, WHALE = 2, OCTOPUS = 4, TURTLE = 8, RAY = 16, DOLPHIN = 32, JELLYFISH = 64;
+    static final String[] CREATURE_NAMES = {
+        "Sharks", "Whales", "Octopuses", "Turtles", "Rays", "Dolphins", "Jellyfish"
+    };
+    static final int SHARK = 1,
+            WHALE = 2,
+            OCTOPUS = 4,
+            TURTLE = 8,
+            RAY = 16,
+            DOLPHIN = 32,
+            JELLYFISH = 64;
     static final String[] SPEEDS = {"Calm", "Gentle", "Lively"};
     static final String[] SIZES = {"Small", "Medium", "Large"};
     static final String[] LIGHTS = {"Daylight", "Warm", "Moonlight"};
@@ -18,13 +30,33 @@ final class AquariumOptions {
     final int mode, count, species, scene, speed, size, light, clock, population, creatures;
     final boolean bubbles, rays;
 
-    AquariumOptions(int mode, int count, int species, int scene, int speed, int size,
-                    int light, int clock, boolean bubbles, boolean rays) {
+    AquariumOptions(
+            int mode,
+            int count,
+            int species,
+            int scene,
+            int speed,
+            int size,
+            int light,
+            int clock,
+            boolean bubbles,
+            boolean rays) {
         this(mode, count, species, scene, speed, size, light, clock, bubbles, rays, 0, 0);
     }
 
-    AquariumOptions(int mode, int count, int species, int scene, int speed, int size,
-                    int light, int clock, boolean bubbles, boolean rays, int population, int creatures) {
+    AquariumOptions(
+            int mode,
+            int count,
+            int species,
+            int scene,
+            int speed,
+            int size,
+            int light,
+            int clock,
+            boolean bubbles,
+            boolean rays,
+            int population,
+            int creatures) {
         this.population = bounded(population, 0, POPULATIONS.length - 1);
         this.creatures = creatures & 127;
         this.mode = bounded(mode, 0, MODES.length - 1);
@@ -51,9 +83,19 @@ final class AquariumOptions {
         return ((value + delta) % count + count) % count;
     }
 
-    boolean hasCreature(int type) { return (creatures & type) != 0; }
-    boolean schools() { return population == 5; }
+    boolean hasCreature(int type) {
+        return (creatures & type) != 0;
+    }
 
-    float swimmingSpeed() { return speed == 0 ? 0.45f : speed == 1 ? 0.8f : 1.35f; }
-    float fishScale() { return size == 0 ? 0.6f : size == 1 ? 0.9f : 1.25f; }
+    boolean schools() {
+        return population == 5;
+    }
+
+    float swimmingSpeed() {
+        return speed == 0 ? 0.45f : speed == 1 ? 0.8f : 1.35f;
+    }
+
+    float fishScale() {
+        return size == 0 ? 0.6f : size == 1 ? 0.9f : 1.25f;
+    }
 }

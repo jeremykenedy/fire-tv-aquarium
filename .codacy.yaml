@@ -1,0 +1,7 @@
+---
+exclude_paths:
+  - build/**
+  - res/**
+  - art/**
+  - docs/screenshots/**
+  - .verity/**

@@ -11,7 +11,10 @@ final class AquariumMesh {
     final int count;
 
     AquariumMesh(float[] data) {
-        vertices = ByteBuffer.allocateDirect(data.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        vertices =
+                ByteBuffer.allocateDirect(data.length * 4)
+                        .order(ByteOrder.nativeOrder())
+                        .asFloatBuffer();
         vertices.put(data).position(0);
         count = data.length / 6;
     }
@@ -29,8 +32,12 @@ final class AquariumMesh {
                     float x = (float) (Math.sin(latitude) * Math.cos(longitude));
                     float y = (float) Math.cos(latitude);
                     float z = (float) (Math.sin(latitude) * Math.sin(longitude));
-                    data[offset++] = x; data[offset++] = y; data[offset++] = z;
-                    data[offset++] = x; data[offset++] = y; data[offset++] = z;
+                    data[offset++] = x;
+                    data[offset++] = y;
+                    data[offset++] = z;
+                    data[offset++] = x;
+                    data[offset++] = y;
+                    data[offset++] = z;
                 }
             }
         }
@@ -38,9 +45,11 @@ final class AquariumMesh {
     }
 
     static AquariumMesh plane() {
-        return new AquariumMesh(new float[] {
-            -1,-1,0, 0,0,1, 1,-1,0, 0,0,1, -1,1,0, 0,0,1,
-            -1,1,0, 0,0,1, 1,-1,0, 0,0,1, 1,1,0, 0,0,1});
+        return new AquariumMesh(
+                new float[] {
+                    -1, -1, 0, 0, 0, 1, 1, -1, 0, 0, 0, 1, -1, 1, 0, 0, 0, 1,
+                    -1, 1, 0, 0, 0, 1, 1, -1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1
+                });
     }
 
     static AquariumMesh fin(float[] points) {
@@ -62,9 +71,14 @@ final class AquariumMesh {
                     float t = steps[i] / 12f;
                     float width = (float) Math.sin(t * Math.PI) * 0.14f;
                     float lean = (blade - 2) * 0.20f;
-                    vertex(data, lean * t * t + sides[i] * width,
-                        t * (1.2f + (blade % 3) * .22f), (float) Math.sin(t * 3) * .12f,
-                        0, 0, 1);
+                    vertex(
+                            data,
+                            lean * t * t + sides[i] * width,
+                            t * (1.2f + (blade % 3) * .22f),
+                            (float) Math.sin(t * 3) * .12f,
+                            0,
+                            0,
+                            1);
                 }
             }
         }
@@ -76,8 +90,17 @@ final class AquariumMesh {
         branch(data, 0, 0, 0, 0, .60f, 0, .07f, 3);
         return from(data);
     }
-    private static void branch(ArrayList<Float> data, float x, float y, float z,
-                               float dx, float dy, float dz, float radius, int depth) {
+
+    private static void branch(
+            ArrayList<Float> data,
+            float x,
+            float y,
+            float z,
+            float dx,
+            float dy,
+            float dz,
+            float radius,
+            int depth) {
         float length = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
         float ux = dy / length, uy = -dx / length;
         float vx = -dz * dx / (length * length), vy = -dz * dy / (length * length);
@@ -91,16 +114,39 @@ final class AquariumMesh {
                 float ny = uy * (float) Math.cos(angle) + vy * (float) Math.sin(angle);
                 float nz = vz * (float) Math.sin(angle);
                 float r = radius * (rings[i] == 0 ? 1 : .65f);
-                vertex(data, x + dx * rings[i] + nx * r, y + dy * rings[i] + ny * r,
-                    z + dz * rings[i] + nz * r, nx, ny, nz);
+                vertex(
+                        data,
+                        x + dx * rings[i] + nx * r,
+                        y + dy * rings[i] + ny * r,
+                        z + dz * rings[i] + nz * r,
+                        nx,
+                        ny,
+                        nz);
             }
         }
         if (depth == 0) return;
-        branch(data, x + dx, y + dy, z + dz, dx * .5f - dy * .48f, dy * .72f,
-            dz * .6f + .09f, radius * .68f, depth - 1);
-        branch(data, x + dx, y + dy, z + dz, dx * .5f + dy * .48f, dy * .72f,
-            dz * .6f - .09f, radius * .68f, depth - 1);
+        branch(
+                data,
+                x + dx,
+                y + dy,
+                z + dz,
+                dx * .5f - dy * .48f,
+                dy * .72f,
+                dz * .6f + .09f,
+                radius * .68f,
+                depth - 1);
+        branch(
+                data,
+                x + dx,
+                y + dy,
+                z + dz,
+                dx * .5f + dy * .48f,
+                dy * .72f,
+                dz * .6f - .09f,
+                radius * .68f,
+                depth - 1);
     }
+
     static AquariumMesh tentacles() {
         ArrayList<Float> data = new ArrayList<>();
         for (int arm = 0; arm < 8; arm++) {
@@ -118,9 +164,14 @@ final class AquariumMesh {
                         float nx = (float) Math.cos(ring) * (float) Math.sin(angle);
                         float nz = (float) Math.cos(ring) * -(float) Math.cos(angle);
                         float ny = (float) Math.sin(ring);
-                        vertex(data, (float) Math.cos(angle) * reach + nx * radius,
-                            -.4f - t * 1.3f + curl + ny * radius,
-                            (float) Math.sin(angle) * reach + nz * radius, nx, ny, nz);
+                        vertex(
+                                data,
+                                (float) Math.cos(angle) * reach + nx * radius,
+                                -.4f - t * 1.3f + curl + ny * radius,
+                                (float) Math.sin(angle) * reach + nz * radius,
+                                nx,
+                                ny,
+                                nz);
                     }
                 }
             }
@@ -133,15 +184,29 @@ final class AquariumMesh {
         float[] data = new float[sphere.vertices.capacity()];
         sphere.vertices.get(data);
         for (int i = 0; i < data.length; i += 6) {
-            float variation = .87f + .13f * (float) (Math.sin(data[i] * 9 + data[i + 1] * 5)
-                * Math.cos(data[i + 2] * 7 - data[i + 1] * 4));
-            data[i] *= variation; data[i + 1] *= variation; data[i + 2] *= variation;
+            float variation =
+                    .87f
+                            + .13f
+                                    * (float)
+                                            (Math.sin(data[i] * 9 + data[i + 1] * 5)
+                                                    * Math.cos(data[i + 2] * 7 - data[i + 1] * 4));
+            data[i] *= variation;
+            data[i + 1] *= variation;
+            data[i + 2] *= variation;
         }
         return new AquariumMesh(data);
     }
-    private static void vertex(ArrayList<Float> data, float x, float y, float z, float nx, float ny, float nz) {
-        data.add(x); data.add(y); data.add(z); data.add(nx); data.add(ny); data.add(nz);
+
+    private static void vertex(
+            ArrayList<Float> data, float x, float y, float z, float nx, float ny, float nz) {
+        data.add(x);
+        data.add(y);
+        data.add(z);
+        data.add(nx);
+        data.add(ny);
+        data.add(nz);
     }
+
     private static AquariumMesh from(ArrayList<Float> values) {
         float[] data = new float[values.size()];
         for (int i = 0; i < data.length; i++) data[i] = values.get(i);

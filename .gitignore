@@ -8,3 +8,7 @@ __pycache__/
 .env
 .verity/*
 !.verity/standard.yaml
+.coverage
+coverage.xml
+.ruff_cache/
+.venv/

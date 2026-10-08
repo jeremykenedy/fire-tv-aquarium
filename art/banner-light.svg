@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" role="img" aria-labelledby="title description">
+  <title id="title">Fire TV Aquarium</title>
+  <desc id="description">Offline 4K aquarium screensaver with customizable fish and sea life.</desc>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#0c0a09"/><stop offset="1" stop-color="#1c1917"/></linearGradient>
+    <linearGradient id="water" x2="0" y2="1"><stop stop-color="#3b82f6"/><stop offset="1" stop-color="#1e40af"/></linearGradient>
+  </defs>
+  <rect width="800" height="200" rx="16" fill="#fff" stroke="#e5e7eb"/>
+  <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+    <text x="40" y="80" font-size="40" font-weight="700" letter-spacing="-.5" fill="#0f172a">Fire TV Aquarium</text>
+    <text x="40" y="112" font-size="14" fill="#64748b">Your own underwater world, right on your TV.</text>
+    <g transform="translate(40 132)"><rect width="90" height="22" rx="11" fill="#eff6ff" stroke="#60a5fa" stroke-width=".8" opacity="1"/><text x="45.0" y="15" font-size="10" font-weight="500" text-anchor="middle" fill="#1e40af">Native 4K</text></g><g transform="translate(138 132)"><rect width="72" height="22" rx="11" fill="#f0fdf4" stroke="#4ade80" stroke-width=".8" opacity="1"/><text x="36.0" y="15" font-size="10" font-weight="500" text-anchor="middle" fill="#166534">Offline</text></g><g transform="translate(218 132)"><rect width="112" height="22" rx="11" fill="#f5f3ff" stroke="#a78bfa" stroke-width=".8" opacity="1"/><text x="56.0" y="15" font-size="10" font-weight="500" text-anchor="middle" fill="#6d28d9">Custom sea life</text></g><g transform="translate(338 132)"><rect width="76" height="22" rx="11" fill="#fffbeb" stroke="#fbbf24" stroke-width=".8" opacity="1"/><text x="38.0" y="15" font-size="10" font-weight="500" text-anchor="middle" fill="#b45309">No ads</text></g>
+  </g>
+  <g transform="translate(578 42)">
+    <rect width="174" height="116" rx="14" fill="url(#water)"/>
+    <path d="M35 0 L62 116 M98 0 L123 116 M133 0 L159 116" stroke="#60a5fa" stroke-width="14" opacity=".2"/>
+    <path d="M12 110 Q18 74 9 66 M22 111 Q30 65 23 49 M149 111 Q154 71 166 59" fill="none" stroke="#4ade80" stroke-width="4"/>
+    <g transform="translate(52 38)"><path d="M-19 0 L-32 -13 L-32 13 Z" fill="#fbbf24"/><ellipse rx="23" ry="13" fill="#f59e0b"/><path d="M-6 -11 L-6 11 M8 -11 L8 11" stroke="#fff" stroke-width="5"/><circle cx="14" cy="-2" r="2.5" fill="#0f172a"/></g>
+    <g transform="translate(117 77)"><path d="M-19 0 L-32 -13 L-32 13 Z" fill="#a78bfa"/><ellipse rx="23" ry="13" fill="#60a5fa"/><path d="M-8 -11 Q1 -19 10 -10" fill="#3b82f6"/><circle cx="14" cy="-2" r="2.5" fill="#0f172a"/></g>
+    <circle cx="135" cy="26" r="4" fill="none" stroke="#c4b5fd" opacity=".7"/><circle cx="146" cy="14" r="3" fill="none" stroke="#c4b5fd" opacity=".7"/>
+  </g>
+</svg>

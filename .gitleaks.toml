@@ -1,0 +1,14 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Generated local build output, caches, and binary media"
+paths = [
+  '''(^|/)build/''',
+  '''(^|/)\.git/''',
+  '''(^|/)\.venv/''',
+  '''(^|/)\.ruff_cache/''',
+  '''(^|/)__pycache__/''',
+  '''\.mp4$''',
+  '''\.png$''',
+]

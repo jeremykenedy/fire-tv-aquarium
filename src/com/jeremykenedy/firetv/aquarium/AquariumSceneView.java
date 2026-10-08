@@ -18,20 +18,26 @@ final class AquariumSceneView extends GLSurfaceView implements Runnable {
         getHolder().setFixedSize(3840, 2160);
     }
 
-    void configure(AquariumOptions options) { renderer.configure(options); }
+    void configure(AquariumOptions options) {
+        renderer.configure(options);
+    }
+
     void start() {
         if (active) return;
         active = true;
         onResume();
         post(this);
     }
+
     void stop() {
         if (!active) return;
         active = false;
         removeCallbacks(this);
         onPause();
     }
-    @Override public void run() {
+
+    @Override
+    public void run() {
         if (!active) return;
         requestRender();
         postDelayed(this, 33);
