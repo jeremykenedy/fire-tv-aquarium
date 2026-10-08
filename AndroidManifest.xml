@@ -6,6 +6,7 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <application android:label="Aquarium 4K" android:theme="@android:style/Theme.Material.NoActionBar"
         android:allowBackup="false" android:usesCleartextTraffic="false"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:hardwareAccelerated="true" android:icon="@drawable/icon" android:banner="@drawable/banner">
         <activity android:name=".AquariumActivity" android:exported="true"
             android:screenOrientation="landscape">

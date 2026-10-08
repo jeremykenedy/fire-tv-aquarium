@@ -5,6 +5,9 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +43,27 @@ public final class AndroidCoverageTest {
         AquariumTest.main(new String[0]);
         int completed = ReflectionHelpers.getStaticField(AquariumTest.class, "checks");
         assertTrue("The standalone suite must execute its assertions", completed > previous);
+    }
+
+    @Test
+    public void manifestKeepsOnlyRequiredExternalEntrypoints() throws Exception {
+        Context context = RuntimeEnvironment.getApplication();
+        PackageInfo info =
+                context.getPackageManager()
+                        .getPackageInfo(
+                                context.getPackageName(),
+                                PackageManager.GET_ACTIVITIES
+                                        | PackageManager.GET_SERVICES
+                                        | PackageManager.GET_PERMISSIONS);
+        assertEquals(1, info.activities.length);
+        assertTrue(info.activities[0].exported);
+        assertEquals(AquariumActivity.class.getName(), info.activities[0].name);
+        assertEquals(1, info.services.length);
+        ServiceInfo dream = info.services[0];
+        assertTrue(dream.exported);
+        assertEquals(AquariumDreamService.class.getName(), dream.name);
+        assertEquals("android.permission.BIND_DREAM_SERVICE", dream.permission);
+        assertTrue(info.requestedPermissions == null || info.requestedPermissions.length == 0);
     }
 
     @Test

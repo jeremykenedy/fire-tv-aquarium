@@ -27,7 +27,8 @@ import java.nio.ByteOrder;
 
 /** Native GPU checks use an offscreen surface and never launch an activity. */
 public final class AppearanceInstrumentation extends Instrumentation {
-    private static final int WIDTH = 3840, HEIGHT = 2160;
+    private static final int WIDTH = 3840;
+    private static final int HEIGHT = 2160;
     private final StringBuilder report = new StringBuilder();
     private EGLDisplay display;
     private EGLSurface surface;

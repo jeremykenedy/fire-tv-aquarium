@@ -5,7 +5,11 @@
       "source",
       "img",
       "p",
-      "a"
+      "a",
+      "table",
+      "tr",
+      "td",
+      "br"
     ]
   },
   "MD013": false,

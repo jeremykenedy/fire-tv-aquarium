@@ -16,7 +16,13 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install -r requirements-dev.txt
+      - name: Audit development dependencies
+        run: |
+          python -m pip install pip-audit==2.10.1
+          python -m pip_audit --strict -r requirements-dev.txt
       - name: Check installer security
         run: bandit -q -ll install.py
+      - name: Verify checks under optimized Python
+        run: python -O -m unittest test_install test_tooling
       - name: Scan source and history for secrets
         run: bash scripts/check-secrets.sh

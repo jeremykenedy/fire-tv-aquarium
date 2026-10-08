@@ -19,6 +19,21 @@ spec.loader.exec_module(installer)
 
 
 class InstallTests(unittest.TestCase):
+    def setUp(self):
+        resolver = patch.object(installer.shutil, "which", return_value="/tools/adb")
+        resolver.start()
+        self.addCleanup(resolver.stop)
+
+    def test_adb_rejects_invalid_devices_and_missing_executable(self):
+        with patch("subprocess.check_output") as run:
+            for serial in ("", "tv;injected", "-H", "tv with spaces"):
+                with self.assertRaises(installer.argparse.ArgumentTypeError):
+                    installer.adb(serial, "get-state")
+            with patch.object(installer.shutil, "which", return_value=None):
+                with self.assertRaisesRegex(SystemExit, "platform-tools"):
+                    installer.adb("tv", "get-state")
+            run.assert_not_called()
+
     def test_missing_build_never_contacts_tv(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -130,15 +145,15 @@ class InstallTests(unittest.TestCase):
             installer.adb("tv", "shell", "settings", "put", "secure", "key", "x; echo injected")
             self.assertEqual(
                 run.call_args.args[0],
-                ["adb", "-s", "tv", "shell", "settings put secure key 'x; echo injected'"],
+                ["/tools/adb", "-s", "tv", "shell", "settings put secure key 'x; echo injected'"],
             )
 
     def test_adb_state_arguments_are_not_shell_commands(self):
         with patch("subprocess.check_output", return_value="device\n") as run:
             self.assertEqual(installer.adb("tv", "get-state"), "device")
-            self.assertEqual(run.call_args.args[0], ["adb", "-s", "tv", "get-state"])
+            self.assertEqual(run.call_args.args[0], ["/tools/adb", "-s", "tv", "get-state"])
             installer.adb("tv")
-            self.assertEqual(run.call_args.args[0], ["adb", "-s", "tv"])
+            self.assertEqual(run.call_args.args[0], ["/tools/adb", "-s", "tv"])
 
     def test_backup_preserves_first_observed_settings(self):
         with tempfile.TemporaryDirectory() as directory:

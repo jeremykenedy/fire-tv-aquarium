@@ -10,6 +10,8 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
+from defusedxml.common import DTDForbidden
+
 ROOT = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location(
     "documentation_checks", ROOT / "scripts/check-docs.py"
@@ -25,11 +27,14 @@ class PackagingTests(unittest.TestCase):
         badging="package: name='com.jeremykenedy.firetv.aquarium'",
         missing=None,
         compressed=False,
+        missing_dex=False,
+        policy='cleartextTrafficPermitted=(type 0x12)0x0 src="system"',
     ):
         with tempfile.TemporaryDirectory() as directory:
             apk = Path(directory) / "fixture.apk"
             with zipfile.ZipFile(apk, "w") as archive:
-                archive.writestr("classes.dex", b"dex")
+                if not missing_dex:
+                    archive.writestr("classes.dex", b"dex")
                 for clip in ("aquarium.mp4", "aquarium_hd.mp4"):
                     archive.writestr(
                         "res/raw/" + clip,
@@ -44,7 +49,7 @@ class PackagingTests(unittest.TestCase):
             with (
                 zipfile.ZipFile(apk) as archive,
                 patch.object(zipfile, "ZipFile", return_value=archive),
-                patch("subprocess.check_output", side_effect=[permission, badging]),
+                patch("subprocess.check_output", side_effect=[permission, badging, policy]),
                 contextlib.redirect_stdout(io.StringIO()),
             ):
                 runpy.run_path(str(ROOT / "check_apk.py"))
@@ -57,9 +62,12 @@ class PackagingTests(unittest.TestCase):
             {"permission": "uses-permission: android.permission.INTERNET"},
             {"badging": "another.package"},
             {"compressed": True},
+            {"missing_dex": True},
+            {"policy": 'cleartextTrafficPermitted=(type 0x12)0xffffffff src="system"'},
+            {"policy": 'cleartextTrafficPermitted=(type 0x12)0x0 src="user"'},
             {"missing": "drawn_marine.png"},
         ):
-            with self.subTest(arguments=arguments), self.assertRaises(AssertionError):
+            with self.subTest(arguments=arguments), self.assertRaises(SystemExit):
                 self.check(**arguments)
 
 
@@ -85,6 +93,17 @@ class DocumentationTests(unittest.TestCase):
             (root / f"art/banner-{mode}.svg").write_text('<svg viewBox="0 0 800 200"/>')
         (root / ".github/workflows/test.yml").write_text("uses: actions/checkout@" + "a" * 40)
 
+    def test_banner_dtd_is_rejected_without_entity_expansion(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            self.fixture(root)
+            (root / "art/banner-light.svg").write_text(
+                '<!DOCTYPE svg [<!ENTITY payload "expanded">]>'
+                '<svg viewBox="0 0 800 200">&payload;</svg>'
+            )
+            with patch.object(docs, "ROOT", root), self.assertRaises(DTDForbidden):
+                docs.check_banners()
+
     def test_local_links_anchors_license_banners_and_action_pins(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
@@ -102,16 +121,16 @@ class DocumentationTests(unittest.TestCase):
                     "bad\u2014punctuation\n",
                 ):
                     readme.write_text(broken + original)
-                    with self.assertRaises(AssertionError):
+                    with self.assertRaises(SystemExit):
                         docs.main()
                 readme.write_text(original.replace("MIT license", "Different license"))
-                with self.assertRaises(AssertionError):
+                with self.assertRaises(SystemExit):
                     docs.main()
                 readme.write_text(original)
                 (root / "art/banner-dark.svg").write_text('<svg viewBox="0 0 1 1"/>')
-                with self.assertRaises(AssertionError):
+                with self.assertRaises(SystemExit):
                     docs.main()
                 (root / "art/banner-dark.svg").write_text('<svg viewBox="0 0 800 200"/>')
                 (root / ".github/workflows/test.yml").write_text("uses: actions/checkout@main")
-                with self.assertRaises(AssertionError):
+                with self.assertRaises(SystemExit):
                     docs.main()

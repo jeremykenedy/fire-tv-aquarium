@@ -52,9 +52,20 @@ final class AquariumShader {
                 + "gl_FragColor=vec4(mix(color,uWater,fog),alpha);}";
 
     final int program;
-    final int position, normal;
-    private final int model, normalMatrix, viewProjection, color, material, species;
-    private final int time, motion, phase, water, tint, rays;
+    final int position;
+    final int normal;
+    private final int model;
+    private final int normalMatrix;
+    private final int viewProjection;
+    private final int color;
+    private final int material;
+    private final int species;
+    private final int time;
+    private final int motion;
+    private final int phase;
+    private final int water;
+    private final int tint;
+    private final int rays;
     private final float[] inverse = new float[16];
     private final float[] transpose = new float[16];
 

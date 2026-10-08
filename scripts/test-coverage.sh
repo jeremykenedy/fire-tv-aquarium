@@ -47,8 +47,7 @@ for kind in ('LINE', 'BRANCH'):
     print(f'Java {kind}: {counter.get("covered")} covered, zero missed')
 PY
 python3 -m venv build/coverage/python
-COVERAGE_SPEC="$(sed -n '/^coverage==/p' requirements-dev.txt)"
-build/coverage/python/bin/python -m pip install --disable-pip-version-check "$COVERAGE_SPEC"
+build/coverage/python/bin/python -m pip install --disable-pip-version-check -r requirements-dev.txt
 build/coverage/python/bin/python -m coverage run --branch \
   --include='install.py,check_apk.py,scripts/*.py' -m unittest test_install test_tooling
 build/coverage/python/bin/python -m coverage report --fail-under=100

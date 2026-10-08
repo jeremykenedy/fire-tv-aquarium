@@ -9,6 +9,8 @@ import android.opengl.GLUtils;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -52,23 +54,27 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
     };
     private final Resources resources;
     private final long started = SystemClock.elapsedRealtime();
-    private volatile AquariumOptions options;
+    private final AtomicReference<AquariumOptions> options;
     private AquariumTextureShader shader;
     private AquariumRenderer cartoon;
     private EGLConfig eglConfig;
-    private int width, height;
-    private int loadedFamily = -1, loadedScene = -1;
-    private Texture background, fish, marine;
+    private int width;
+    private int height;
+    private int loadedFamily = -1;
+    private int loadedScene = -1;
+    private Texture background;
+    private Texture fish;
+    private Texture marine;
     private long sampled;
     private int frames;
 
     AquariumAppearanceRenderer(Resources resources, AquariumOptions options) {
         this.resources = resources;
-        this.options = options;
+        this.options = new AtomicReference<>(options);
     }
 
     void configure(AquariumOptions options) {
-        this.options = options;
+        this.options.set(options);
     }
 
     @Override
@@ -92,7 +98,7 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        AquariumOptions settings = options;
+        AquariumOptions settings = options.get();
         if (settings.look == 3) {
             if (cartoon == null) {
                 cartoon = new AquariumRenderer(settings);

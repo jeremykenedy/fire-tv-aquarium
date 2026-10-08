@@ -11,15 +11,27 @@ sdk = Path(os.environ.get("ANDROID_HOME", str(Path.home() / "Library/Android/sdk
 aapt = sdk / "build-tools/36.0.0/aapt"
 apk = here / "build/aquarium-4k.apk"
 permissions = subprocess.check_output([str(aapt), "dump", "permissions", str(apk)], text=True)
-assert "uses-permission:" not in permissions, permissions
+if "uses-permission:" in permissions:
+    raise SystemExit(f"Unexpected APK permissions: {permissions}")
 badging = subprocess.check_output([str(aapt), "dump", "badging", str(apk)], text=True)
-assert "package: name='com.jeremykenedy.firetv.aquarium'" in badging
+if "package: name='com.jeremykenedy.firetv.aquarium'" not in badging:
+    raise SystemExit("Unexpected APK package identity")
+policy = subprocess.check_output(
+    [str(aapt), "dump", "xmltree", str(apk), "res/xml/network_security_config.xml"], text=True
+)
+if "cleartextTrafficPermitted=(type 0x12)0x0" not in policy:
+    raise SystemExit("APK must forbid cleartext traffic")
+if 'src="system"' not in policy:
+    raise SystemExit("APK must use system certificate authorities")
 with zipfile.ZipFile(apk) as archive:
-    assert archive.getinfo("res/raw/aquarium.mp4").compress_type == zipfile.ZIP_STORED
-    assert archive.getinfo("res/raw/aquarium_hd.mp4").compress_type == zipfile.ZIP_STORED
-    assert "classes.dex" in archive.namelist()
+    for clip in ("aquarium.mp4", "aquarium_hd.mp4"):
+        if archive.getinfo("res/raw/" + clip).compress_type != zipfile.ZIP_STORED:
+            raise SystemExit(f"Video must be stored without ZIP compression: {clip}")
+    if "classes.dex" not in archive.namelist():
+        raise SystemExit("APK is missing executable classes")
     packaged = {Path(name).name for name in archive.namelist()}
     for family in ("realistic", "cinematic", "drawn"):
         for asset in ("reef", "tank", "ocean", "kelp", "deep", "fish", "marine"):
-            assert f"{family}_{asset}.png" in packaged, f"Missing artwork: {family}_{asset}"
+            if f"{family}_{asset}.png" not in packaged:
+                raise SystemExit(f"Missing artwork: {family}_{asset}")
 print("APK verified: zero requested permissions, UHD footage, all artwork, expected package")

@@ -6,6 +6,8 @@ import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -27,10 +29,17 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
         {0.04f, 0.75f, 0.9f},
         {0.85f, 0.18f, 0.32f}
     };
-    private volatile AquariumOptions options;
+    private final AtomicReference<AquariumOptions> options;
     private AquariumShader shader;
     private MarineLife marineLife;
-    private AquariumMesh body, detail, plane, leaf, coral, rock, tail, dorsal;
+    private AquariumMesh body;
+    private AquariumMesh detail;
+    private AquariumMesh plane;
+    private AquariumMesh leaf;
+    private AquariumMesh coral;
+    private AquariumMesh rock;
+    private AquariumMesh tail;
+    private AquariumMesh dorsal;
     private final float[] camera = new float[16];
     private final float[] projection = new float[16];
     private final float[] view = new float[16];
@@ -41,11 +50,11 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
     private int frames;
 
     AquariumRenderer(AquariumOptions settings) {
-        options = settings;
+        options = new AtomicReference<>(settings);
     }
 
     void configure(AquariumOptions settings) {
-        options = settings;
+        options.set(settings);
     }
 
     @Override
@@ -81,13 +90,13 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        AquariumOptions settings = options;
+        AquariumOptions settings = options.get();
         float seconds = (SystemClock.elapsedRealtime() - started) / 1000f;
         float[] water = WATER[settings.scene];
         GLES20.glClearColor(water[0], water[1], water[2], 1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         shader.frame(camera, seconds, water, LIGHT[settings.light], settings.rays);
-        environment(settings, seconds);
+        environment(settings);
         for (int i = 0; i < settings.count; i++) drawFish(i, settings, seconds);
         marineLife.draw(settings, seconds);
         if (settings.bubbles) bubbles(seconds);
@@ -119,7 +128,7 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
         shader.draw(mesh);
     }
 
-    private void environment(AquariumOptions settings, float seconds) {
+    private void environment(AquariumOptions settings) {
         transform(0, 4, -14, 40, 30, 1);
         solid(plane, 0, 0, 0, 4);
         if (settings.scene == 2 || settings.scene == 4) return;
@@ -161,7 +170,7 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
                     settings.scene == 0 ? 1.8f : 1,
                     height,
                     1);
-            Matrix.rotateM(model, 0, (i % 3 - 1) * 14, 0, 0, 1);
+            Matrix.rotateM(model, 0, (i % 3 - 1) * 14f, 0, 0, 1);
             float[] color =
                     settings.scene != 0
                             ? new float[] {0.16f, 0.48f, 0.28f}

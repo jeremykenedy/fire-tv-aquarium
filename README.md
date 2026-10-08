@@ -19,8 +19,15 @@
     <a href="https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/sonarcloud.yml/badge.svg" alt="SonarQube Cloud scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=alert_status" alt="Quality Gate Status"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=coverage" alt="Coverage"></a>
+    <a href="https://www.codefactor.io/repository/github/jeremykenedy/fire-tv-aquarium"><img src="https://www.codefactor.io/repository/github/jeremykenedy/fire-tv-aquarium/badge" alt="CodeFactor"></a>
     <a href="https://app.codacy.com/gh/jeremykenedy/fire-tv-aquarium/dashboard"><img src="https://app.codacy.com/project/badge/Grade/68dd126aa1d24b81808768dffa2f0df3" alt="Codacy Badge"></a>
+    <a href="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/build-status/main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/badges/build.png?b=main" alt="Scrutinizer Build Status"></a>
+    <a href="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/?branch=main"><img src="https://scrutinizer-ci.com/g/jeremykenedy/fire-tv-aquarium/badges/quality-score.png?b=main" alt="Scrutinizer Code Quality"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+    <a href="https://app.aikido.dev/repositories/3327480"><img src="https://app.aikido.dev/assets/badges/full-light-theme.svg" alt="Secured by Aikido" height="32"></a>
 </p>
 
 <p align="center">
@@ -303,6 +310,7 @@ See [Troubleshooting](docs/TROUBLESHOOTING.md) for diagnostics and
 ## Testing
 
 ```bash
+python3 -m pip install -r requirements-dev.txt
 bash test.sh
 bash build.sh
 python3 check_apk.py
@@ -312,8 +320,9 @@ bash scripts/test-coverage.sh
 The tests cover installer integrity, rollback, settings bounds, species
 selection, random bounds, fixed-choice preservation, shuffle exclusions,
 long-running swimming paths, and school formation. APK verification
-checks the package, absence of requested permissions, bundled video storage,
-and signature through the build. Device testing covers the remote controls,
+checks the package, absence of requested permissions, blocked cleartext traffic,
+system-only certificate trust, bundled video storage, and signature through
+the build. Device testing covers the remote controls,
 persistence, preview, idle activation, exit, and actual 4K display composition.
 
 The coverage suite exercises every Java application source file and each Python
@@ -340,7 +349,11 @@ to immutable commits. CI builds use temporary signing keys; release APKs use the
 stable application key.
 
 GitGuardian and SonarQube Cloud scans are enabled. Sonar analyzes the Java and
-Python source with compiled Android classes and measured Java/Python coverage.
+Python source with compiled Android classes and measured Java/Python coverage,
+and CI waits for its processed quality gate. Codacy, CodeFactor, and Aikido are
+registered for this public repository. Scrutinizer's requested badges use this
+repository's URLs, but its import remains blocked by provider errors.
+Checks that require a paid plan and badges for unrelated technology are omitted.
 See [CI](docs/CI.md) for workflow details, scan scope, and external service setup.
 
 ## Privacy
