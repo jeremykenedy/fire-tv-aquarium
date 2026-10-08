@@ -65,6 +65,12 @@ class PackagingTests(unittest.TestCase):
             {"missing_dex": True},
             {"policy": 'cleartextTrafficPermitted=(type 0x12)0xffffffff src="system"'},
             {"policy": 'cleartextTrafficPermitted=(type 0x12)0x0 src="user"'},
+            {"policy": 'cleartextTrafficPermitted=(type 0x12)0x0 src="system" src="user"'},
+            {
+                "policy": 'cleartextTrafficPermitted=(type 0x12)0x0 src="system" '
+                "cleartextTrafficPermitted=(type 0x12)0xffffffff"
+            },
+            {"policy": ""},
             {"missing": "drawn_marine.png"},
         ):
             with self.subTest(arguments=arguments), self.assertRaises(SystemExit):

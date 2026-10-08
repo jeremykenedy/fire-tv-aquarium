@@ -2,6 +2,7 @@
 """Verify the built app requests no permissions and bundles native UHD footage."""
 
 import os
+import re
 import subprocess
 import zipfile
 from pathlib import Path
@@ -19,9 +20,9 @@ if "package: name='com.jeremykenedy.firetv.aquarium'" not in badging:
 policy = subprocess.check_output(
     [str(aapt), "dump", "xmltree", str(apk), "res/xml/network_security_config.xml"], text=True
 )
-if "cleartextTrafficPermitted=(type 0x12)0x0" not in policy:
+if re.findall(r"cleartextTrafficPermitted=\(type 0x12\)(0x[0-9a-f]+)", policy) != ["0x0"]:
     raise SystemExit("APK must forbid cleartext traffic")
-if 'src="system"' not in policy:
+if re.findall(r'\bsrc="([^"]+)"', policy) != ["system"]:
     raise SystemExit("APK must use system certificate authorities")
 with zipfile.ZipFile(apk) as archive:
     for clip in ("aquarium.mp4", "aquarium_hd.mp4"):
