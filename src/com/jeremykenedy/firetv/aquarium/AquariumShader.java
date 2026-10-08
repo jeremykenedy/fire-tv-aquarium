@@ -90,7 +90,9 @@ final class AquariumShader {
     void frame(float[] camera, float seconds, float[] waterColor, float[] lighting, boolean lightRays) {
         GLES20.glUseProgram(program);
         GLES20.glUniformMatrix4fv(viewProjection, 1, false, camera, 0);
-        GLES20.glUniform1f(time, seconds);
+        // All shader frequencies share this period. Keep mediump time precise
+        // during long screensaver sessions without a visible animation jump.
+        GLES20.glUniform1f(time, seconds % 62.831853f);
         GLES20.glUniform3fv(water, 1, waterColor, 0);
         GLES20.glUniform3fv(tint, 1, lighting, 0);
         GLES20.glUniform1f(rays, lightRays ? 1 : 0);

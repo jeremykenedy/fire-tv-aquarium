@@ -25,7 +25,7 @@ final class FishMotion {
     }
     static float schoolY(int index, float seconds) {
         int group = index / 16;
-        return -2.5f + group * 2.5f + (index % 16 / 4 - 1.5f) * .65f
+        return -3.4f + group * 3.6f + (index % 16 / 4 - 1.5f) * .95f
             + (float) Math.sin(seconds * .35f + group) * .4f;
     }
     static float schoolDepth(int index) { return -2 + (index / 16) * 1.5f + (index % 3) * .3f; }

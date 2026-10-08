@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-          sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0'
       - name: Run tests
         run: bash test.sh
       - name: Build and verify offline APK

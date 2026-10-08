@@ -88,7 +88,7 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
     }
 
     private void environment(AquariumOptions settings, float seconds) {
-        transform(0, 4, -14, 40, 18, 1); solid(plane, 0, 0, 0, 4);
+        transform(0, 4, -14, 40, 30, 1); solid(plane, 0, 0, 0, 4);
         if (settings.scene == 2 || settings.scene == 4) return;
         Matrix.setIdentityM(model, 0);
         Matrix.translateM(model, 0, 0, -7.3f, 0);
@@ -122,7 +122,7 @@ final class AquariumRenderer implements GLSurfaceView.Renderer {
 
     private void drawFish(int index, AquariumOptions settings, float seconds) {
         int species = FishMotion.species(settings.schools() ? index / 16 : index, settings.species);
-        float scale = FishMotion.scale(index) * settings.fishScale();
+        float scale = (settings.schools() ? 0.65f : FishMotion.scale(index)) * settings.fishScale();
         Matrix.setIdentityM(fish, 0);
         Matrix.translateM(fish, 0,
             settings.schools() ? FishMotion.schoolX(index, seconds, settings.swimmingSpeed()) : FishMotion.x(index, seconds, settings.swimmingSpeed()),
