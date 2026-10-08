@@ -13,6 +13,7 @@
 
 Actions use full commit SHA pins. The Java formatter and Gitleaks releases are
 pinned and checked against their published SHA-256 digests before execution.
+Their downloads and redirects are restricted to HTTPS.
 Python development tools are version-pinned. Dependabot watches action pins and
 Python development dependencies. No development tool is bundled in the APK.
 
@@ -73,6 +74,8 @@ View analysis results and quality gates in this repository's
 A successful scanner upload does not by itself establish a passing quality gate;
 check the processed result for the same branch or pull request and commit.
 The README's Sonar badge shows the Actions scan status.
+Manual runs explicitly pass the selected branch to Sonar so a branch scan does
+not replace the `main` result. Push and pull request runs use automatic detection.
 
 Both integrations are enabled for main pushes, manual runs, and pull requests
 from branches in this repository. Their authenticated Actions jobs skip fork

@@ -47,6 +47,9 @@ jobs:
           coverage run --include=install.py -m unittest test_install.py
           coverage xml
           printf 'sonar.java.libraries=%s/platforms/android-36/android.jar\n' "$ANDROID_HOME" >> sonar-project.properties
+          if [[ "$GITHUB_EVENT_NAME" == 'workflow_dispatch' ]]; then
+            printf 'sonar.branch.name=%s\n' "$GITHUB_REF_NAME" >> sonar-project.properties
+          fi
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9
         env:

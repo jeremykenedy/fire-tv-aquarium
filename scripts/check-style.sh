@@ -6,7 +6,7 @@ FORMAT_JAR="$HERE/build/tools/google-java-format.jar"
 FORMAT_SHA="834b2a0c38cb774953322a84b5ca3f2f40dd3156650b3cd44d3b744345962f7a"
 mkdir -p build/tools
 if [[ ! -f "$FORMAT_JAR" ]]; then
-  curl -fsSL https://github.com/google/google-java-format/releases/download/v1.37.0/google-java-format-1.37.0-all-deps.jar -o "$FORMAT_JAR"
+  curl --proto '=https' --proto-redir '=https' -fsSL https://github.com/google/google-java-format/releases/download/v1.37.0/google-java-format-1.37.0-all-deps.jar -o "$FORMAT_JAR"
 fi
 python3 - "$FORMAT_JAR" "$FORMAT_SHA" <<'PY'
 import hashlib

@@ -8,7 +8,7 @@ case "$(uname -s):$(uname -m)" in
   *) echo "Run secret checks on macOS arm64 or Linux x86_64." >&2; exit 1 ;;
 esac
 mkdir -p build/tools/gitleaks
-curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/$archive" -o "build/tools/$archive"
+curl --proto '=https' --proto-redir '=https' -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/$archive" -o "build/tools/$archive"
 python3 - "build/tools/$archive" "$digest" <<'PY'
 import hashlib
 from pathlib import Path
