@@ -4,12 +4,12 @@
 
 | Workflow | Checks | Credentials |
 |---|---|---|
-| Tests | Java swimming/configuration and Python tooling tests on macOS and Linux with Python 3.10 and 3.13; Android build; signature and APK privacy verification; 100% Java/Python coverage gate | None |
+| Tests | Java swimming/configuration and Python tooling tests on macOS and Linux with Python 3.10 and 3.13; Android build; signature and APK privacy verification; 100% Java/Python coverage gate | None for checks; `CODACY_PROJECT_TOKEN` for explicitly enabled reporting |
 | Code style | Google Java Format in AOSP style, Ruff lint/format, ShellCheck | None |
 | Documentation | Local links, contents, banner XML, MIT license wording, immutable action pins | None |
-| Security | Bandit installer analysis and Gitleaks source/history scan | None |
+| Security | Strict development dependency vulnerability audit, Bandit installer analysis, and Gitleaks source/history scan | None |
 | GitGuardian scan | The same GitGuardian service used in the Fire TV tooling repo | `GITGUARDIAN_API_KEY`, enabled explicitly |
-| SonarQube Cloud Scan | Java/Python analysis with compiled Android classes and measured line/branch coverage | `SONAR_TOKEN`, enabled explicitly |
+| SonarQube Cloud Scan | Java/Python analysis with compiled Android classes, measured line/branch coverage, and processed quality gate verification | `SONAR_TOKEN`, enabled explicitly |
 
 Actions use full commit SHA pins. The Java formatter and Gitleaks releases are
 pinned and checked against their published SHA-256 digests before execution.
@@ -39,6 +39,8 @@ bash test.sh
 bash scripts/check-style.sh
 python3 scripts/check-docs.py
 bandit -q -ll install.py
+python3 -m pip install pip-audit==2.10.1
+python3 -m pip_audit --strict -r requirements-dev.txt
 bash scripts/check-secrets.sh
 bash build.sh
 python3 check_apk.py
@@ -59,7 +61,10 @@ The same runner creates a local Python test environment and measures
 It requires 100% line and branch coverage and verifies the XML report contains
 every expected source file. Fixtures exercise disconnected devices, rollback,
 invalid serials, package identity, permission violations, missing media,
-documentation errors, and mutable action pins. Shell scripts receive ShellCheck
+cleartext and certificate trust policies, documentation errors, unsafe XML,
+and mutable action pins. Production checks use explicit failures and also run
+under optimized Python, where language assertions are disabled.
+Shell scripts receive ShellCheck
 and functional CI execution; they are not assigned synthetic coverage results.
 Device checks remain necessary for decoder performance and actual display output.
 
@@ -92,8 +97,9 @@ documented separately and do not manufacture coverage data.
 
 View analysis results and quality gates in this repository's
 [SonarQube Cloud project](https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium).
-A successful scanner upload does not by itself establish a passing quality gate;
-check the processed result for the same branch or pull request and commit.
+The scanner waits up to five minutes for the processed quality gate and fails
+the job if it does not pass. Check the result for the same branch or pull request
+and commit when reviewing a change.
 The README includes separate Sonar badges for Actions upload status, the
 processed quality gate, and measured overall coverage.
 Manual runs explicitly pass the selected branch to Sonar so a branch scan does
@@ -115,30 +121,70 @@ use the triggering checkout rather than cloning another branch's `main`.
 Codacy is registered for this repository and has completed its initial source
 analysis. Its README badge uses this project's own ID. Source findings remain
 visible in the dashboard; registration does not imply they are all resolved.
+The Tests workflow can upload the real Java and Python coverage reports using
+a repository-scoped `CODACY_PROJECT_TOKEN` secret and `CODACY_ENABLED=true`.
+The reporter is pinned to version 14.1.3 with its published SHA-256 verified
+before execution. Java paths receive the actual `src/` prefix; Python paths
+come directly from coverage.py. Both reports are finalized for the checked-out
+commit, and fork and Dependabot pull requests cannot access this secret.
+This reporting feature is available for public open-source repositories.
+Subprocess findings require a review of the actual arguments rather than a
+blanket rule exclusion. The installer invokes a trusted local `adb` executable
+with an argument list, validates device serials at the CLI and helper boundaries,
+and quotes remote-shell values with `shlex.join`. The APK verifier invokes the
+local SDK's `aapt` with fixed commands and package paths. Neither enables a host
+shell. Individual false-positive classifications record this evidence and retain
+scanning for future calls. PATH and ANDROID_HOME select local development tools;
+they are not inputs from a remote application service.
 Scrutinizer import is currently blocked by gateway and third-party service
-errors on its repository import page. Its badge will be added after the
-repository is registered successfully.
+errors on its repository import page. The README includes the requested build
+and quality badge URLs for this repository's `main` branch. They may be
+unavailable until the provider completes registration; they do not establish
+a successful build or quality rating. This is a provider import failure,
+not a confirmed paid-plan restriction.
+
+### CodeFactor
+
+The public repository is registered with CodeFactor. Its dashboard and README
+badge use this repository's own URL. CodeFactor analyzes Java, Python, shell,
+and repository configuration separately from the local formatting checks.
 
 ### Aikido
 
-Add this repository to the existing GitHub integration in the Aikido dashboard.
-The app has no third-party
-runtime dependencies, but source and development dependency scanning remain
-useful. Verify the repository's own dashboard before adding its badge.
+This repository is registered in the existing GitHub integration as
+[Aikido repository 3327480](https://app.aikido.dev/repositories/3327480).
+The README's Aikido badge links directly to that dashboard. The app has no
+third-party runtime dependencies, but source, manifest, development dependency,
+secret, and license scans remain useful. The badge identifies the integration;
+it does not claim that no findings remain.
+Branch Quick Scan requires a paid Aikido plan and is omitted. This integration
+uses the scans available for the repository's configured `main` branch; no
+paid branch-scan job or upgrade is required.
+
+The launcher activity and screensaver service intentionally remain exported.
+Android must be able to open the TV launcher and bind the screensaver. The
+service requires the system `android.permission.BIND_DREAM_SERVICE` permission;
+the activity uses saved local preferences and does not consume intent extras.
+The Android coverage suite verifies those two entry points and their permission
+boundary. Aikido's existing findings for these required exports are classified
+individually with that evidence. Future exports and other manifest findings
+remain scanned.
 
 ### StyleCI
 
-This project uses Java and Python. Java formatting runs in the Code style
-workflow. StyleCI's Python support requires a compatible multi-language plan;
-its open-source PHP configuration does not cover this app. Enable the project
-only if the existing account supports it, and use this repository's own ID for
-any StyleCI badge.
+This project uses Java and Python. StyleCI's free open-source plan covers PHP;
+Python support requires a paid multi-language plan. It is omitted, along with
+its badge. Java and Python formatting run in the Code style workflow.
+
+Integrations or features unavailable on the existing plan are omitted rather
+than added as skipped checks. No paid upgrades are required by this project.
+PHP, Laravel, Packagist, and other unrelated badges are not included.
 
 The two authenticated scan jobs are controlled by their repository variables;
 set a variable to `false` to disable its job. A disabled or skipped job is not
 a completed scan. Add provider status badges
-only after the specific repository integration is active; do not reuse badge
-IDs from another project.
+only for this repository; do not reuse badge IDs from another project. A pending
+provider registration must be documented rather than presented as passing.
 
 The Sponsor badge links to `https://github.com/sponsors/jeremykenedy`.
 GitHub sanitizes README HTML, so it uses a linked image rather than an iframe.

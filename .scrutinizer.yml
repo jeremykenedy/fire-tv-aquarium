@@ -4,7 +4,8 @@ build:
       environment:
         python: '3.13.7'
       project_setup:
-        override: true
+        override:
+          - pip install -r requirements-dev.txt
       tests:
         override:
           - py-scrutinizer-run
@@ -16,7 +17,8 @@ build:
       dependencies:
         override: true
       project_setup:
-        override: true
+        override:
+          - pip install -r requirements-dev.txt
       tests:
         override:
           - bash test.sh

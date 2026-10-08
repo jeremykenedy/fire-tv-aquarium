@@ -36,7 +36,8 @@ final class MarineLife {
                         .7f, 0, 0, -.35f, .18f, -1.5f, -.85f, 0, 0, .7f, 0, 0, -.85f, 0, 0, -.35f,
                         .18f, 1.5f
                     });
-    private final float[] animal = new float[16], model = new float[16];
+    private final float[] animal = new float[16];
+    private final float[] model = new float[16];
 
     MarineLife(AquariumShader shader) {
         this.shader = shader;
@@ -56,7 +57,7 @@ final class MarineLife {
         }
         if (options.hasCreature(AquariumOptions.DOLPHIN)) {
             for (int i = 0; i < 2; i++) {
-                swimming(112, seconds + i * 3, speed, 2.4f + i * .65f, -2 - i, 1.35f);
+                swimming(112, seconds + i * 3, speed, 2.4f + i * .65f, -2f - i, 1.35f);
                 cetacean(2);
             }
         }
@@ -106,8 +107,11 @@ final class MarineLife {
     }
 
     private void cetacean(int type) {
-        float r = type == 1 ? .14f : .34f, g = type == 1 ? .26f : .45f, b = type == 1 ? .36f : .54f;
-        float length = type == 1 ? 1.9f : 1.6f, height = type == 1 ? .65f : .43f;
+        float r = type == 1 ? .14f : .34f;
+        float g = type == 1 ? .26f : .45f;
+        float b = type == 1 ? .36f : .54f;
+        float length = type == 1 ? 1.9f : 1.6f;
+        float height = type == 1 ? .65f : .43f;
         ball(0, 0, 0, length, height, .43f, r, g, b, 0);
         ball(.18f, -height * .40f, .03f, length * .80f, height * .5f, .42f, .71f, .78f, .78f, 0);
         ball(-1.5f, 0, 0, .62f, .17f, .18f, r, g, b, 0);

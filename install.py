@@ -5,7 +5,9 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shlex
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -14,10 +16,20 @@ COMPONENT = "com.jeremykenedy.firetv.aquarium/.AquariumDreamService"
 KEYS = ("screensaver_components", "screensaver_enabled", "screensaver_activate_on_sleep")
 
 
+def device_serial(value):
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", value):
+        raise argparse.ArgumentTypeError("Invalid device serial")
+    return value
+
+
 def adb(device, *args):
+    device = device_serial(device)
+    executable = shutil.which("adb")
+    if executable is None:
+        raise SystemExit("Install Android platform-tools and add adb to PATH")
     if args and args[0] == "shell":
         args = ("shell", shlex.join(args[1:]))
-    return subprocess.check_output(["adb", "-s", device, *args], text=True).strip()
+    return subprocess.check_output([executable, "-s", device, *args], text=True).strip()
 
 
 def save_original(device, path):
@@ -88,17 +100,14 @@ def install(device, path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--device", required=True, help="ADB device serial or IP:port")
+    parser.add_argument(
+        "--device", required=True, type=device_serial, help="ADB device serial or IP:port"
+    )
     parser.add_argument("--restore", action="store_true", help="Restore the original screensaver")
     parser.add_argument(
         "--state-file", type=Path, help="Separate original-settings backup for this TV"
     )
     args = parser.parse_args()
-    if not args.device or any(
-        char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-"
-        for char in args.device
-    ):
-        parser.error("Invalid device serial")
     adb(args.device, "get-state")
     state = args.state_file or HERE / "device-state.json"
     if args.restore:

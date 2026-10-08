@@ -19,7 +19,8 @@ final class AquariumOutput {
                 return new int[] {3840, 2160};
         }
         Display.Mode current = display.getMode();
-        int width = current.getPhysicalWidth(), height = current.getPhysicalHeight();
+        int width = current.getPhysicalWidth();
+        int height = current.getPhysicalHeight();
         float scale = Math.min(1f, Math.min(3840f / width, 2160f / height));
         return new int[] {Math.max(1, (int) (width * scale)), Math.max(1, (int) (height * scale))};
     }

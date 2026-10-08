@@ -102,8 +102,10 @@ final class AquariumMesh {
             float radius,
             int depth) {
         float length = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-        float ux = dy / length, uy = -dx / length;
-        float vx = -dz * dx / (length * length), vy = -dz * dy / (length * length);
+        float ux = dy / length;
+        float uy = -dx / length;
+        float vx = -dz * dx / (length * length);
+        float vy = -dz * dy / (length * length);
         float vz = (dx * dx + dy * dy) / (length * length);
         for (int side = 0; side < 8; side++) {
             int[] rings = {0, 1, 0, 0, 1, 1};

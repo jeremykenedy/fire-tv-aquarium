@@ -23,33 +23,35 @@ final class AquariumOptions {
     static final String[] CREATURE_NAMES = {
         "Sharks", "Whales", "Octopuses", "Turtles", "Rays", "Dolphins", "Jellyfish"
     };
-    static final int SHARK = 1,
-            WHALE = 2,
-            OCTOPUS = 4,
-            TURTLE = 8,
-            RAY = 16,
-            DOLPHIN = 32,
-            JELLYFISH = 64;
+    static final int SHARK = 1;
+    static final int WHALE = 2;
+    static final int OCTOPUS = 4;
+    static final int TURTLE = 8;
+    static final int RAY = 16;
+    static final int DOLPHIN = 32;
+    static final int JELLYFISH = 64;
     static final String[] SPEEDS = {"Calm", "Gentle", "Lively"};
     static final String[] SIZES = {"Small", "Medium", "Large"};
     static final String[] LIGHTS = {"Daylight", "Warm", "Moonlight"};
     static final String[] CLOCKS = {"Hidden", "12-hour", "24-hour"};
     static final int MAX_FISH = 60;
 
-    final int mode,
-            count,
-            species,
-            scene,
-            speed,
-            size,
-            light,
-            clock,
-            population,
-            creatures,
-            look,
-            time;
-    final boolean bubbles, rays;
-    final int randomMask, versions;
+    final int mode;
+    final int count;
+    final int species;
+    final int scene;
+    final int speed;
+    final int size;
+    final int light;
+    final int clock;
+    final int population;
+    final int creatures;
+    final int look;
+    final int time;
+    final boolean bubbles;
+    final boolean rays;
+    final int randomMask;
+    final int versions;
     static final int CONTROL_COUNT = 20;
 
     AquariumOptions(

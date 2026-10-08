@@ -46,8 +46,23 @@ final class AquariumTextureShader {
                 + "else{color.rgb=mix(color.rgb,uWater*color.a,uFog);"
                 + "if(uRays>0.5)color.rgb*=1.0+0.045*sin(uTime*1.3+vLocal.x*7.0);}"
                 + "gl_FragColor=color*uOpacity;}";
-    private final int program, position, uv, placement, uvRect, time, motion, phase;
-    private final int angle, texture, tint, water, effect, rays, look, fog, opacity;
+    private final int program;
+    private final int position;
+    private final int uv;
+    private final int placement;
+    private final int uvRect;
+    private final int time;
+    private final int motion;
+    private final int phase;
+    private final int angle;
+    private final int texture;
+    private final int tint;
+    private final int water;
+    private final int effect;
+    private final int rays;
+    private final int look;
+    private final int fog;
+    private final int opacity;
     private final FloatBuffer vertices;
     private final int vertexCount;
 
@@ -79,7 +94,8 @@ final class AquariumTextureShader {
         look = location("uLook");
         fog = location("uFog");
         opacity = location("uOpacity");
-        int columns = 16, rows = 8;
+        int columns = 16;
+        int rows = 8;
         vertexCount = columns * rows * 6;
         vertices =
                 ByteBuffer.allocateDirect(vertexCount * 4 * 4)
