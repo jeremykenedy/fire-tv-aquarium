@@ -39,10 +39,10 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
             R.drawable.drawn_deep
         }
     };
-    private static final int[] FISH = {
+    private static final int[] FISH_ARTWORK = {
         R.drawable.realistic_fish, R.drawable.cinematic_fish, R.drawable.drawn_fish
     };
-    private static final int[] MARINE = {
+    private static final int[] MARINE_ARTWORK = {
         R.drawable.realistic_marine, R.drawable.cinematic_marine, R.drawable.drawn_marine
     };
     private static final float[][] WATER = {
@@ -115,8 +115,8 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
         if (family != loadedFamily) {
             release(fish);
             release(marine);
-            fish = load(FISH[family]);
-            marine = load(MARINE[family]);
+            fish = load(FISH_ARTWORK[family]);
+            marine = load(MARINE_ARTWORK[family]);
         }
         if (family != loadedFamily || settings.scene != loadedScene) {
             release(background);
