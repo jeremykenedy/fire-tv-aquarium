@@ -9,7 +9,10 @@ permissions:
   contents: read
 jobs:
   sonarqube:
-    if: vars.SONAR_ENABLED == 'true'
+    if: >-
+      vars.SONAR_ENABLED == 'true' &&
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -41,7 +44,7 @@ jobs:
         run: |
           bash test.sh
           bash build.sh
-          coverage run --source=install -m unittest test_install.py
+          coverage run --include=install.py -m unittest test_install.py
           coverage xml
           printf 'sonar.java.libraries=%s/platforms/android-36/android.jar\n' "$ANDROID_HOME" >> sonar-project.properties
       - name: SonarQube Scan
