@@ -1,11 +1,36 @@
 # Device verification
 
-Aquarium 4K 1.3.0 verification, October 8, 2026
+Aquarium 4K 1.3.1 verification, October 8, 2026
+
+## Version 1.3.1 release checks
+
+The signed APK has version name `1.3.1` and version code `5`. Its signing
+certificate matches the previous official 1.3.0 release. APK verification
+confirmed zero requested permissions, blocked cleartext traffic, system-only
+certificate trust, bundled footage, artwork, and executable classes.
+
+| Platform | Environment | Signed release checks |
+|---|---|---|
+| Fire TV | Physical API 30 TV with 4K panel | In-place upgrade, saved settings, remote navigation, random controls, day/night, reopening, UHD playback, all native appearance checks, native 3840x2160 dream surface, automatic idle activation and Back exit |
+| Android TV | Official API 31 ARM64 emulator, 1920x1080 | In-place installation, cold-start saved settings comparison, native remote controls, random controls, day/night, reopening, local HD playback, automatic idle activation and Back exit |
+| Google TV | Official API 34 ARM64 emulator, 1920x1080 | In-place upgrade, saved settings, native remote controls, random controls, day/night, reopening, local HD playback, automatic idle activation and Back exit |
+
+All native display check runners passed. The Fire TV appearance runner passed
+all looks, backgrounds, species, and sea-life checks. Test runners restored
+preferences, screensaver selections, timeout settings, and prior sleep states.
+The Android TV comparison was repeated with fresh activity starts so retained
+view state did not affect the settings comparison.
+
+Only Fire TV hardware was connected. Physical Android TV and Google TV
+verification remains unavailable and is not claimed by these emulator results.
+Source CI enforces 100% Java and Python line and branch coverage. The tested
+release APK is kept separately from CI's temporary-key validation APKs.
 
 ## Local checks
 
-- Seven installer tests passed, including checksum rejection, shell quoting,
-  preservation of the original settings, wrong-device rejection, and rollback.
+- Twenty Python tooling tests passed, including checksum rejection, shell quoting,
+  preservation of original settings, invalid-device rejection, rollback, compiled
+  certificate policy checks, and unsafe documentation XML rejection.
 - 575,155 Java assertions passed for corrupt settings, population and appearance
   bounds, random choices, shuffle exclusions, fixed-option preservation, day/night brightness, species distribution, school direction and
   spacing, and day-long swim paths.

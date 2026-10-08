@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.1 - 2026-10-08
+
+- Add explicit cleartext blocking and system-only certificate trust to the APK.
+- Harden installer device validation, remote-shell quoting, and APK verification.
+- Preserve rendering behavior while simplifying environment drawing and safely
+  publishing settings snapshots to the renderers.
+- Enforce 100% Java and Python line and branch coverage across application source.
+- Complete applicable quality checks, documentation, and release badges.
+- Omit paid-plan features and skip Scrutinizer while repository import is unavailable.
+- No breaking changes, major feature changes, or new commands or flags.
+- Upgrade in place from earlier releases with the same package and signing key;
+  saved preferences and screensaver backups are preserved.
+
 ## 1.3.0 - 2026-10-08
 
 - Support Fire TV, Android TV, and Google TV with one offline APK.

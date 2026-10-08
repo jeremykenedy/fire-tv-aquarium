@@ -131,7 +131,7 @@ python3 install.py --device DEVICE_IP:5555
 
 The installer uses an in-place upgrade. Matching package and signing identity
 retain aquarium preferences, and the first saved screensaver backup remains the
-restore baseline. Version 1.3.0 keeps the signing identity and minimum Android
+restore baseline. Version 1.3.1 keeps the signing identity and minimum Android
 version of 1.2.0. Existing choices remain fixed until you select Random.
 
 To select the previous screensaver again:
