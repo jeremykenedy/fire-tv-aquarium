@@ -40,6 +40,38 @@ The bundled video must be H.264 at exactly 3840x2160. Build validation rejects
 lower-resolution or incompatible footage. The video is stored uncompressed
 in the APK for native resource-file playback.
 
+## Native appearance checks
+
+The separate device-check APK renders every look and background on the TV's
+GPU into a 3840x2160 offscreen surface. It also checks each fish species,
+optional sea-life type, and saved appearance preferences. It does not open an
+activity. Replace `DEVICE_IP` with your connected TV's address:
+
+```bash
+bash scripts/build-device-checks.sh
+adb -s DEVICE_IP:5555 install -r build/device-tests/device-checks.apk
+adb -s DEVICE_IP:5555 shell am instrument -w \
+  com.jeremykenedy.firetv.aquarium.devicechecks/com.jeremykenedy.firetv.aquarium.AppearanceInstrumentation
+adb -s DEVICE_IP:5555 shell am instrument -w \
+  com.jeremykenedy.firetv.aquarium.devicechecks/com.jeremykenedy.firetv.aquarium.DisplayInstrumentation
+adb -s DEVICE_IP:5555 shell am instrument -w -e export true \
+  com.jeremykenedy.firetv.aquarium.devicechecks/com.jeremykenedy.firetv.aquarium.AppearanceInstrumentation
+adb -s DEVICE_IP:5555 pull /sdcard/Download/AquariumChecks build/device-captures
+adb -s DEVICE_IP:5555 uninstall com.jeremykenedy.firetv.aquarium.devicechecks
+```
+
+A successful run prints `All native appearance checks passed`. Captures are
+reduced to 1920x1080 for documentation. The checks preserve and restore the app's
+prior preferences. Capture export uses scoped media storage on API 29 or newer;
+no storage permission is added to either APK. CI compiles this APK; running
+these GPU checks requires an actual device. The device-check APK
+is separate from the application and is not included in releases.
+
+Display checks open the actual settings activity, exercise remote navigation and
+Day / Night in both modes, and verify saved selections after reopening. A passing
+run prints `All native display controls passed`. Screen captures are skipped if
+another app owns the foreground. Both check runners restore prior preferences.
+
 ## Signing key
 
 The first build creates a private key at

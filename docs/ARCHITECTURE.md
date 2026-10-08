@@ -10,7 +10,9 @@ services. Its package is `com.jeremykenedy.firetv.aquarium`.
 | `AquariumPreferences` | Private on-device settings storage |
 | `AquariumDisplay` | Switch between animated and video content; display clock |
 | `AquariumSceneView` | Native 4K OpenGL surface and frame requests |
-| `AquariumRenderer` | Camera, environment, ordinary fish, bubbles, lighting |
+| `AquariumAppearanceRenderer` | Appearance selection, artwork textures, depth layers, fish and sea-life placement |
+| `AquariumTextureShader` | Transparent surfaces, tail and arm movement, lighting, sunlight, bubbles |
+| `AquariumRenderer` | Original Cartoon camera, environment, fish, bubbles, lighting |
 | `AquariumMesh` | Original fish, plant, coral, rock, and tentacle geometry |
 | `AquariumShader` | Fish patterns, shading, movement, fog, sunlight highlights |
 | `MarineLife` | Optional larger animals and jellyfish |
@@ -28,7 +30,9 @@ The idle dream is non-interactive, allowing the system to exit on a remote key.
 
 Preferences are immutable snapshots passed to the renderer through a volatile
 reference. UI changes do not mutate structures while the GL thread reads them.
-Meshes and shaders are rebuilt when a GL context is created.
+Meshes and shaders are rebuilt when a GL context is created. Artwork textures
+load lazily on the GL thread and are released when the selected family or
+background changes. See [Artwork](ARTWORK.md).
 
 ## Resolution
 

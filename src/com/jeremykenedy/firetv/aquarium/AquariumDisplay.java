@@ -2,6 +2,7 @@ package com.jeremykenedy.firetv.aquarium;
 
 import android.content.Context;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ final class AquariumDisplay extends FrameLayout implements Runnable {
     private AquariumSceneView scene;
     private AquariumPlayback footage;
     private final TextView clock;
+    private final View shade;
     private boolean active;
 
     AquariumDisplay(Context context, AquariumOptions initial) {
@@ -27,12 +29,16 @@ final class AquariumDisplay extends FrameLayout implements Runnable {
         int margin = (int) (28 * getResources().getDisplayMetrics().density);
         placement.setMargins(margin, margin, margin, margin);
         addView(clock, placement);
+        shade = new View(context);
+        shade.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        addView(shade, new LayoutParams(-1, -1));
         configure(initial);
     }
 
     void configure(AquariumOptions next) {
         boolean replace = options == null || options.mode != next.mode;
         options = next;
+        shade.setBackgroundColor(options.nightShade());
         if (replace) {
             if (scene != null) {
                 scene.stop();

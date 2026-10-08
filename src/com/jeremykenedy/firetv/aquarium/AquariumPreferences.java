@@ -24,7 +24,9 @@ final class AquariumPreferences {
                 bool("bubbles", d.bubbles),
                 bool("rays", d.rays),
                 integer("population", store.contains("count") ? 0 : d.population),
-                integer("creatures", d.creatures));
+                integer("creatures", d.creatures),
+                integer("look", d.look),
+                integer("time", d.time));
     }
 
     private int integer(String name, int fallback) {
@@ -55,6 +57,8 @@ final class AquariumPreferences {
                 .putInt("clock", options.clock)
                 .putInt("population", options.population)
                 .putInt("creatures", options.creatures)
+                .putInt("look", options.look)
+                .putInt("time", options.time)
                 .putBoolean("bubbles", options.bubbles)
                 .putBoolean("rays", options.rays)
                 .apply();

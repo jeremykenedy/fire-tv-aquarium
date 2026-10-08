@@ -10,6 +10,34 @@ public final class AquariumTest {
     }
 
     public static void main(String[] args) {
+        check(AquariumOptions.defaults().look == 0, "Realistic is the default appearance");
+        check(AquariumOptions.defaults().time == 0, "Day is the default brightness");
+        for (int time = -1; time <= 2; time++) {
+            for (int mode = 0; mode < 2; mode++) {
+                AquariumOptions brightness =
+                        new AquariumOptions(mode, 16, 0, 0, 1, 1, 0, 0, true, true, 2, 0, 5, time);
+                check(brightness.time == Math.max(0, Math.min(1, time)), "Day/night bounds");
+                check(
+                        brightness.nightShade() == (time <= 0 ? 0 : 0x99000000),
+                        "Night dims both animated and original footage modes");
+                check(
+                        brightness.look == 5 && brightness.mode == mode,
+                        "Brightness preserves the selected appearance and playback mode");
+            }
+        }
+        check(AquariumOptions.LOOKS.length == 6, "All six requested appearances are available");
+        for (int look = -1; look <= 6; look++) {
+            AquariumOptions appearance =
+                    new AquariumOptions(0, 32, 3, 2, 2, 2, 1, 2, false, true, 3, 127, look);
+            check(appearance.look == Math.max(0, Math.min(5, look)), "Appearance bounds");
+            check(
+                    appearance.count == 32
+                            && appearance.species == 3
+                            && appearance.scene == 2
+                            && appearance.creatures == 127
+                            && appearance.rays,
+                    "Changing appearance retains independent aquarium options");
+        }
         AquariumOptions low = new AquariumOptions(-1, -1, -1, -1, -1, -1, -1, -1, false, false);
         AquariumOptions high =
                 new AquariumOptions(999, 999, 999, 999, 999, 999, 999, 999, true, true);

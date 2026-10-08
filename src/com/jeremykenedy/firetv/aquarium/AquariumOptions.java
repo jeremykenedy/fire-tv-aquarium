@@ -2,7 +2,16 @@ package com.jeremykenedy.firetv.aquarium;
 
 /** Validated, immutable settings shared by the renderer and the remote controls. */
 final class AquariumOptions {
-    static final String[] MODES = {"Animated aquarium", "Real 4K footage"};
+    static final String[] MODES = {"Animated aquarium", "Original 4K footage"};
+    static final String[] TIMES = {"Day", "Night"};
+    static final String[] LOOKS = {
+        "Realistic",
+        "Classic Windows aquarium",
+        "Animated 3D",
+        "Cartoon",
+        "Finding Nemo inspired",
+        "Little Mermaid inspired"
+    };
     static final String[] SPECIES = {
         "Mixed", "Clownfish", "Yellow tang", "Blue tang", "Angelfish", "Neon tetra", "Betta"
     };
@@ -27,7 +36,18 @@ final class AquariumOptions {
     static final String[] CLOCKS = {"Hidden", "12-hour", "24-hour"};
     static final int MAX_FISH = 60;
 
-    final int mode, count, species, scene, speed, size, light, clock, population, creatures;
+    final int mode,
+            count,
+            species,
+            scene,
+            speed,
+            size,
+            light,
+            clock,
+            population,
+            creatures,
+            look,
+            time;
     final boolean bubbles, rays;
 
     AquariumOptions(
@@ -57,6 +77,68 @@ final class AquariumOptions {
             boolean rays,
             int population,
             int creatures) {
+        this(
+                mode,
+                count,
+                species,
+                scene,
+                speed,
+                size,
+                light,
+                clock,
+                bubbles,
+                rays,
+                population,
+                creatures,
+                0);
+    }
+
+    AquariumOptions(
+            int mode,
+            int count,
+            int species,
+            int scene,
+            int speed,
+            int size,
+            int light,
+            int clock,
+            boolean bubbles,
+            boolean rays,
+            int population,
+            int creatures,
+            int look) {
+        this(
+                mode,
+                count,
+                species,
+                scene,
+                speed,
+                size,
+                light,
+                clock,
+                bubbles,
+                rays,
+                population,
+                creatures,
+                look,
+                0);
+    }
+
+    AquariumOptions(
+            int mode,
+            int count,
+            int species,
+            int scene,
+            int speed,
+            int size,
+            int light,
+            int clock,
+            boolean bubbles,
+            boolean rays,
+            int population,
+            int creatures,
+            int look,
+            int time) {
         this.population = bounded(population, 0, POPULATIONS.length - 1);
         this.creatures = creatures & 127;
         this.mode = bounded(mode, 0, MODES.length - 1);
@@ -69,6 +151,8 @@ final class AquariumOptions {
         this.clock = bounded(clock, 0, CLOCKS.length - 1);
         this.bubbles = bubbles;
         this.rays = rays;
+        this.look = bounded(look, 0, LOOKS.length - 1);
+        this.time = bounded(time, 0, TIMES.length - 1);
     }
 
     static AquariumOptions defaults() {
@@ -97,5 +181,9 @@ final class AquariumOptions {
 
     float fishScale() {
         return size == 0 ? 0.6f : size == 1 ? 0.9f : 1.25f;
+    }
+
+    int nightShade() {
+        return time == 1 ? 0x99000000 : 0x00000000;
     }
 }

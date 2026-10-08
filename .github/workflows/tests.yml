@@ -48,3 +48,4 @@ jobs:
         run: |
           bash build.sh
           python3 check_apk.py
+          bash scripts/build-device-checks.sh

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.0
+
+- Preserve the first installed aquarium video as Original 4K footage.
+- Add saved Day / Night brightness for every animated look and original footage.
+- Add Follow and Star badges and explicit tracking-free wording to both banners.
+
+- Add six selectable aquarium appearances with Realistic as the default.
+- Add realistic, cinematic, and classic drawn fish, sea life, and five matching
+  underwater backgrounds for each artwork family.
+- Retain the original Cartoon appearance and all independent aquarium controls.
+- Animate transparent fish artwork with tail, fin, and tentacle movement.
+- Save appearance preferences and retain older settings during upgrades.
+- Add appearance screenshots and native Fire TV verification.
+
 ## 1.1.0 - 2026-10-08
 
 - Add the original native 4K animated aquarium and remote-operated settings.

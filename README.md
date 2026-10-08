@@ -10,12 +10,17 @@
 
 <p align="center">
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases"><img src="https://img.shields.io/badge/Downloads-private-lightgrey" alt="Downloads: private repository"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest"><img src="https://img.shields.io/badge/Release-v1.1.0-blue" alt="Latest stable version: v1.1.0"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest"><img src="https://img.shields.io/badge/Release-v1.2.0-blue" alt="Latest stable version: v1.2.0"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml/badge.svg" alt="Code style"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml/badge.svg" alt="Documentation"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml/badge.svg" alt="Security"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+    <a href="https://github.com/jeremykenedy"><img src="https://img.shields.io/github/followers/jeremykenedy?label=Follow%20me&amp;style=social" alt="Follow me on GitHub"></a>
+    <a href="https://github.com/jeremykenedy/fire-tv-aquarium" title="Open the repository and click Star"><img src="https://img.shields.io/badge/Star-this%20repo-yellow?logo=github&amp;style=social" alt="Star this repo"></a>
 </p>
 
 ## Table of Contents
@@ -86,9 +91,12 @@ key exits the idle screensaver. **Reset aquarium** restores the default options.
 ## Features
 
 - Native 3840x2160 animated rendering and a bundled silent 4K video loop.
+- Realistic, Classic Windows aquarium, Animated 3D, Cartoon, Finding Nemo inspired,
+  and Little Mermaid inspired appearances.
 - Reef, Fish tank, Ocean, Kelp forest, and Deep sea backgrounds.
 - A few, A handful, A lot, A ton, Schools, or an exact count from 0 to 60 fish.
 - Six fish species or a mixed aquarium, with coordinated groups in Schools mode.
+- A saved Day / Night switch dims every animated look and the original video.
 - Independent sharks, whales, octopuses, turtles, rays, dolphins, and jellyfish.
 - Fish size, swimming speed, lighting, bubbles, and sunlight shimmer from above.
 - An optional 12-hour or 24-hour clock.
@@ -96,15 +104,22 @@ key exits the idle screensaver. **Reset aquarium** restores the default options.
 - Reversible screensaver selection, with no launcher changes.
 - No ads, analytics, tracking SDKs, accounts, network permission, or runtime downloads.
 
-Animated mode uses original stylized 3D animals and scenery. Frame rate depends
-on the device and settings. **Real 4K footage** mode plays a recorded aquarium;
+Realistic is the default. Appearance changes the fish and environment together
+while keeping your population, background selection, and sea-life switches.
+Textured appearances animate detailed artwork on deforming surfaces; Cartoon
+uses the original simple 3D geometry. The animation renders to a native 4K
+surface; bundled texture artwork has its own source resolution. Frame rate
+depends on the device and settings. **Original 4K footage** preserves the real
+aquarium video from the first version installed on the TV;
 the fish and scenery controls apply to animated mode. The clock works in both.
 
 ## Configuration
 
 | Setting | Options | Default |
 |---|---|---|
-| Mode | Animated aquarium, Real 4K footage | Animated aquarium |
+| Mode | Animated aquarium, Original 4K footage | Animated aquarium |
+| Look | Realistic, Classic Windows aquarium, Animated 3D, Cartoon, Finding Nemo inspired, Little Mermaid inspired | Realistic |
+| Day / Night | Day, Night (40% brightness) | Day |
 | Population | Custom, A few, A handful, A lot, A ton, Schools | A handful |
 | Fish | Exact count from 0 to 60 | 16 |
 | Species | Mixed, Clownfish, Yellow tang, Blue tang, Angelfish, Neon tetra, Betta | Mixed |
@@ -132,18 +147,36 @@ actual aquarium surface and display composition were verified at 3840x2160.
 <table>
     <tr>
         <td valign="top" width="50%"><img src="docs/screenshots/settings.png" alt="Remote-operated aquarium settings with live reef preview" width="100%"><br>Settings and live preview</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/reef.png" alt="Mixed fish swimming above a reef with sunlight on the sand" width="100%"><br>Reef with sunlight shimmer</td>
+        <td valign="top" width="50%"><img src="docs/screenshots/night.png" alt="Night mode dims the aquarium while settings remain readable" width="100%"><br>Night mode</td>
     </tr>
     <tr>
-        <td valign="top" colspan="2"><img src="docs/screenshots/ocean.png" alt="Ocean aquarium with sharks, a whale, an octopus, rays, dolphins, jellyfish, and fish" width="100%"><br>Ocean with optional sea life</td>
+        <td valign="top" width="50%"><img src="docs/screenshots/original-day.png" alt="Original real 4K aquarium footage in Day mode" width="100%"><br>Original 4K footage: Day</td>
+        <td valign="top" width="50%"><img src="docs/screenshots/original-night.png" alt="Original real 4K aquarium footage dimmed in Night mode" width="100%"><br>Original 4K footage: Night</td>
+    </tr>
+    <tr>
+        <td valign="top" width="50%"><img src="docs/screenshots/realistic.png" alt="Realistic fish above a detailed reef" width="100%"><br>Realistic</td>
+        <td valign="top" width="50%"><img src="docs/screenshots/classic.png" alt="Classic Windows inspired aquarium with cool water and a glass frame" width="100%"><br>Classic Windows aquarium</td>
+    </tr>
+    <tr>
+        <td valign="top" width="50%"><img src="docs/screenshots/animated-3d.png" alt="Cinematic fish and underwater scenery" width="100%"><br>Animated 3D</td>
+        <td valign="top" width="50%"><img src="docs/screenshots/cartoon.png" alt="Original geometric cartoon fish and reef" width="100%"><br>Cartoon</td>
+    </tr>
+    <tr>
+        <td valign="top" width="50%"><img src="docs/screenshots/nemo-inspired.png" alt="Warm cinematic underwater appearance" width="100%"><br>Finding Nemo inspired</td>
+        <td valign="top" width="50%"><img src="docs/screenshots/mermaid-inspired.png" alt="Classic drawn fish and painted underwater scenery" width="100%"><br>Little Mermaid inspired</td>
     </tr>
 </table>
+
+Settings and video images are Fire TV screen captures. The six appearance
+images were rendered on the same TV's GPU into native 3840x2160 offscreen
+surfaces. All documentation images are 1920x1080. See [Verification](docs/VERIFICATION.md).
 
 ## Documentation
 
 - [Installation, upgrades, restore, and uninstall](INSTALLATION.md)
 - [Build tools and signing keys](docs/BUILDING.md)
 - [Aquarium configuration](docs/CONFIGURATION.md)
+- [Appearance artwork and rendering](docs/ARTWORK.md)
 - [Architecture and lifecycle](docs/ARCHITECTURE.md)
 - [CI and quality checks](docs/CI.md)
 - [Release process](docs/RELEASING.md)

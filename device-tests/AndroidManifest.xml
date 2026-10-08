@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jeremykenedy.firetv.aquarium.devicechecks">
+    <application android:label="Aquarium device checks" />
+    <instrumentation android:name="com.jeremykenedy.firetv.aquarium.AppearanceInstrumentation"
+        android:targetPackage="com.jeremykenedy.firetv.aquarium" />
+    <instrumentation android:name="com.jeremykenedy.firetv.aquarium.DisplayInstrumentation"
+        android:targetPackage="com.jeremykenedy.firetv.aquarium" />
+</manifest>

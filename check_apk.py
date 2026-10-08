@@ -17,4 +17,8 @@ assert "package: name='com.jeremykenedy.firetv.aquarium'" in badging
 with zipfile.ZipFile(apk) as archive:
     assert archive.getinfo("res/raw/aquarium.mp4").compress_type == zipfile.ZIP_STORED
     assert "classes.dex" in archive.namelist()
-print("APK verified: zero requested permissions, bundled UHD footage, expected package")
+    packaged = {Path(name).name for name in archive.namelist()}
+    for family in ("realistic", "cinematic", "drawn"):
+        for asset in ("reef", "tank", "ocean", "kelp", "deep", "fish", "marine"):
+            assert f"{family}_{asset}.png" in packaged, f"Missing artwork: {family}_{asset}"
+print("APK verified: zero requested permissions, UHD footage, all artwork, expected package")

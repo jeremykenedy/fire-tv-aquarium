@@ -21,7 +21,7 @@ public final class AquariumActivity extends Activity {
     private AquariumDisplay aquarium;
     private LinearLayout panel;
     private Button preview;
-    private final Button[] controls = new Button[18];
+    private final Button[] controls = new Button[20];
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -59,10 +59,10 @@ public final class AquariumActivity extends Activity {
         LinearLayout rows = new LinearLayout(this);
         rows.setOrientation(LinearLayout.VERTICAL);
         scroll.addView(rows);
-        for (int i = 0; i < controls.length; i++) {
-            final int index = i;
+        for (int position = 0; position < controls.length; position++) {
+            final int index = controlAt(position);
             Button control = button("");
-            controls[i] = control;
+            controls[index] = control;
             LinearLayout.LayoutParams row = new LinearLayout.LayoutParams(-1, dp(43));
             row.bottomMargin = dp(3);
             rows.addView(control, row);
@@ -182,7 +182,9 @@ public final class AquariumActivity extends Activity {
                 light = options.light,
                 clock = options.clock,
                 population = options.population,
-                creatures = options.creatures;
+                creatures = options.creatures,
+                look = options.look,
+                time = options.time;
         boolean bubbles = options.bubbles, shimmer = options.rays;
         switch (index) {
             case 0:
@@ -222,6 +224,12 @@ public final class AquariumActivity extends Activity {
             case 17:
                 clock = AquariumOptions.cycle(clock, delta, AquariumOptions.CLOCKS.length);
                 break;
+            case 18:
+                look = AquariumOptions.cycle(look, delta, AquariumOptions.LOOKS.length);
+                break;
+            case 19:
+                time = AquariumOptions.cycle(time, delta, AquariumOptions.TIMES.length);
+                break;
             default:
                 if (index < 10 || index > 16) throw new IllegalArgumentException("Unknown control");
                 creatures ^= 1 << (index - 10);
@@ -239,7 +247,9 @@ public final class AquariumActivity extends Activity {
                         bubbles,
                         shimmer,
                         population,
-                        creatures);
+                        creatures,
+                        look,
+                        time);
         changed();
     }
 
@@ -250,11 +260,16 @@ public final class AquariumActivity extends Activity {
     }
 
     private void focusControl(int index, int direction) {
-        int target = index + direction;
-        while (target >= 0 && target < controls.length && !controls[target].isEnabled())
+        int position = index == 18 ? 1 : index == 19 ? 2 : index == 0 ? 0 : index + 2;
+        int target = position + direction;
+        while (target >= 0 && target < controls.length && !controls[controlAt(target)].isEnabled())
             target += direction;
         if (target >= controls.length) preview.requestFocus();
-        else controls[Math.max(0, target)].requestFocus();
+        else controls[controlAt(Math.max(0, target))].requestFocus();
+    }
+
+    private int controlAt(int position) {
+        return position == 1 ? 18 : position == 2 ? 19 : position == 0 ? 0 : position - 2;
     }
 
     private void updateLabels() {
@@ -276,7 +291,9 @@ public final class AquariumActivity extends Activity {
             "",
             "",
             "",
-            "Clock: " + AquariumOptions.CLOCKS[options.clock]
+            "Clock: " + AquariumOptions.CLOCKS[options.clock],
+            "Look: " + AquariumOptions.LOOKS[options.look],
+            "Day / Night: " + AquariumOptions.TIMES[options.time]
         };
         for (int i = 0; i < AquariumOptions.CREATURE_NAMES.length; i++)
             labels[10 + i] =
@@ -285,7 +302,7 @@ public final class AquariumActivity extends Activity {
                             + (options.hasCreature(1 << i) ? "On" : "Off");
         for (int i = 0; i < controls.length; i++) {
             controls[i].setText(labels[i]);
-            boolean enabled = options.mode == 0 || i == 0 || i == 17;
+            boolean enabled = options.mode == 0 || i == 0 || i == 17 || i == 19;
             controls[i].setEnabled(enabled);
             controls[i].setAlpha(enabled ? 1 : 0.45f);
         }

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 
 final class AquariumSceneView extends GLSurfaceView implements Runnable {
-    private final AquariumRenderer renderer;
+    private final AquariumAppearanceRenderer renderer;
     private boolean active;
 
     AquariumSceneView(Context context, AquariumOptions options) {
@@ -12,7 +12,7 @@ final class AquariumSceneView extends GLSurfaceView implements Runnable {
         setEGLContextClientVersion(2);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         setPreserveEGLContextOnPause(true);
-        renderer = new AquariumRenderer(options);
+        renderer = new AquariumAppearanceRenderer(context.getResources(), options);
         setRenderer(renderer);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
         getHolder().setFixedSize(3840, 2160);

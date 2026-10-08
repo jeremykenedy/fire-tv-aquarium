@@ -16,7 +16,7 @@ if hashlib.sha256(Path(sys.argv[1]).read_bytes()).hexdigest() != sys.argv[2]:
     raise SystemExit('Java formatter checksum mismatch')
 PY
 java_files=()
-while IFS= read -r file; do java_files+=("$file"); done < <(find src tests -name '*.java' | sort)
+while IFS= read -r file; do java_files+=("$file"); done < <(find src tests device-tests -name '*.java' | sort)
 java -jar "$FORMAT_JAR" --aosp --dry-run --set-exit-if-changed "${java_files[@]}"
 ruff check .
 ruff format --check .
