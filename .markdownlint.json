@@ -1,5 +1,21 @@
 {
   "MD033": {
-    "allowed_elements": ["picture", "source", "img", "p", "a"]
-  }
+    "allowed_elements": [
+      "picture",
+      "source",
+      "img",
+      "p",
+      "a"
+    ]
+  },
+  "MD013": false,
+  "MD043": false,
+  "MD041": false,
+  "MD009": false,
+  "MD040": false,
+  "MD031": false,
+  "MD047": false,
+  "MD058": false,
+  "MD059": false,
+  "MD060": false
 }

@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -110,7 +109,7 @@ public final class AppearanceInstrumentation extends Instrumentation {
             for (int look = 0; look < AquariumOptions.LOOKS.length; look++) {
                 for (int scene = 0; scene < AquariumOptions.SCENES.length; scene++) {
                     renderer.configure(options(look, scene, 16, 0, 0));
-                    drawAtStart(renderer);
+                    renderer.onDrawFrame(null);
                     read(pixels);
                     check(
                             nonEmpty(pixels),
@@ -121,14 +120,14 @@ public final class AppearanceInstrumentation extends Instrumentation {
             byte[] baseline = new byte[WIDTH * HEIGHT * 4];
             for (int look : new int[] {0, 2, 5}) {
                 renderer.configure(options(look, 2, 0, 0, 0));
-                drawAtStart(renderer);
+                renderer.onDrawFrame(null);
                 read(pixels);
                 pixels.position(0);
                 pixels.get(baseline);
                 pixels.position(0);
                 for (int species = 1; species <= 6; species++) {
                     renderer.configure(options(look, 2, 16, species, 0));
-                    drawAtStart(renderer);
+                    renderer.onDrawFrame(null);
                     read(pixels);
                     check(
                             changed(pixels, baseline) > 1000,
@@ -136,16 +135,14 @@ public final class AppearanceInstrumentation extends Instrumentation {
                 }
                 for (int creature = 0; creature < 7; creature++) {
                     renderer.configure(options(look, 2, 0, 0, 1 << creature));
-                    drawAtStart(renderer);
-                    read(pixels);
                     check(
-                            changed(pixels, baseline) > 1000,
+                            visitorAppears(renderer, pixels, baseline),
                             AquariumOptions.LOOKS[look]
                                     + " "
                                     + AquariumOptions.CREATURE_NAMES[creature]);
                 }
                 renderer.configure(options(look, 2, 16, 0, 127));
-                drawAtStart(renderer);
+                renderer.onDrawFrame(null);
                 read(pixels);
                 save(pixels, "marine-" + look + ".png");
             }
@@ -190,21 +187,19 @@ public final class AppearanceInstrumentation extends Instrumentation {
                 0, count, species, scene, 1, 1, 0, 0, false, false, 0, creatures, look);
     }
 
-    private static void drawAtStart(AquariumAppearanceRenderer renderer) throws Exception {
-        // Compare the same animation instant so a visitor cannot swim out of frame
-        // while the device saves captures or reads millions of pixels.
-        Field started = AquariumAppearanceRenderer.class.getDeclaredField("started");
-        started.setAccessible(true);
-        started.setLong(renderer, SystemClock.elapsedRealtime());
-        Field cartoon = AquariumAppearanceRenderer.class.getDeclaredField("cartoon");
-        cartoon.setAccessible(true);
-        Object animated = cartoon.get(renderer);
-        if (animated != null) {
-            Field cartoonStarted = AquariumRenderer.class.getDeclaredField("started");
-            cartoonStarted.setAccessible(true);
-            cartoonStarted.setLong(animated, SystemClock.elapsedRealtime());
-        }
-        renderer.onDrawFrame(null);
+    private static boolean visitorAppears(
+            AquariumAppearanceRenderer renderer, ByteBuffer pixels, byte[] baseline)
+            throws Exception {
+        // Visitors can swim completely out of frame. Give them time to return
+        // rather than requiring visibility at an arbitrary capture instant.
+        long deadline = SystemClock.elapsedRealtime() + 60000;
+        do {
+            renderer.onDrawFrame(null);
+            read(pixels);
+            if (changed(pixels, baseline) > 1000) return true;
+            Thread.sleep(250);
+        } while (SystemClock.elapsedRealtime() < deadline);
+        return false;
     }
 
     private void check(boolean success, String name) {

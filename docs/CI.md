@@ -15,7 +15,8 @@ Actions use full commit SHA pins. The Java formatter and Gitleaks releases are
 pinned and checked against their published SHA-256 digests before execution.
 Their downloads and redirects are restricted to HTTPS.
 Python development tools are version-pinned. Dependabot watches action pins and
-Python and Gradle development dependencies. No development tool is bundled in the APK.
+Python and Gradle development dependencies. No development tool is bundled in
+the APK.
 
 The installer test matrix retains Python 3.10 and 3.13 on Linux and macOS.
 macOS jobs use GitHub's standard `macos-15-intel` image to avoid the ARM runner
