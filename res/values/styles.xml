@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AquariumTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#FF072431</item>
+        <item name="android:windowSplashScreenBackground">#FF072431</item>
+    </style>
+</resources>

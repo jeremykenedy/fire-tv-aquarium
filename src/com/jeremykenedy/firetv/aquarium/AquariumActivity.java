@@ -26,11 +26,11 @@ public final class AquariumActivity extends Activity {
     @Override
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
-        AquariumPlayback.configureWindow(getWindow());
         preferences = new AquariumPreferences(this);
         options = preferences.read();
         FrameLayout root = new FrameLayout(this);
         aquarium = new AquariumDisplay(this, AquariumRandomizer.resolve(options));
+        aquarium.setVisibility(View.GONE);
         root.addView(aquarium, new FrameLayout.LayoutParams(-1, -1));
         panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
@@ -101,6 +101,7 @@ public final class AquariumActivity extends Activity {
                     public void onClick(View v) {
                         aquarium.configure(AquariumRandomizer.resolve(options));
                         panel.setVisibility(View.GONE);
+                        aquarium.setVisibility(View.VISIBLE);
                     }
                 });
         panel.addView(preview, new LinearLayout.LayoutParams(-1, dp(46)));
@@ -277,6 +278,7 @@ public final class AquariumActivity extends Activity {
     public boolean onKeyDown(int key, KeyEvent event) {
         if (key == KeyEvent.KEYCODE_MENU
                 || (key == KeyEvent.KEYCODE_BACK && panel.getVisibility() == View.GONE)) {
+            aquarium.setVisibility(View.GONE);
             panel.setVisibility(View.VISIBLE);
             preview.requestFocus();
             return true;

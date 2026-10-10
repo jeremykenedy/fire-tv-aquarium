@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.service.dreams.DreamService;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -50,6 +51,15 @@ public final class LifecycleCoverageTest {
         AquariumActivity activity =
                 Robolectric.buildActivity(AquariumActivity.class).create().get();
         Button[] controls = ReflectionHelpers.getField(activity, "controls");
+        AquariumDisplay aquarium = ReflectionHelpers.getField(activity, "aquarium");
+        assertEquals(View.GONE, aquarium.getVisibility());
+        assertEquals(0, activity.getWindow().getAttributes().preferredDisplayModeId);
+        assertEquals(0, activity.getWindow().getDecorView().getSystemUiVisibility());
+        TypedValue background = new TypedValue();
+        assertTrue(
+                activity.getTheme()
+                        .resolveAttribute(android.R.attr.windowBackground, background, true));
+        assertEquals(0xFF072431, background.data);
         for (int index = 1; index < 20; index++) {
             Button control = controls[index];
             assertTrue(control.isEnabled());
@@ -89,6 +99,7 @@ public final class LifecycleCoverageTest {
     private void verifyPreviewAndReset(AquariumActivity activity) {
         Button preview = ReflectionHelpers.getField(activity, "preview");
         LinearLayout panel = ReflectionHelpers.getField(activity, "panel");
+        AquariumDisplay aquarium = ReflectionHelpers.getField(activity, "aquarium");
         Button reset = (Button) panel.getChildAt(panel.getChildCount() - 2);
         for (int code : new int[] {KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN}) {
             assertTrue(key(preview, KeyEvent.ACTION_DOWN, code));
@@ -100,11 +111,13 @@ public final class LifecycleCoverageTest {
         assertFalse(key(reset, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN));
         preview.performClick();
         assertEquals(View.GONE, panel.getVisibility());
+        assertEquals(View.VISIBLE, aquarium.getVisibility());
         assertTrue(
                 activity.onKeyDown(
                         KeyEvent.KEYCODE_BACK,
                         new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK)));
         assertEquals(View.VISIBLE, panel.getVisibility());
+        assertEquals(View.GONE, aquarium.getVisibility());
         assertTrue(
                 activity.onKeyDown(
                         KeyEvent.KEYCODE_MENU,

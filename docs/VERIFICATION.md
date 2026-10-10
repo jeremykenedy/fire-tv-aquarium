@@ -1,6 +1,28 @@
 # Device verification
 
-Aquarium 4K 1.3.2 verification, October 9, 2026
+Aquarium 4K 1.3.3 verification, October 9, 2026
+
+## Version 1.3.3 release checks
+
+The signed APK uses version name `1.3.3`, version code `7`, and the existing
+release signing certificate. The settings Activity no longer requests the
+screensaver's immersive 4K window mode or runs the animated surface underneath
+its controls. Its initial window uses the same dark background as the settings
+panel. Preview starts the animation; Menu or Back returns to settings.
+
+| Platform | Environment | Signed release checks |
+|---|---|---|
+| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Settings opened directly and through the Fire TV UI picker, stable panel, Preview animation, Menu return, no crash |
+| Fire TV | Physical API 30 TV with 4K panel | Previous 1.3.2 check only. The user reported the settings flash/black behavior; do not install or test this release on the TV until the user confirms it is available. |
+| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this settings-only change |
+
+The physical TV was captured in its reported settings session without input.
+That capture showed the activity and settings panel over the aquarium renderer;
+device logs reported a 3840x2160 appearance surface. It was not a verification of
+the new release. Emulator screenshots confirmed the dark startup window,
+controls visible before Preview, the aquarium rendering after Preview, and Menu
+restoring the settings panel. The 1.3.3 release has no permission, preference
+schema, minimum Android version, or network-access changes.
 
 ## Version 1.3.2 release checks
 

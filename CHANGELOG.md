@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3.3 - 2026-10-09
+
+- Keep aquarium rendering stopped and hidden while settings are open; start it
+  only when Preview is selected.
+- Keep settings in the TV's normal display mode instead of requesting immersive
+  fullscreen 4K output.
+- Use the aquarium's dark background while the settings Activity initializes.
+- No breaking changes, major feature changes, new commands, or new flags.
+- Upgrade in place from 1.3.2 with the same package and signing key; saved
+  preferences and screensaver backups are preserved.
+
 ## 1.3.2 - 2026-10-09
 
 - Keep one resolved set of Random options for the complete screensaver session.
