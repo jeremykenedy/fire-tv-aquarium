@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.5 - 2026-10-09
+
+- Stop forcing a preferred display mode when Fire TV starts the screensaver preview.
+- Keep the platform-selected display mode for both the idle screensaver and UI preview.
+- Keep Fire TV UI's protected screensaver preference in sync during install and restore.
+
 ## 1.3.4 - 2026-10-09
 
 - Keep the physical display awake during full-screen aquarium preview.

@@ -199,6 +199,7 @@ public final class LifecycleCoverageTest {
         service.onAttachedToWindow();
         assertFalse(service.isInteractive());
         assertTrue(service.isFullscreen());
+        assertEquals(0, owner.getWindow().getAttributes().preferredDisplayModeId);
         AquariumDisplay playback = ReflectionHelpers.getField(service, "playback");
         AquariumOptions resolved = ReflectionHelpers.getField(playback, "options");
         service.onDreamingStarted();

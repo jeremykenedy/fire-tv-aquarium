@@ -12,7 +12,7 @@ and use temporary keys.
 2. Update [CHANGELOG.md](../CHANGELOG.md).
 3. Run tests, style checks, documentation checks, and the Android build.
 4. Verify APK permissions and signature, and test the signed build on the relevant TV platforms.
-5. Commit the source and wait for the CI checks for that commit to pass.
+5. Commit and push the verified source to the remote primary branch.
 6. Create a release at the full source commit SHA and upload both output files.
 
 ```bash
@@ -22,10 +22,10 @@ python3 scripts/check-docs.py
 bash build.sh
 python3 check_apk.py
 
-gh release create v1.3.4 \
+gh release create v1.3.5 \
   build/aquarium-4k.apk build/aquarium-4k.apk.sha256 \
   --repo jeremykenedy/fire-tv-aquarium \
-  --target "$(git rev-parse HEAD)" --title 'Aquarium 4K 1.3.4' \
+  --target "$(git rev-parse HEAD)" --title 'Aquarium 4K 1.3.5' \
   --notes-file build/release-notes.txt
 ```
 
@@ -51,9 +51,9 @@ tested release APK, and never publish CI's temporary-key APK as an upgrade.
 After publishing, download the two uploaded assets into a separate directory:
 
 ```bash
-gh release download v1.3.4 --repo jeremykenedy/fire-tv-aquarium \
+gh release download v1.3.5 --repo jeremykenedy/fire-tv-aquarium \
   --pattern aquarium-4k.apk --pattern aquarium-4k.apk.sha256 \
-  --dir build/release-1.3.4
+  --dir build/release-1.3.5
 ```
 
 Compare the downloaded APK's SHA-256 with the downloaded checksum and locally

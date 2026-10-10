@@ -1,11 +1,9 @@
 package com.jeremykenedy.firetv.aquarium;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
@@ -14,7 +12,6 @@ import android.view.Display;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -137,12 +134,6 @@ public final class OutputPolicyTest {
                 new Display.Mode[] {mode(2, 1920, 1080), mode(3, 3840, 1080), mode(7, 3840, 2160)};
         assertArrayEquals(
                 new int[] {3840, 2160}, AquariumOutput.size(RuntimeEnvironment.getApplication()));
-        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        AquariumPlayback.configureWindow(activity.getWindow());
-        assertEquals(7, activity.getWindow().getAttributes().preferredDisplayModeId);
-        DisplayModes.supported = new Display.Mode[] {mode(2, 1920, 1080), mode(3, 3840, 1080)};
-        AquariumPlayback.configureWindow(activity.getWindow());
-        assertTrue(activity.getWindow().getDecorView().getSystemUiVisibility() != 0);
     }
 
     @Test

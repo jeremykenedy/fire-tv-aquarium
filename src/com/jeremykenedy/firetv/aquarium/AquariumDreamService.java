@@ -11,7 +11,6 @@ public final class AquariumDreamService extends DreamService {
         setInteractive(false);
         setFullscreen(true);
         setScreenBright(true);
-        AquariumPlayback.configureWindow(getWindow());
         playback =
                 new AquariumDisplay(
                         this, AquariumRandomizer.resolve(new AquariumPreferences(this).read()));

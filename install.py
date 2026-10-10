@@ -13,6 +13,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 COMPONENT = "com.jeremykenedy.firetv.aquarium/.AquariumDreamService"
+UI_PACKAGE = "com.jeremykenedy.firetv.ui"
+UI_SELECTION_ACTION = f"{UI_PACKAGE}.SELECT_SCREENSAVER"
+UI_SELECTION_RECEIVER = f"{UI_PACKAGE}/.ScreensaverSelectionReceiver"
 KEYS = ("screensaver_components", "screensaver_enabled", "screensaver_activate_on_sleep")
 
 
@@ -59,14 +62,63 @@ def set_setting(device, key, value):
         raise SystemExit(f"Device did not save {key}: expected {value!r}, received {actual!r}")
 
 
+def set_screensaver(device, component, enabled):
+    receivers = adb(
+        device,
+        "shell",
+        "cmd",
+        "package",
+        "query-receivers",
+        "--brief",
+        "-a",
+        UI_SELECTION_ACTION,
+        "-p",
+        UI_PACKAGE,
+    )
+    if "ScreensaverSelectionReceiver" not in receivers:
+        set_setting(device, "screensaver_components", component)
+        set_setting(device, "screensaver_enabled", enabled)
+        return
+
+    result = adb(
+        device,
+        "shell",
+        "am",
+        "broadcast",
+        "-a",
+        UI_SELECTION_ACTION,
+        "-n",
+        UI_SELECTION_RECEIVER,
+        "--es",
+        "component",
+        component,
+        "--es",
+        "enabled",
+        enabled,
+    )
+    if 'result=0, data="ok"' not in result:
+        raise SystemExit(f"Fire TV UI did not accept the screensaver selection: {result}")
+    set_setting(device, "screensaver_components", component)
+    set_setting(device, "screensaver_enabled", enabled)
+
+
 def restore(device, path):
     if not path.is_file():
         raise SystemExit("No saved screensaver settings exist for this app.")
     saved = json.loads(path.read_text())
     if saved["device"] != device:
         raise SystemExit("The saved settings belong to a different device.")
-    for key in KEYS:
-        set_setting(device, key, saved["settings"][key])
+    saved_settings = saved["settings"]
+    set_screensaver(
+        device,
+        saved_settings["screensaver_components"],
+        saved_settings["screensaver_enabled"],
+    )
+    set_setting(
+        device,
+        "screensaver_activate_on_sleep",
+        saved_settings["screensaver_activate_on_sleep"],
+    )
     print("Restored the previous screensaver settings. Aquarium remains installed.")
 
 
@@ -85,8 +137,7 @@ def install(device, path):
     save_original(device, path)
     print(adb(device, "install", "--no-incremental", "-r", str(apk)))
     try:
-        set_setting(device, "screensaver_components", COMPONENT)
-        set_setting(device, "screensaver_enabled", "1")
+        set_screensaver(device, COMPONENT, "1")
         set_setting(device, "screensaver_activate_on_sleep", "1")
     except BaseException:
         restore(device, path)

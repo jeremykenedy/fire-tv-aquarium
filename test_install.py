@@ -72,10 +72,68 @@ class InstallTests(unittest.TestCase):
             ):
                 installer.install("tv", root / "state.json")
                 save.assert_called_once_with("tv", root / "state.json")
-                self.assertEqual(adb.call_args.args[1:4], ("install", "--no-incremental", "-r"))
+                self.assertEqual(
+                    adb.call_args_list[0].args[1:4], ("install", "--no-incremental", "-r")
+                )
                 self.assertEqual(
                     [call.args[1] for call in setting.call_args_list], list(installer.KEYS)
                 )
+
+    def test_screensaver_selection_updates_fire_tv_ui_preference(self):
+        with (
+            patch.object(
+                installer,
+                "adb",
+                side_effect=[
+                    "1 receivers found: com.jeremykenedy.firetv.ui/.ScreensaverSelectionReceiver",
+                    'Broadcast completed: result=0, data="ok"',
+                    "",
+                    installer.COMPONENT,
+                    "",
+                    "1",
+                ],
+            ) as adb,
+        ):
+            installer.set_screensaver("tv", installer.COMPONENT, "1")
+        self.assertEqual(adb.call_args_list[1].args[1:4], ("shell", "am", "broadcast"))
+        self.assertEqual(
+            adb.call_args_list[1].args[1:],
+            (
+                "shell",
+                "am",
+                "broadcast",
+                "-a",
+                installer.UI_SELECTION_ACTION,
+                "-n",
+                installer.UI_SELECTION_RECEIVER,
+                "--es",
+                "component",
+                installer.COMPONENT,
+                "--es",
+                "enabled",
+                "1",
+            ),
+        )
+
+    def test_screensaver_selection_falls_back_without_fire_tv_ui(self):
+        with (
+            patch.object(installer, "adb", return_value="0 receivers found"),
+            patch.object(installer, "set_setting") as setting,
+        ):
+            installer.set_screensaver("tv", installer.COMPONENT, "1")
+        self.assertEqual(
+            [call.args[1:] for call in setting.call_args_list],
+            [("screensaver_components", installer.COMPONENT), ("screensaver_enabled", "1")],
+        )
+
+    def test_screensaver_selection_reports_rejected_ui_broadcast(self):
+        with patch.object(
+            installer,
+            "adb",
+            side_effect=["1 receivers found: ScreensaverSelectionReceiver", "result=1"],
+        ):
+            with self.assertRaisesRegex(SystemExit, "did not accept"):
+                installer.set_screensaver("tv", installer.COMPONENT, "1")
 
     def test_setting_write_is_read_back_and_failure_is_visible(self):
         with patch.object(installer, "adb", side_effect=["", "1"]) as adb:
@@ -179,12 +237,13 @@ class InstallTests(unittest.TestCase):
                 installer.save_original("second", second)
             self.assertEqual(first.read_bytes(), first_bytes)
             self.assertEqual(json.loads(second.read_text())["device"], "second")
-            with patch.object(installer, "set_setting") as setting:
+            with (
+                patch.object(installer, "set_screensaver") as screensaver,
+                patch.object(installer, "set_setting") as setting,
+            ):
                 installer.restore("second", second)
-                self.assertEqual(
-                    setting.call_args_list[0].args,
-                    ("second", "screensaver_components", "second/.Dream"),
-                )
+                screensaver.assert_called_once_with("second", "second/.Dream", "0")
+                setting.assert_called_once_with("second", "screensaver_activate_on_sleep", "null")
             self.assertEqual(first.read_bytes(), first_bytes)
 
     def test_restore_deletes_originally_unset_setting(self):

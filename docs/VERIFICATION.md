@@ -1,6 +1,26 @@
 # Device verification
 
-Aquarium 4K 1.3.4 verification, October 9, 2026
+Aquarium 4K 1.3.5 verification, October 9, 2026
+
+## Version 1.3.5 release checks
+
+The signed APK uses version name `1.3.5`, version code `9`, and the existing
+release signing certificate. The DreamService leaves the Fire TV display mode
+at the platform-selected value instead of forcing a preferred mode.
+
+| Platform | Environment | Signed release checks |
+|---|---|---|
+| Fire TV | Physical API 30 TV with 4K panel | Signed install, saved aquarium options retained, Fire TV UI settings and preview, `AquariumDreamService` remained animated during a 15-second preview, selection and enabled state survived the protection service, Home returned to AT4K |
+| Android unit tests | Robolectric | Lifecycle regression asserts the screensaver does not request a preferred display mode |
+| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this display-mode change |
+
+The installer now uses Fire TV UI's screensaver selection receiver when that
+receiver is installed. This updates the protected selection preference along
+with Android's secure setting, so the UI guard does not revert the aquarium or
+disable it. The installer falls back to verified secure-setting writes when
+Fire TV UI is absent. ADB captures are 1920x1080; Android reports the active
+physical display mode as 3840x2160 at 60 Hz. ADB capture does not independently
+verify what is visible on the television panel.
 
 ## Version 1.3.4 release checks
 
@@ -19,8 +39,6 @@ ADB frame capture confirmed the animated surface was producing frames. The
 physical panel could not be independently observed by this capture; the user
 reported the TV remained black before this fix. No permission, preference
 schema, minimum Android version, or network-access changes.
-
-## Version 1.3.3 release checks
 
 ## Version 1.3.3 release checks
 
