@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -100,6 +101,7 @@ public final class AquariumActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         aquarium.configure(AquariumRandomizer.resolve(options));
+                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         panel.setVisibility(View.GONE);
                         aquarium.setVisibility(View.VISIBLE);
                     }
@@ -271,6 +273,7 @@ public final class AquariumActivity extends Activity {
     @Override
     public void onPause() {
         aquarium.stop();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onPause();
     }
 
@@ -278,6 +281,7 @@ public final class AquariumActivity extends Activity {
     public boolean onKeyDown(int key, KeyEvent event) {
         if (key == KeyEvent.KEYCODE_MENU
                 || (key == KeyEvent.KEYCODE_BACK && panel.getVisibility() == View.GONE)) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             aquarium.setVisibility(View.GONE);
             panel.setVisibility(View.VISIBLE);
             preview.requestFocus();

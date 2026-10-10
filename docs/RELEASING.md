@@ -22,10 +22,10 @@ python3 scripts/check-docs.py
 bash build.sh
 python3 check_apk.py
 
-gh release create v1.3.3 \
+gh release create v1.3.4 \
   build/aquarium-4k.apk build/aquarium-4k.apk.sha256 \
   --repo jeremykenedy/fire-tv-aquarium \
-  --target "$(git rev-parse HEAD)" --title 'Aquarium 4K 1.3.3' \
+  --target "$(git rev-parse HEAD)" --title 'Aquarium 4K 1.3.4' \
   --notes-file build/release-notes.txt
 ```
 
@@ -51,9 +51,9 @@ tested release APK, and never publish CI's temporary-key APK as an upgrade.
 After publishing, download the two uploaded assets into a separate directory:
 
 ```bash
-gh release download v1.3.3 --repo jeremykenedy/fire-tv-aquarium \
+gh release download v1.3.4 --repo jeremykenedy/fire-tv-aquarium \
   --pattern aquarium-4k.apk --pattern aquarium-4k.apk.sha256 \
-  --dir build/release-1.3.3
+  --dir build/release-1.3.4
 ```
 
 Compare the downloaded APK's SHA-256 with the downloaded checksum and locally

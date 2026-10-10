@@ -12,6 +12,7 @@ import android.service.dreams.DreamService;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -113,11 +114,19 @@ public final class LifecycleCoverageTest {
         assertEquals(View.GONE, panel.getVisibility());
         assertEquals(View.VISIBLE, aquarium.getVisibility());
         assertTrue(
+                (activity.getWindow().getAttributes().flags
+                                & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        != 0);
+        assertTrue(
                 activity.onKeyDown(
                         KeyEvent.KEYCODE_BACK,
                         new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK)));
         assertEquals(View.VISIBLE, panel.getVisibility());
         assertEquals(View.GONE, aquarium.getVisibility());
+        assertEquals(
+                0,
+                activity.getWindow().getAttributes().flags
+                        & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         assertTrue(
                 activity.onKeyDown(
                         KeyEvent.KEYCODE_MENU,

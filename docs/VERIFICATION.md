@@ -1,6 +1,26 @@
 # Device verification
 
-Aquarium 4K 1.3.3 verification, October 9, 2026
+Aquarium 4K 1.3.4 verification, October 9, 2026
+
+## Version 1.3.4 release checks
+
+The signed APK uses version name `1.3.4`, version code `8`, and the existing
+release signing certificate. Full-screen preview sets `FLAG_KEEP_SCREEN_ON`;
+returning to settings or leaving the activity clears it. This keeps the display
+awake only while the user is watching the aquarium preview.
+
+| Platform | Environment | Signed release checks |
+|---|---|---|
+| Fire TV | Physical API 30 TV with 4K panel | In-place signed upgrade, settings launch, full-screen preview, `KEEP_SCREEN_ON` window flag, display remained Awake/ON for 20 seconds, renderer active at 12 FPS |
+| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Lifecycle regression test verifies preview sets the keep-screen-on flag and Back clears it |
+| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this preview lifecycle change |
+
+ADB frame capture confirmed the animated surface was producing frames. The
+physical panel could not be independently observed by this capture; the user
+reported the TV remained black before this fix. No permission, preference
+schema, minimum Android version, or network-access changes.
+
+## Version 1.3.3 release checks
 
 ## Version 1.3.3 release checks
 
@@ -13,16 +33,13 @@ panel. Preview starts the animation; Menu or Back returns to settings.
 | Platform | Environment | Signed release checks |
 |---|---|---|
 | Android TV | Official API 31 ARM64 emulator, 1920x1080 | Settings opened directly and through the Fire TV UI picker, stable panel, Preview animation, Menu return, no crash |
-| Fire TV | Physical API 30 TV with 4K panel | Previous 1.3.2 check only. The user reported the settings flash/black behavior; do not install or test this release on the TV until the user confirms it is available. |
+| Fire TV | Physical API 30 TV with 4K panel | Installed and tested after release. Settings panel and preview launch were checked; the later user report identified the preview display turning black. |
 | Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this settings-only change |
 
-The physical TV was captured in its reported settings session without input.
-That capture showed the activity and settings panel over the aquarium renderer;
-device logs reported a 3840x2160 appearance surface. It was not a verification of
-the new release. Emulator screenshots confirmed the dark startup window,
-controls visible before Preview, the aquarium rendering after Preview, and Menu
-restoring the settings panel. The 1.3.3 release has no permission, preference
-schema, minimum Android version, or network-access changes.
+Emulator screenshots confirmed the dark startup window, controls visible before
+Preview, the aquarium rendering after Preview, and Menu restoring the settings
+panel. The 1.3.3 release has no permission, preference schema, minimum Android
+version, or network-access changes.
 
 ## Version 1.3.2 release checks
 

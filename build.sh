@@ -51,7 +51,7 @@ fi
 "$BUILD_TOOLS/aapt2" compile --dir "$HERE/res" -o "$OUT/res.zip"
 "$BUILD_TOOLS/aapt2" link -o "$OUT/unsigned.apk" -I "$ANDROID_JAR" \
   --manifest "$HERE/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 36 \
-  --version-code 7 --version-name 1.3.3 -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
+  --version-code 8 --version-name 1.3.4 -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
 find "$HERE/src" "$OUT/generated" -name '*.java' > "$OUT/sources.txt"
 javac -nowarn -Xlint:-options -source 8 -target 8 -bootclasspath "$ANDROID_JAR" \
   -d "$OUT/classes" @"$OUT/sources.txt"

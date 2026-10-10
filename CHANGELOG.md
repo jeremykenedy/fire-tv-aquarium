@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.4 - 2026-10-09
+
+- Keep the physical display awake during full-screen aquarium preview.
+- Release the display wake lock when returning to settings or leaving the activity.
+
 ## 1.3.3 - 2026-10-09
 
 - Keep aquarium rendering stopped and hidden while settings are open; start it
