@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.6 - 2026-10-10
+
+- Let Android size the animated OpenGL surface to the app view instead of forcing a 4K buffer that blacked out on Fire TV.
+- Keep the aquarium animation running at the TV's native output through platform composition.
+- No breaking changes, major feature changes, new commands, or new flags.
+- Upgrade in place from 1.3.5 with the same package and signing key; saved preferences and screensaver state are preserved.
+
 ## 1.3.5 - 2026-10-09
 
 - Stop forcing a preferred display mode when Fire TV starts the screensaver preview.

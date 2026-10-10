@@ -1,6 +1,22 @@
 # Device verification
 
-Aquarium 4K 1.3.5 verification, October 9, 2026
+Aquarium 4K 1.3.6 verification, October 10, 2026
+
+## Version 1.3.6 release checks
+
+The signed APK uses version name `1.3.6`, version code `10`, and the existing
+release signing certificate. The animated OpenGL view now uses the size Android
+assigns to its view rather than forcing a 3840x2160 surface buffer.
+
+| Platform | Environment | Signed release checks |
+|---|---|---|
+| Fire TV | Physical API 30 TV with 4K panel | In-place signed upgrade; Fire TV UI 1.1.1 showed Aquarium 4K selected and Screensaver On; DreamActivity rendered continuously at about 30 FPS on a 1920x1080 surface; display remained Awake/ON |
+| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Not retested for this surface-size change |
+| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this surface-size change |
+
+The APK requests no permissions and has no network access. The 4K panel uses
+the system compositor to scale the view to its output mode. The Fire TV's
+settings page remained available after the in-place upgrade.
 
 ## Version 1.3.5 release checks
 
