@@ -15,8 +15,6 @@ final class AquariumSceneView extends GLSurfaceView implements Runnable {
         renderer = new AquariumAppearanceRenderer(context.getResources(), options);
         setRenderer(renderer);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
-        int[] output = AquariumOutput.size(context);
-        getHolder().setFixedSize(output[0], output[1]);
     }
 
     void configure(AquariumOptions options) {
