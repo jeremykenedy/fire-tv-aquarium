@@ -2,6 +2,7 @@ package com.jeremykenedy.firetv.aquarium;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -176,7 +177,10 @@ public final class LifecycleCoverageTest {
         service.onAttachedToWindow();
         assertFalse(service.isInteractive());
         assertTrue(service.isFullscreen());
+        AquariumDisplay playback = ReflectionHelpers.getField(service, "playback");
+        AquariumOptions resolved = ReflectionHelpers.getField(playback, "options");
         service.onDreamingStarted();
+        assertSame(resolved, ReflectionHelpers.getField(playback, "options"));
         service.onDreamingStopped();
         service.onDetachedFromWindow();
         service.onDetachedFromWindow();

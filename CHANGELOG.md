@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.2 - 2026-10-09
+
+- Keep one resolved set of Random options for the complete screensaver session.
+- Prevent a second renderer configuration during dream startup, avoiding a
+  renderer switch while the TV is opening the aquarium.
+- No breaking changes, major feature changes, new commands, or new flags.
+- Upgrade in place from 1.3.1 with the same package and signing key; saved
+  preferences and screensaver backups are preserved.
+
 ## 1.3.1 - 2026-10-08
 
 - Add explicit cleartext blocking and system-only certificate trust to the APK.

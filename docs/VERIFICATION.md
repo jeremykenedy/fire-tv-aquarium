@@ -1,6 +1,23 @@
 # Device verification
 
-Aquarium 4K 1.3.1 verification, October 8, 2026
+Aquarium 4K 1.3.2 verification, October 9, 2026
+
+## Version 1.3.2 release checks
+
+The signed APK uses version name `1.3.2`, version code `6`, and the existing
+release signing certificate. The DreamService keeps the Random options
+resolved when its display is attached instead of resolving and configuring a
+second time when the dream starts.
+
+| Platform | Environment | Signed release checks |
+|---|---|---|
+| Fire TV | Physical API 30 TV with 4K panel | In-place upgrade, settings controls, randomized 15-second idle startup, active AquariumDreamService, rendered aquarium capture, remote navigation and preview return |
+| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Signed APK installation, settings and preview startup, remote navigation, saved options after reopening, preview return |
+| Google TV | Official API 34 ARM64 emulator, 1920x1080 | In-place upgrade, settings and preview startup, remote navigation, saved options after reopening, preview return |
+
+Only Fire TV is physical hardware. Android TV and Google TV results are from
+emulators; physical models still need hardware testing. No preference schema,
+minimum Android version, requested permissions, or network access changed.
 
 ## Version 1.3.1 release checks
 

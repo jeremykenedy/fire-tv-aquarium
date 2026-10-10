@@ -22,7 +22,6 @@ public final class AquariumDreamService extends DreamService {
     public void onDreamingStarted() {
         super.onDreamingStarted();
         if (playback != null) {
-            playback.configure(AquariumRandomizer.resolve(new AquariumPreferences(this).read()));
             playback.start();
         }
     }
