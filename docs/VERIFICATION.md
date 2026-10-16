@@ -1,10 +1,11 @@
 # Device verification
 
-Aquarium 4K 1.3.6 verification, October 10, 2026
+Aquarium 4K 1.4.0 release candidate verification, October 16, 2026
 
-## Unreleased volume and swimming rework
+## Version 1.4.0 volume and swimming rework
 
-This candidate is under native quality review and has no release tag. The Android
+Version 1.4.0 uses Android version code 11 and the existing release signing
+certificate. This candidate is under physical quality review and has no release tag. The Android
 package, signing key and saved setting values are preserved. Recorded results
 below apply to the measured candidate, not every later asset revision.
 
@@ -26,7 +27,7 @@ below apply to the measured candidate, not every later asset revision.
   1,786 frames. Logged intervals stayed around 29.4 to 30 FPS, with one 28.386 FPS
   interval. Shark and whale captures occurred; no dolphin capture was observed
   during that recording. Capture resolution was 1280x720, rendering was 1920x1080.
-- The current signed build was captured in all six looks, settings, and original
+- A pre-release renderer candidate was captured in all six looks, settings, and original
   footage Day and Night modes. Natural and painted humpbacks were also recorded
   through continuous turns and checked from the opposite side. These checks are
   part of visual review and do not establish final user acceptance.
@@ -36,8 +37,8 @@ below apply to the measured candidate, not every later asset revision.
   choices and consumed-fish visibility.
 - Shark, whale and dolphin assets are still under front, side and tail review.
   New geometry and skin revisions require another native check before release.
-- Required host coverage passed with 1,294 Java lines and 686 branches covered,
-  and 207 Python statements and 98 branches covered, with zero misses. Style,
+- Required host coverage passed with 1,344 Java lines and 686 branches covered,
+  and 211 Python statements and 100 branches covered, with zero misses. Style,
   documentation and offline APK checks passed; all 36 runtime marine assets
   matched source bytes in the signed candidate.
 

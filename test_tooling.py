@@ -24,7 +24,9 @@ class PackagingTests(unittest.TestCase):
     def check(
         self,
         permission="",
-        badging="package: name='com.jeremykenedy.firetv.aquarium'",
+        badging=(
+            "package: name='com.jeremykenedy.firetv.aquarium' versionCode='11' versionName='1.4.0'"
+        ),
         missing=None,
         compressed=False,
         missing_dex=False,
@@ -94,6 +96,16 @@ class PackagingTests(unittest.TestCase):
 
     def test_valid_offline_package(self):
         self.check()
+
+    def test_stale_or_mismatched_release_version_is_rejected(self):
+        for code, name in ((10, "1.3.6"), (10, "1.4.0"), (11, "1.3.6")):
+            with self.subTest(code=code, name=name), self.assertRaises(SystemExit):
+                self.check(
+                    badging=(
+                        "package: name='com.jeremykenedy.firetv.aquarium' "
+                        f"versionCode='{code}' versionName='{name}'"
+                    )
+                )
 
     def test_network_permission_wrong_identity_or_missing_artwork_fails(self):
         for arguments in (

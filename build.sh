@@ -61,7 +61,7 @@ cp "$HERE/LICENSE" "$OUT/marine-assets/licenses/MIT.txt"
 "$BUILD_TOOLS/aapt2" compile --dir "$HERE/res" -o "$OUT/res.zip"
 "$BUILD_TOOLS/aapt2" link -o "$OUT/unsigned.apk" -I "$ANDROID_JAR" \
   --manifest "$HERE/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 36 \
-  --version-code 10 --version-name 1.3.6 -A "$OUT/marine-assets" -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
+  --version-code 11 --version-name 1.4.0 -A "$OUT/marine-assets" -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
 find "$HERE/src" "$OUT/generated" -name '*.java' > "$OUT/sources.txt"
 javac -nowarn -Xlint:-options -source 8 -target 8 -bootclasspath "$ANDROID_JAR" \
   -d "$OUT/classes" @"$OUT/sources.txt"

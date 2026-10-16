@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.0 - 2026-10-16
+
+- Replace flat fish cards with six distinct textured fish meshes and natural or painted skins across all six looks.
+- Give sharks, humpbacks and dolphins real volume, larger species-appropriate proportions, and measured mouth positions.
+- Replace synchronized swimming rails with independent wandering, depth changes, gradual turns, pauses and loose schooling.
+- Add non-graphic pursuit, escape, feeding contact and gradual offscreen population replenishment.
+- Use illustrated scenery and painted fish for the Cartoon look while retaining all five backgrounds and existing controls.
+- Request the supported native display surface and retain the original offline Day and Night footage.
+- Preserve the Android package, signing certificate and saved options for in-place upgrades from 1.3.x.
+- No breaking settings changes, new runtime dependencies, permissions, commands or flags.
+
 ## 1.3.6 - 2026-10-10
 
 - Let Android size the animated OpenGL surface to the app view instead of forcing a 4K buffer that blacked out on Fire TV.

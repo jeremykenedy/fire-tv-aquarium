@@ -17,6 +17,8 @@ if "uses-permission:" in permissions:
 badging = subprocess.check_output([str(aapt), "dump", "badging", str(apk)], text=True)
 if "package: name='com.jeremykenedy.firetv.aquarium'" not in badging:
     raise SystemExit("Unexpected APK package identity")
+if "versionCode='11' versionName='1.4.0'" not in badging:
+    raise SystemExit("APK release identity must be 1.4.0 with version code 11")
 policy = subprocess.check_output(
     [str(aapt), "dump", "xmltree", str(apk), "res/xml/network_security_config.xml"], text=True
 )
