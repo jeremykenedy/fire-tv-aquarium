@@ -240,7 +240,7 @@ change the animals or scenery inside recorded footage.
 
 ## Screenshots
 
-Current signed build, captured on a Google TV emulator at an actual 1920x1080
+Version 1.4.0, captured from the signed release candidate on a Google TV emulator at an actual 1920x1080
 surface. Physical Fire TV 3840x2160 composition and performance verification of
 the new volume renderer remain pending. See [Verification](docs/VERIFICATION.md).
 

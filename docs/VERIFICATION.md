@@ -27,8 +27,12 @@ below apply to the measured candidate, not every later asset revision.
   1,786 frames. Logged intervals stayed around 29.4 to 30 FPS, with one 28.386 FPS
   interval. Shark and whale captures occurred; no dolphin capture was observed
   during that recording. Capture resolution was 1280x720, rendering was 1920x1080.
-- A pre-release renderer candidate was captured in all six looks, settings, and original
-  footage Day and Night modes. Natural and painted humpbacks were also recorded
+- The frozen signed 1.4.0 candidate, SHA-256
+  `b8dda54ca5d3381fd7a954061b103351d9247f9d4237570fe88d8f83ca1968bf`,
+  was captured in all six looks, settings, and original footage Day and Night modes.
+  These nine gallery images use the actual 1920x1080 emulator surface. The selected
+  Dream, enabled state and other three screensaver settings remained unchanged;
+  appearance, mode and Day / Night settings were restored before returning Home. Natural and painted humpbacks were also recorded
   through continuous turns and checked from the opposite side. These checks are
   part of visual review and do not establish final user acceptance.
 - Host regressions cover independent wandering, changes of direction and depth,
