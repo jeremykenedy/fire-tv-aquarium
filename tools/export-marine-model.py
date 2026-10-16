@@ -15,7 +15,7 @@ EXPECTED = "ecc3bafb6b00f2c8b810863c388e3768a7b7ea0d0335e8cb8c574c266e571f4a"
 COMMIT = "edc7c9e67c639d230715049ee31f9a96a6babbbe"
 
 
-def export():
+def read_scene():
     source = SOURCE.read_bytes()
     if hashlib.sha256(source).hexdigest() != EXPECTED:
         raise ValueError("The source model differs from the pinned upstream asset")
@@ -39,14 +39,10 @@ def export():
         stride = struct.calcsize("<" + code * components)
         return list(struct.iter_unpack("<" + code * components, data[: record["count"] * stride]))
 
-    primitive = scene["meshes"][0]["primitives"][0]
-    attrs = primitive["attributes"]
-    positions = accessor(attrs["POSITION"], 3, "f")
-    normals = accessor(attrs["NORMAL"], 3, "f")
-    uvs = accessor(attrs["TEXCOORD_0"], 2, "f")
-    indices = [item[0] for item in accessor(primitive["indices"], 1, "H")]
-    if len(positions) > 65535 or max(indices) >= len(positions):
-        raise ValueError("Mesh exceeds the unsigned-short index contract")
+    return scene, view, accessor
+
+
+def write_mesh(positions, normals, uvs, indices):
     low = [min(point[axis] for point in positions) for axis in range(3)]
     high = [max(point[axis] for point in positions) for axis in range(3)]
     center = [(a + b) * 0.5 for a, b in zip(low, high, strict=True)]
@@ -62,6 +58,10 @@ def export():
     directory.mkdir(parents=True, exist_ok=True)
     mesh_path = directory / "barramundi.bin"
     mesh_path.write_bytes(output)
+    return directory, output
+
+
+def write_texture(scene, view, directory):
     texture_index = scene["materials"][0]["pbrMetallicRoughness"]["baseColorTexture"]["index"]
     image_index = scene["textures"][texture_index]["source"]
     image = Image.open(io.BytesIO(view(scene["images"][image_index]["bufferView"])))
@@ -69,6 +69,21 @@ def export():
     image.thumbnail((2048, 2048), Image.Resampling.LANCZOS)
     texture_path = directory / "barramundi.png"
     image.save(texture_path, optimize=True)
+    return original_size, image.size, texture_path
+
+
+def export():
+    scene, view, accessor = read_scene()
+    primitive = scene["meshes"][0]["primitives"][0]
+    attrs = primitive["attributes"]
+    positions = accessor(attrs["POSITION"], 3, "f")
+    normals = accessor(attrs["NORMAL"], 3, "f")
+    uvs = accessor(attrs["TEXCOORD_0"], 2, "f")
+    indices = [item[0] for item in accessor(primitive["indices"], 1, "H")]
+    if len(positions) > 65535 or max(indices) >= len(positions):
+        raise ValueError("Mesh exceeds the unsigned-short index contract")
+    directory, output = write_mesh(positions, normals, uvs, indices)
+    original_size, texture_size, texture_path = write_texture(scene, view, directory)
     metadata = {
         "name": "Barramundi Fish",
         "author": "Microsoft",
@@ -84,7 +99,7 @@ def export():
         "vertex_count": len(positions),
         "triangle_count": len(indices) // 3,
         "texture_source_dimensions": list(original_size),
-        "texture_dimensions": list(image.size),
+        "texture_dimensions": list(texture_size),
         "mesh_sha256": hashlib.sha256(output).hexdigest(),
         "texture_sha256": hashlib.sha256(texture_path.read_bytes()).hexdigest(),
     }

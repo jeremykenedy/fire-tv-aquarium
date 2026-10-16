@@ -76,8 +76,7 @@ final class MarineVisitorRenderer {
                         index * 2.7f,
                         water,
                         LIGHT[settings.light],
-                        settings.look,
-                        species == 0 ? 0 : 1);
+                        settings.look);
             }
         }
         GLES20.glDisable(GLES20.GL_CULL_FACE);

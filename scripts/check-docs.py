@@ -19,6 +19,19 @@ def anchors(path):
     return result
 
 
+def check_target(path, target):
+    name, _, fragment = target.partition("#")
+    linked = (path.parent / name).resolve() if name else path
+    if not linked.is_relative_to(ROOT) or not linked.is_file():
+        raise SystemExit(f"{path.name}: missing {target}")
+    theme_fragment = linked.suffix == ".svg" and fragment in (
+        "gh-light-mode-only",
+        "gh-dark-mode-only",
+    )
+    if fragment and not theme_fragment and fragment not in anchors(linked):
+        raise SystemExit(f"{path.name}: missing anchor {target}")
+
+
 def check_links(path):
     text = path.read_text()
     if any(char in text for char in ("\u2014", "\u201c", "\u201d")):
@@ -29,16 +42,7 @@ def check_links(path):
     for target in targets:
         if target.startswith(("https:", "http:", "mailto:")):
             continue
-        name, _, fragment = target.partition("#")
-        linked = (path.parent / name).resolve() if name else path
-        if not linked.is_relative_to(ROOT) or not linked.is_file():
-            raise SystemExit(f"{path.name}: missing {target}")
-        theme_fragment = linked.suffix == ".svg" and fragment in (
-            "gh-light-mode-only",
-            "gh-dark-mode-only",
-        )
-        if fragment and not theme_fragment and fragment not in anchors(linked):
-            raise SystemExit(f"{path.name}: missing anchor {target}")
+        check_target(path, target)
         checked += 1
     return checked
 

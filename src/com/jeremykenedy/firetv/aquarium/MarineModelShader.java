@@ -95,8 +95,7 @@ final class MarineModelShader {
             float offset,
             float[] waterColor,
             float[] lighting,
-            int appearance,
-            float verticalTail) {
+            int appearance) {
         GLES20.glUseProgram(program);
         GLES20.glUniformMatrix4fv(model, 1, false, transform, 0);
         GLES20.glUniformMatrix4fv(projection, 1, false, camera, 0);
@@ -106,7 +105,7 @@ final class MarineModelShader {
         GLES20.glUniform3fv(tint, 1, lighting, 0);
         GLES20.glUniform1i(texture, 0);
         GLES20.glUniform1f(look, appearance);
-        GLES20.glUniform1f(tailVertical, verticalTail);
+        GLES20.glUniform1f(tailVertical, mesh.hasVerticalTail() ? 1 : 0);
         mesh.draw(position, normal, uv, flex, finMask, frontUv, frontBlend);
     }
 

@@ -28,17 +28,22 @@ final class MarineMeshData {
         stride = version == 2 ? 36 : 32;
         int vertexCount = data.getInt();
         count = data.getInt();
-        if (vertexCount < 3
-                || vertexCount > 65535
-                || count < 3
-                || count % 3 != 0
-                || bytes.length != 16L + vertexCount * (long) stride + count * 2L)
-            throw new IOException("Invalid marine mesh dimensions");
+        validateDimensions(vertexCount, count, stride, bytes.length);
         data.position(16);
         vertices = data.slice().order(ByteOrder.LITTLE_ENDIAN);
         vertices.limit(vertexCount * stride);
         data.position(16 + vertexCount * stride);
         indices = data.slice().order(ByteOrder.LITTLE_ENDIAN);
         indices.limit(count * 2);
+    }
+
+    private static void validateDimensions(int vertexCount, int count, int stride, int length)
+            throws IOException {
+        if (vertexCount < 3
+                || vertexCount > 65535
+                || count < 3
+                || count % 3 != 0
+                || length != 16L + vertexCount * (long) stride + count * 2L)
+            throw new IOException("Invalid marine mesh dimensions");
     }
 }

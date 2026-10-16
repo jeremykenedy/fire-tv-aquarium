@@ -21,6 +21,7 @@ final class TexturedMarineModel {
     private final int indexBuffer;
     private int texture;
     private boolean painted;
+    private boolean verticalTail;
     private final AssetManager assets;
     private final String name;
     private final int count;
@@ -58,6 +59,10 @@ final class TexturedMarineModel {
         } catch (IOException | JSONException error) {
             throw new IllegalStateException("Unable to load marine model " + name, error);
         }
+    }
+
+    boolean hasVerticalTail() {
+        return verticalTail;
     }
 
     void setPainted(boolean next) {
@@ -110,6 +115,7 @@ final class TexturedMarineModel {
         } catch (IOException absentOptionalMetadata) {
             return;
         }
+        verticalTail = "vertical".equals(new JSONObject(source).optString("tail_motion"));
         float[] projection = parseFrontalProjection(source);
         frontalBlend[0] = projection[0];
         System.arraycopy(projection, 1, frontalUv, 0, 4);

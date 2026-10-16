@@ -5,3 +5,4 @@ exclude_paths:
   - art/**
   - docs/screenshots/**
   - .verity/**
+  - assets/source-models/**

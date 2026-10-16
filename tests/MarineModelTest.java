@@ -108,6 +108,21 @@ public final class MarineModelTest {
         assertThrows(IllegalStateException.class, () -> reference.setPainted(true));
     }
 
+    @Test
+    public void authoredTailMotionDistinguishesCetaceansFromFish() {
+        for (String species :
+                new String[] {
+                    "clownfish", "great-white-shark", "humpback-whale", "bottlenose-dolphin"
+                }) {
+            TexturedMarineModel model =
+                    new TexturedMarineModel(
+                            RuntimeEnvironment.getApplication().getAssets(), species);
+            assertEquals(
+                    species.equals("humpback-whale") || species.equals("bottlenose-dolphin"),
+                    model.hasVerticalTail());
+        }
+    }
+
     @Implements(BitmapFactory.class)
     public static class MissingModelTexture extends org.robolectric.shadows.ShadowBitmapFactory {
         @Implementation

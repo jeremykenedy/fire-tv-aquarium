@@ -64,11 +64,7 @@ ILLUSTRATION = """<rect width="174" height="116" rx="14"
  stroke="#c4b5fd" opacity=".7"/>"""
 
 
-def banner(dark, mobile, still):
-    width, height = (392, 408) if mobile else (800, 200)
-    title, subtitle = ("#fff", "#a8a29e") if dark else ("#0f172a", "#64748b")
-    background = "url(#background)" if dark else "#fff"
-    text_x, title_y, tagline_y = (20, 76, 105) if mobile else (40, 80, 112)
+def banner_tags(dark, mobile, text_x):
     pills = [
         ("3D fish", 64, "#eff6ff", "#60a5fa", "#1e40af"),
         ("Six looks", 70, "#f5f3ff", "#a78bfa", "#6d28d9"),
@@ -88,6 +84,15 @@ def banner(dark, mobile, still):
             f'fill="{border if dark else light_text}">{text}</text></g>'
         )
         x += pill_width + 8
+    return tags
+
+
+def banner(dark, mobile, still):
+    width, height = (392, 408) if mobile else (800, 200)
+    title, subtitle = ("#fff", "#a8a29e") if dark else ("#0f172a", "#64748b")
+    background = "url(#background)" if dark else "#fff"
+    text_x, title_y, tagline_y = (20, 76, 105) if mobile else (40, 80, 112)
+    tags = banner_tags(dark, mobile, text_x)
     illustration = ILLUSTRATION
     if still:
         illustration = re.sub(r' class="[^"]+"', "", illustration)

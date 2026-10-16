@@ -8,10 +8,6 @@ final class FishMotion {
     private boolean flatAppearance;
     private final float[][] meshMouths = new float[7][];
 
-    void setMeshMouth(int type, float x, float y, float z, float scale) {
-        meshMouths[type] = new float[] {x * scale, y * scale, z * scale};
-    }
-
     private int marineArtwork;
     private float screenAspect = 16f / 9;
     // Mouth positions in each atlas cell, relative to its center, with up positive.
@@ -20,6 +16,10 @@ final class FishMotion {
         {.44f, -.05f, .47f, .18f, .46f, .03f},
         {.44f, -.11f, .47f, .01f, .44f, .04f}
     };
+
+    void setMeshMouth(int type, float x, float y, float z, float scale) {
+        meshMouths[type] = new float[] {x * scale, y * scale, z * scale};
+    }
 
     void setMarineArtwork(int artwork, float aspect) {
         marineArtwork = artwork;
@@ -54,65 +54,73 @@ final class FishMotion {
         while (remaining > .00001f) {
             float step = Math.min(.04f, remaining);
             stepSeconds = seconds - remaining;
-            for (int i = 0; i < count; i++) {
-                swimmers[i].escapeX = swimmers[i].escapeY = swimmers[i].escapeZ = 0;
-                swimmers[i].spacingX = swimmers[i].spacingY = swimmers[i].spacingZ = 0;
-            }
-            for (int i = 0; i < count; i++) {
-                if (!swimmers[i].visible) continue;
-                for (int j = i + 1; j < count; j++) {
-                    if (!swimmers[j].visible) continue;
-                    Pose a = swimmers[i], b = swimmers[j];
-                    float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
-                    float distance = dx * dx + dy * dy + dz * dz;
-                    if (distance < 6.25f) {
-                        float push = 1 / Math.max(.2f, distance);
-                        a.spacingX += dx * push;
-                        b.spacingX -= dx * push;
-                        a.spacingY += dy * push;
-                        b.spacingY -= dy * push;
-                        a.spacingZ += dz * push;
-                        b.spacingZ -= dz * push;
-                    }
+            separate(count);
+            feed(creatures, count, step);
+            advanceSwimmers(step, speed, schooling, count);
+            remaining -= step;
+        }
+    }
+
+    private void advanceSwimmers(float step, float speed, boolean schooling, int count) {
+        for (int i = 0; i < swimmers.length; i++) {
+            Pose swimmer = swimmers[i];
+            Pose leader = schooling && i < count ? swimmers[i / 16 * 16] : null;
+            if (leader != null && (!leader.visible || leader.entering)) leader = null;
+            swimmer.advance(step, speed * pace(i, swimmer), leader);
+        }
+    }
+
+    private float pace(int i, Pose swimmer) {
+        return i == 67
+                ? (swimmer.pursuing ? 1.8f : .6f)
+                : i == 60 || i == 61 || i == 95 || i == 96 ? (swimmer.pursuing ? 1.7f : .85f) : 1;
+    }
+
+    private void separate(int count) {
+        for (int i = 0; i < count; i++) {
+            swimmers[i].escapeX = swimmers[i].escapeY = swimmers[i].escapeZ = 0;
+            swimmers[i].spacingX = swimmers[i].spacingY = swimmers[i].spacingZ = 0;
+        }
+        for (int i = 0; i < count; i++) {
+            if (!swimmers[i].visible) continue;
+            for (int j = i + 1; j < count; j++) {
+                if (!swimmers[j].visible) continue;
+                Pose a = swimmers[i];
+                Pose b = swimmers[j];
+                float dx = a.x - b.x;
+                float dy = a.y - b.y;
+                float dz = a.z - b.z;
+                float distance = dx * dx + dy * dy + dz * dz;
+                if (distance < 6.25f) {
+                    float push = 1 / Math.max(.2f, distance);
+                    a.spacingX += dx * push;
+                    b.spacingX -= dx * push;
+                    a.spacingY += dy * push;
+                    b.spacingY -= dy * push;
+                    a.spacingZ += dz * push;
+                    b.spacingZ -= dz * push;
                 }
             }
-            boolean sharkA = hunts(60, step), sharkB = hunts(61, step);
-            boolean whale = hunts(67, step), dolphinA = hunts(95, step), dolphinB = hunts(96, step);
-            if ((creatures & AquariumOptions.SHARK) != 0) {
-                if (sharkA)
-                    hunt(
-                            60,
-                            count,
-                            flatAppearance ? 5.7f : 3.9f,
-                            flatAppearance ? .8f : .55f,
-                            false);
-                if (sharkB)
-                    hunt(
-                            61,
-                            count,
-                            flatAppearance ? 5.7f : 3.9f,
-                            flatAppearance ? .8f : .55f,
-                            false);
-            }
-            if ((creatures & AquariumOptions.WHALE) != 0 && count >= 6 && whale)
-                hunt(67, count, flatAppearance ? 8.8f : 8.2f, 1, true);
-            if ((creatures & AquariumOptions.DOLPHIN) != 0) {
-                if (dolphinA) hunt(95, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
-                if (dolphinB) hunt(96, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
-            }
-            for (int i = 0; i < swimmers.length; i++) {
-                Pose swimmer = swimmers[i];
-                Pose leader = schooling && i < count ? swimmers[i / 16 * 16] : null;
-                if (leader != null && (!leader.visible || leader.entering)) leader = null;
-                float pace =
-                        i == 67
-                                ? (swimmer.pursuing ? 1.8f : .6f)
-                                : i == 60 || i == 61 || i == 95 || i == 96
-                                        ? (swimmer.pursuing ? 1.7f : .85f)
-                                        : 1;
-                swimmer.advance(step, speed * pace, leader);
-            }
-            remaining -= step;
+        }
+    }
+
+    private void feed(int creatures, int count, float step) {
+        boolean sharkA = hunts(60, step);
+        boolean sharkB = hunts(61, step);
+        boolean whale = hunts(67, step);
+        boolean dolphinA = hunts(95, step);
+        boolean dolphinB = hunts(96, step);
+        if ((creatures & AquariumOptions.SHARK) != 0) {
+            if (sharkA)
+                hunt(60, count, flatAppearance ? 5.7f : 3.9f, flatAppearance ? .8f : .55f, false);
+            if (sharkB)
+                hunt(61, count, flatAppearance ? 5.7f : 3.9f, flatAppearance ? .8f : .55f, false);
+        }
+        if ((creatures & AquariumOptions.WHALE) != 0 && count >= 6 && whale)
+            hunt(67, count, flatAppearance ? 8.8f : 8.2f, 1, true);
+        if ((creatures & AquariumOptions.DOLPHIN) != 0) {
+            if (dolphinA) hunt(95, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
+            if (dolphinB) hunt(96, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
         }
     }
 
@@ -124,38 +132,41 @@ final class FishMotion {
         return predator.hunting;
     }
 
-    private void hunt(int index, int count, float nose, float radius, boolean school) {
-        float centerX = 0, centerY = 0, centerZ = 0;
-        if (school) {
-            int largest = 5;
-            for (int anchor = 0; anchor < count; anchor++) {
-                Pose center = swimmers[anchor];
-                if (!center.visible) continue;
-                int members = 0;
-                float sumX = 0, sumY = 0, sumZ = 0;
-                for (int member = 0; member < count; member++) {
-                    Pose fish = swimmers[member];
-                    if (!fish.visible
-                            || Math.abs(fish.x - center.x) >= 4
-                            || Math.abs(fish.y - center.y) >= 2.5f
-                            || Math.abs(fish.z - center.z) >= 2) continue;
-                    members++;
-                    sumX += fish.x;
-                    sumY += fish.y;
-                    sumZ += fish.z;
-                }
-                if (members > largest) {
-                    largest = members;
-                    centerX = sumX / members;
-                    centerY = sumY / members;
-                    centerZ = sumZ / members;
-                }
+    private float[] feedingSchool(int count) {
+        float centerX = 0;
+        float centerY = 0;
+        float centerZ = 0;
+        int largest = 5;
+        for (int anchor = 0; anchor < count; anchor++) {
+            Pose center = swimmers[anchor];
+            if (!center.visible) continue;
+            int members = 0;
+            float sumX = 0;
+            float sumY = 0;
+            float sumZ = 0;
+            for (int member = 0; member < count; member++) {
+                Pose fish = swimmers[member];
+                if (!fish.visible
+                        || Math.abs(fish.x - center.x) >= 4
+                        || Math.abs(fish.y - center.y) >= 2.5f
+                        || Math.abs(fish.z - center.z) >= 2) continue;
+                members++;
+                sumX += fish.x;
+                sumY += fish.y;
+                sumZ += fish.z;
             }
-            if (largest < 6) return;
+            if (members > largest) {
+                largest = members;
+                centerX = sumX / members;
+                centerY = sumY / members;
+                centerZ = sumZ / members;
+            }
         }
+        return largest < 6 ? null : new float[] {centerX, centerY, centerZ};
+    }
+
+    private float[] mouth(int index, float nose, float[] meshMouth) {
         Pose predator = swimmers[index];
-        Pose nearest = null;
-        float best = Float.MAX_VALUE;
         float mouthX =
                 predator.x
                         + (float) Math.cos(predator.yaw) * (float) Math.cos(predator.pitch) * nose;
@@ -167,28 +178,47 @@ final class FishMotion {
             int species = index == 67 ? 1 : index >= 95 ? 2 : 0;
             float size = species == 1 ? .95f : species == 0 ? .62f : .42f;
             float[] mouths = MARINE_MOUTHS[marineArtwork];
-            float localX = mouths[species * 2], localY = mouths[species * 2 + 1];
-            float c = (float) Math.cos(predator.pitch), s = (float) Math.sin(predator.pitch);
+            float localX = mouths[species * 2];
+            float localY = mouths[species * 2 + 1];
+            float c = (float) Math.cos(predator.pitch);
+            float s = (float) Math.sin(predator.pitch);
             float forward = (localX * c - localY * s) * size * 22;
             float facing = (float) Math.cos(predator.yaw);
             mouthX = predator.x + Math.copySign(Math.max(.16f, Math.abs(facing)), facing) * forward;
             mouthZ = predator.z - (float) Math.sin(predator.yaw) * forward;
             mouthY = predator.y + (localX * s + localY * c) * size * screenAspect * 12;
         }
-        float[] meshMouth = meshMouths[index == 67 ? 1 : index >= 95 ? 5 : 0];
         if (meshMouth != null) {
-            float c = (float) Math.cos(predator.pitch), s = (float) Math.sin(predator.pitch);
+            float c = (float) Math.cos(predator.pitch);
+            float s = (float) Math.sin(predator.pitch);
             float x = meshMouth[0] * c - meshMouth[1] * s;
             float y = meshMouth[0] * s + meshMouth[1] * c;
-            float cy = (float) Math.cos(predator.yaw), sy = (float) Math.sin(predator.yaw);
+            float cy = (float) Math.cos(predator.yaw);
+            float sy = (float) Math.sin(predator.yaw);
             mouthX = predator.x + x * cy + meshMouth[2] * sy;
             mouthY = predator.y + y;
             mouthZ = predator.z - x * sy + meshMouth[2] * cy;
         }
+        return new float[] {mouthX, mouthY, mouthZ};
+    }
+
+    private void hunt(int index, int count, float nose, float radius, boolean school) {
+        float[] center = school ? feedingSchool(count) : new float[] {0, 0, 0};
+        if (center == null) return;
+        Pose predator = swimmers[index];
+        Pose nearest = null;
+        float best = Float.MAX_VALUE;
+        float[] meshMouth = meshMouths[index == 67 ? 1 : index >= 95 ? 5 : 0];
+        float[] mouth = mouth(index, nose, meshMouth);
+        float mouthX = mouth[0];
+        float mouthY = mouth[1];
+        float mouthZ = mouth[2];
         for (int i = 0; i < count; i++) {
             Pose prey = swimmers[i];
             if (!prey.visible) continue;
-            float dx = prey.x - mouthX, dy = prey.y - mouthY, dz = prey.z - mouthZ;
+            float dx = prey.x - mouthX;
+            float dy = prey.y - mouthY;
+            float dz = prey.z - mouthZ;
             float distance = dx * dx + dy * dy + dz * dz;
             if (distance < radius * radius) {
                 predator.captures++;
@@ -211,9 +241,9 @@ final class FishMotion {
         }
         if (nearest != null) {
             predator.pursuing = true;
-            predator.targetX = school ? centerX : nearest.x;
-            predator.targetY = school ? centerY : nearest.y;
-            predator.targetZ = school ? centerZ : nearest.z;
+            predator.targetX = school ? center[0] : nearest.x;
+            predator.targetY = school ? center[1] : nearest.y;
+            predator.targetZ = school ? center[2] : nearest.z;
             if (meshMouth != null) {
                 predator.targetX -= mouthX - predator.x;
                 predator.targetY -= mouthY - predator.y;
@@ -226,18 +256,39 @@ final class FishMotion {
     }
 
     static final class Pose {
-        float x, y, z, yaw, pitch, vx, vy, vz;
+        float x;
+        float y;
+        float z;
+        float yaw;
+        float pitch;
+        float vx;
+        float vy;
+        float vz;
         float lastCaptureSeconds = -1;
         int lastPrey = -1;
         boolean visible = true;
         boolean hunting;
         int captures;
-        private boolean entering, pursuing;
+        private boolean entering;
+        private boolean pursuing;
         private float feedingClock;
-        private float hiddenFor, escapeX, escapeY, escapeZ, spacingX, spacingY, spacingZ;
+        private float hiddenFor;
+        private float escapeX;
+        private float escapeY;
+        private float escapeZ;
+        private float spacingX;
+        private float spacingY;
+        private float spacingZ;
         private final java.util.Random random;
-        private float targetX, targetY, targetZ, decision, pause, pace, velocity;
-        private final float cruising, turning;
+        private float targetX;
+        private float targetY;
+        private float targetZ;
+        private float decision;
+        private float pause;
+        private float pace;
+        private float velocity;
+        private final float cruising;
+        private final float turning;
 
         Pose(java.util.Random random) {
             this.random = random;
@@ -265,25 +316,18 @@ final class FishMotion {
             pause = random.nextFloat() < .14f ? between(.8f, 2.8f) : 0;
         }
 
-        private void advance(float step, float speed, Pose leader) {
-            if (!visible) {
-                hiddenFor -= step;
-                if (hiddenFor > 0) return;
-                visible = true;
-                x = random.nextBoolean() ? -27 : 27;
-                entering = true;
-                y = between(-3.6f, 5.1f);
-                z = between(-2.7f, 2.7f);
-                yaw = x < 0 ? 0 : (float) Math.PI;
-                velocity = 0;
-                chooseTarget();
-            }
-            decision -= step;
-            float dx = targetX - x, dy = targetY - y, dz = targetZ - z;
-            if (decision <= 0 || dx * dx + dy * dy + dz * dz < 1.4f) chooseTarget();
-            dx = targetX - x;
-            dy = targetY - y;
-            dz = targetZ - z;
+        private void orient(float step, float dx, float dy, float dz) {
+            float desiredYaw = (float) Math.atan2(-dz, dx);
+            float turn = desiredYaw - yaw;
+            while (turn > Math.PI) turn -= (float) (Math.PI * 2);
+            while (turn < -Math.PI) turn += (float) (Math.PI * 2);
+            yaw += Math.max(-turning * step, Math.min(turning * step, turn));
+            float desiredPitch = (float) Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
+            desiredPitch = Math.max(-.38f, Math.min(.38f, desiredPitch));
+            pitch += Math.max(-.3f * step, Math.min(.3f * step, desiredPitch - pitch));
+        }
+
+        private void steer(float step, float dx, float dy, float dz, Pose leader) {
             if (leader != null && leader != this) {
                 float distance = (leader.x - x) * (leader.x - x) + (leader.y - y) * (leader.y - y);
                 if (distance > 16) {
@@ -302,14 +346,26 @@ final class FishMotion {
             if (!entering && Math.abs(x + vx * 4) > 16.5f) dx = -x * 2;
             if (y + vy * 4 > 5.3f || y + vy * 4 < -3.8f) dy = 1 - y;
             if (Math.abs(z + vz * 4) > 2.6f) dz = -z * 2;
-            float desiredYaw = (float) Math.atan2(-dz, dx);
-            float turn = desiredYaw - yaw;
-            while (turn > Math.PI) turn -= (float) (Math.PI * 2);
-            while (turn < -Math.PI) turn += (float) (Math.PI * 2);
-            yaw += Math.max(-turning * step, Math.min(turning * step, turn));
-            float desiredPitch = (float) Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
-            desiredPitch = Math.max(-.38f, Math.min(.38f, desiredPitch));
-            pitch += Math.max(-.3f * step, Math.min(.3f * step, desiredPitch - pitch));
+            orient(step, dx, dy, dz);
+        }
+
+        private boolean restoreVisibility(float step) {
+            if (!visible) {
+                hiddenFor -= step;
+                if (hiddenFor > 0) return false;
+                visible = true;
+                x = random.nextBoolean() ? -27 : 27;
+                entering = true;
+                y = between(-3.6f, 5.1f);
+                z = between(-2.7f, 2.7f);
+                yaw = x < 0 ? 0 : (float) Math.PI;
+                velocity = 0;
+                chooseTarget();
+            }
+            return true;
+        }
+
+        private void swimVelocity(float step, float speed) {
             if (pause > 0) pause = Math.max(0, pause - step);
             float desiredSpeed =
                     pause > 0
@@ -322,6 +378,20 @@ final class FishMotion {
             vx = (float) Math.cos(yaw) * (float) Math.cos(pitch) * velocity;
             vy = (float) Math.sin(pitch) * velocity;
             vz = -(float) Math.sin(yaw) * (float) Math.cos(pitch) * velocity;
+        }
+
+        private void advance(float step, float speed, Pose leader) {
+            if (!restoreVisibility(step)) return;
+            decision -= step;
+            float dx = targetX - x;
+            float dy = targetY - y;
+            float dz = targetZ - z;
+            if (decision <= 0 || dx * dx + dy * dy + dz * dz < 1.4f) chooseTarget();
+            dx = targetX - x;
+            dy = targetY - y;
+            dz = targetZ - z;
+            steer(step, dx, dy, dz, leader);
+            swimVelocity(step, speed);
             x = Math.max(entering ? -27 : -19, Math.min(entering ? 27 : 19, x + vx * step));
             if (entering && Math.abs(x) < 18.5f) entering = false;
             y = Math.max(-4.4f, Math.min(6.1f, y + vy * step));

@@ -56,8 +56,7 @@ final class MarineFishRenderer {
                     i * 2.7f,
                     water,
                     LIGHT[settings.light],
-                    settings.look,
-                    0);
+                    settings.look);
         }
         GLES20.glDisable(GLES20.GL_CULL_FACE);
     }

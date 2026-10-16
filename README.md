@@ -176,7 +176,7 @@ key exits the idle screensaver. **Reset aquarium** restores the default options.
   prey evasion, non-graphic captures, and gradual population replenishment.
 - Fish size, swimming speed, lighting, bubbles, and sunlight shimmer from above.
 - An optional 12-hour or 24-hour clock.
-- Remote-operated settings with a live preview and saved preferences.
+- Remote-operated settings, full-screen preview, and saved preferences.
 - Reversible screensaver selection, with no launcher changes.
 - No ads, analytics, tracking SDKs, accounts, network permission, or runtime downloads.
 
@@ -244,6 +244,7 @@ Current signed build, captured on a Google TV emulator at an actual 1920x1080
 surface. Physical Fire TV 3840x2160 composition and performance verification of
 the new volume renderer remain pending. See [Verification](docs/VERIFICATION.md).
 
+<!-- markdownlint-disable MD033 -->
 <table>
     <tr>
         <td valign="top" width="33%"><img src="art/screenshots/realistic-google-tv.png" alt="Natural textured three-dimensional fish above the reef" width="100%"><br>Realistic</td>
@@ -261,6 +262,7 @@ the new volume renderer remain pending. See [Verification](docs/VERIFICATION.md)
         <td valign="top" width="33%"><img src="art/screenshots/original-night-google-tv.png" alt="Bundled original aquarium footage dimmed in Night mode on the Google TV emulator" width="100%"><br>Original footage: Night</td>
     </tr>
 </table>
+<!-- markdownlint-enable MD033 -->
 
 ## Documentation
 

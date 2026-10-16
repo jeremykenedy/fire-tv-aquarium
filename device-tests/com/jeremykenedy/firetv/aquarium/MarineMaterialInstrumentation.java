@@ -30,75 +30,24 @@ public final class MarineMaterialInstrumentation extends Instrumentation {
         int status = Activity.RESULT_CANCELED;
         try {
             check(EGL14.eglInitialize(display, new int[2], 0, new int[2], 0), "EGL initialization");
-            EGLConfig[] configurations = new EGLConfig[1];
-            int[] count = new int[1];
-            check(
-                    EGL14.eglChooseConfig(
-                                    display,
-                                    new int[] {
-                                        EGL14.EGL_RENDERABLE_TYPE,
-                                        EGL14.EGL_OPENGL_ES2_BIT,
-                                        EGL14.EGL_SURFACE_TYPE,
-                                        EGL14.EGL_PBUFFER_BIT,
-                                        EGL14.EGL_RED_SIZE,
-                                        8,
-                                        EGL14.EGL_GREEN_SIZE,
-                                        8,
-                                        EGL14.EGL_BLUE_SIZE,
-                                        8,
-                                        EGL14.EGL_ALPHA_SIZE,
-                                        8,
-                                        EGL14.EGL_DEPTH_SIZE,
-                                        16,
-                                        EGL14.EGL_NONE
-                                    },
-                                    0,
-                                    configurations,
-                                    0,
-                                    1,
-                                    count,
-                                    0)
-                            && count[0] == 1,
-                    "EGL color configuration");
+            EGLConfig configuration = configuration(display);
             context =
                     EGL14.eglCreateContext(
                             display,
-                            configurations[0],
+                            configuration,
                             EGL14.EGL_NO_CONTEXT,
                             new int[] {EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE},
                             0);
             surface =
                     EGL14.eglCreatePbufferSurface(
                             display,
-                            configurations[0],
+                            configuration,
                             new int[] {
                                 EGL14.EGL_WIDTH, 1280, EGL14.EGL_HEIGHT, 720, EGL14.EGL_NONE
                             },
                             0);
             check(EGL14.eglMakeCurrent(display, surface, surface, context), "EGL current context");
-            GLES20.glViewport(0, 0, 32, 32);
-            GLES20.glEnable(GLES20.GL_BLEND);
-            GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-            MarineModelShader shader = new MarineModelShader();
-            int[] body = pixel(shader, "transparent-body");
-            int[] membrane = pixel(shader, "transparent-fin");
-            int[] root = pixel(shader, "transparent-root");
-            int[] coloredRoot = pixel(shader, "translucent-root");
-            int[] coloredBody = pixel(shader, "translucent-body");
-            int[] coloredFin = pixel(shader, "translucent-fin");
-            check(body[2] < 15, "Transparent mouth texel still closes the body");
-            check(membrane[2] > 35 && membrane[1] > 20, "Transparent membrane retains water");
-            check(
-                    root[2] > 35
-                            && coloredRoot[0] > 70
-                            && coloredRoot[0] < 160
-                            && coloredRoot[2] > 15,
-                    "Rigid fin roots retain membrane alpha");
-            check(coloredBody[0] > 180 && coloredBody[2] < 15, "Body skin restores opaque albedo");
-            check(
-                    coloredFin[0] > 70 && coloredFin[0] < 160 && coloredFin[2] > 15,
-                    "Fin alpha still blends over water");
-            check(GLES20.glGetError() == GLES20.GL_NO_ERROR, "Shader drawing has no OpenGL errors");
+            verifyMaterials();
             GLES20.glViewport(0, 0, 1280, 720);
             contact(0, AquariumOptions.SHARK, 3.9f, "great-white-shark");
             contact(1, AquariumOptions.WHALE, 8.2f, "humpback-whale");
@@ -121,6 +70,63 @@ public final class MarineMaterialInstrumentation extends Instrumentation {
         finish(status, result);
     }
 
+    private EGLConfig configuration(EGLDisplay display) {
+        EGLConfig[] configurations = new EGLConfig[1];
+        int[] count = new int[1];
+        check(
+                EGL14.eglChooseConfig(
+                                display,
+                                new int[] {
+                                    EGL14.EGL_RENDERABLE_TYPE,
+                                    EGL14.EGL_OPENGL_ES2_BIT,
+                                    EGL14.EGL_SURFACE_TYPE,
+                                    EGL14.EGL_PBUFFER_BIT,
+                                    EGL14.EGL_RED_SIZE,
+                                    8,
+                                    EGL14.EGL_GREEN_SIZE,
+                                    8,
+                                    EGL14.EGL_BLUE_SIZE,
+                                    8,
+                                    EGL14.EGL_ALPHA_SIZE,
+                                    8,
+                                    EGL14.EGL_DEPTH_SIZE,
+                                    16,
+                                    EGL14.EGL_NONE
+                                },
+                                0,
+                                configurations,
+                                0,
+                                1,
+                                count,
+                                0)
+                        && count[0] == 1,
+                "EGL color configuration");
+        return configurations[0];
+    }
+
+    private void verifyMaterials() {
+        GLES20.glViewport(0, 0, 32, 32);
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        MarineModelShader shader = new MarineModelShader();
+        int[] body = pixel(shader, "transparent-body");
+        int[] membrane = pixel(shader, "transparent-fin");
+        int[] root = pixel(shader, "transparent-root");
+        int[] coloredRoot = pixel(shader, "translucent-root");
+        int[] coloredBody = pixel(shader, "translucent-body");
+        int[] coloredFin = pixel(shader, "translucent-fin");
+        check(body[2] < 15, "Transparent mouth texel still closes the body");
+        check(membrane[2] > 35 && membrane[1] > 20, "Transparent membrane retains water");
+        check(
+                root[2] > 35 && coloredRoot[0] > 70 && coloredRoot[0] < 160 && coloredRoot[2] > 15,
+                "Rigid fin roots retain membrane alpha");
+        check(coloredBody[0] > 180 && coloredBody[2] < 15, "Body skin restores opaque albedo");
+        check(
+                coloredFin[0] > 70 && coloredFin[0] < 160 && coloredFin[2] > 15,
+                "Fin alpha still blends over water");
+        check(GLES20.glGetError() == GLES20.GL_NO_ERROR, "Shader drawing has no OpenGL errors");
+    }
+
     private int[] pixel(MarineModelShader shader, String name) {
         GLES20.glClearColor(.018f, .12f, .18f, 1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
@@ -134,7 +140,6 @@ public final class MarineMaterialInstrumentation extends Instrumentation {
                 0,
                 new float[] {.018f, .12f, .18f},
                 new float[] {1, 1, 1},
-                0,
                 0);
         ByteBuffer pixel = ByteBuffer.allocateDirect(4);
         GLES20.glReadPixels(16, 16, 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixel);
@@ -153,31 +158,13 @@ public final class MarineMaterialInstrumentation extends Instrumentation {
         MarineVisitorRenderer visitors = new MarineVisitorRenderer(getTargetContext().getAssets());
         visitors.prepare(motion, options);
         int hunterIndex = 60 + type * 7;
-        motion.update(0, .8f, false, 0);
-        float seconds = 0;
-        while (!motion.pose(hunterIndex).hunting && seconds < 40) {
-            seconds += .04f;
-            motion.update(seconds, .8f, false, 0);
-        }
-        check(motion.pose(hunterIndex).hunting, name + " enters feeding phase");
+        float seconds = prepareHunter(motion, hunterIndex, name);
         FishMotion.Pose hunter = motion.pose(hunterIndex);
-        hunter.x = hunter.y = hunter.z = hunter.yaw = hunter.pitch = 0;
-        if (type != 1) {
-            FishMotion.Pose other = motion.pose(hunterIndex + 1);
-            other.x = -90;
-            other.y = 90;
-            other.z = 8;
-        }
         float[] mouth = MarineVisitorRenderer.mouth(getTargetContext().getAssets(), name);
-        float mx = mouth[0] * scale, my = mouth[1] * scale, mz = mouth[2] * scale;
-        for (int i = 0; i < count; i++) {
-            FishMotion.Pose prey = motion.pose(i);
-            prey.x = mx + .12f + i * .01f;
-            prey.y = my;
-            prey.z = mz + .01f;
-            prey.yaw = prey.pitch = 0;
-            prey.visible = true;
-        }
+        float mx = mouth[0] * scale;
+        float my = mouth[1] * scale;
+        float mz = mouth[2] * scale;
+        placePrey(motion, count, mx, my, mz);
         float[] camera = new float[16];
         Matrix.orthoM(camera, 0, -12, 14, -7.3125f, 7.3125f, -10, 10);
         ByteBuffer before = contactFrame(fish, visitors, motion, options, camera, seconds);
@@ -217,6 +204,36 @@ public final class MarineMaterialInstrumentation extends Instrumentation {
                 name + " contact rendering has no GL errors");
     }
 
+    private float prepareHunter(FishMotion motion, int hunterIndex, String name) {
+        FishMotion.Pose hunter = motion.pose(hunterIndex);
+        motion.update(0, .8f, false, 0);
+        float seconds = 0;
+        while (!motion.pose(hunterIndex).hunting && seconds < 40) {
+            seconds += .04f;
+            motion.update(seconds, .8f, false, 0);
+        }
+        check(motion.pose(hunterIndex).hunting, name + " enters feeding phase");
+        hunter.x = hunter.y = hunter.z = hunter.yaw = hunter.pitch = 0;
+        if (hunterIndex != 67) {
+            FishMotion.Pose other = motion.pose(hunterIndex + 1);
+            other.x = -90;
+            other.y = 90;
+            other.z = 8;
+        }
+        return seconds;
+    }
+
+    private void placePrey(FishMotion motion, int count, float mx, float my, float mz) {
+        for (int i = 0; i < count; i++) {
+            FishMotion.Pose prey = motion.pose(i);
+            prey.x = mx + .12f + i * .01f;
+            prey.y = my;
+            prey.z = mz + .01f;
+            prey.yaw = prey.pitch = 0;
+            prey.visible = true;
+        }
+    }
+
     private ByteBuffer contactFrame(
             MarineFishRenderer fish,
             MarineVisitorRenderer visitors,
@@ -243,9 +260,9 @@ public final class MarineMaterialInstrumentation extends Instrumentation {
         for (int y = bottom; y < top; y++) {
             for (int x = left; x < right; x++) {
                 int at = (y * 1280 + x) * 4;
-                int red = pixels.get(at) & 255,
-                        green = pixels.get(at + 1) & 255,
-                        blue = pixels.get(at + 2) & 255;
+                int red = pixels.get(at) & 255;
+                int green = pixels.get(at + 1) & 255;
+                int blue = pixels.get(at + 2) & 255;
                 if (red > 80 && red > green * 1.3f && red > blue * 1.8f) orange++;
             }
         }

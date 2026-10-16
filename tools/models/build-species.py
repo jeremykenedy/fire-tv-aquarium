@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MODELS = ROOT / "assets/models"
 
 
-def build(species):
+def build_skins(species):
     cell = species["cell"]
     atlas_path = ROOT / "res/drawable-nodpi" / species.get("atlas", "realistic_fish.png")
     with Image.open(atlas_path) as atlas:
@@ -61,35 +61,10 @@ def build(species):
                 MODELS / ("painted-" + species["name"] + ".png"),
                 "painted-" + front_skin if front_skin else "",
             )
-    x0, y0, x1, y1 = species["bounds"]
-    scale = 2 / (x1 - x0)
-    center = ((x0 + x1) / 2, (y0 + y1) / 2)
-    vertices = []
-    triangles = []
+    return cell, atlas_path, front_skin
 
-    def vertex(x, y, z, flex=0, skin_y=None, skin_x=None):
-        index = len(vertices)
-        vertices.append(
-            [
-                (x - center[0]) * scale,
-                (center[1] - y) * scale,
-                z,
-                (x if skin_x is None else skin_x) / 512,
-                (y if skin_y is None else skin_y) / 512,
-                flex,
-            ]
-        )
-        return index
 
-    profile = species["body"]
-
-    def section(x):
-        for a, b in zip(profile[:-1], profile[1:], strict=True):
-            if a[0] <= x <= b[0]:
-                t = (x - a[0]) / (b[0] - a[0])
-                return [a[i] + (b[i] - a[i]) * t for i in range(1, 4)]
-        return list(profile[-1][1:])
-
+def build_body(profile, section, vertex, triangles):
     ring_positions = sorted(
         set(
             [profile[0][0] + (profile[-1][0] - profile[0][0]) * i / 41 for i in range(42)]
@@ -123,115 +98,136 @@ def build(species):
             b = ring * sides + (side + 1) % sides
             triangles.append((cap, b, a) if reverse else (cap, a, b))
 
-    for fin in species["fins"]:
 
-        def fin_vertex(x, y, z, flex_value=0, skin_y=None, fin=fin):
-            angle = math.radians(fin.get("rotate_x", 0))
-            pivot = fin.get("pivot_y", 0)
-            sign = -1 if flex_value < 0 or fin["depth"] < 0 else 1
-            membrane_flex = sign * (0.0001 + 0.9999 * abs(flex_value))
-            return vertex(
-                fin.get("pivot_x", 0) + (x - fin.get("pivot_x", 0)) * fin.get("mirror_x", 1),
-                pivot + (y - pivot) * math.cos(angle),
-                z - (y - pivot) * scale * math.sin(angle) * fin.get("span", 1),
-                membrane_flex,
-                y if skin_y is None else skin_y,
-                x,
-            )
-
-        if "ribbon" in fin:
-            points = fin["ribbon"]
-            sign = -1 if fin["depth"] < 0 else 1
-            for back in (False, True):
-                first = len(vertices)
-                for i, (x, y, width) in enumerate(points):
-                    before = points[max(0, i - 1)]
-                    after = points[min(len(points) - 1, i + 1)]
-                    dx, dy = after[0] - before[0], after[1] - before[1]
-                    length = max(0.001, math.hypot(dx, dy))
-                    nx, ny = -dy / length, dx / length
-                    t = i / (len(points) - 1)
-                    z = fin["depth"] + math.sin(t * math.pi) * fin["curve"]
-                    z += -0.0015 if back else 0.0015
-                    for side in (-1, 1):
-                        fin_vertex(x + side * nx * width, y + side * ny * width, z, sign * t)
-                for i in range(len(points) - 1):
-                    a = first + i * 2
-                    for triangle in [(a, a + 1, a + 3), (a, a + 3, a + 2)]:
-                        av, bv, cv = [vertices[j] for j in triangle]
-                        winding = (bv[0] - av[0]) * (cv[1] - av[1]) - (bv[1] - av[1]) * (
-                            cv[0] - av[0]
-                        )
-                        if (winding < 0) != back:
-                            triangle = (triangle[0], triangle[2], triangle[1])
-                        triangles.append(triangle)
-            continue
-        outline = fin["outline"]
-        cx = sum(p[0] for p in outline) / len(outline)
-        cy = sum(p[1] for p in outline) / len(outline)
-        root_shifts = []
-        for i, (x, y) in enumerate(outline):
-            shift = 0
-            if i in fin.get("roots", []):
-                top, bottom, _ = section(max(profile[0][0], min(profile[-1][0], x)))
-                shift = (top + 10 if fin["kind"] == "dorsal" else bottom - 10) - y
-            root_shifts.append(shift)
-        center_shift = sum(root_shifts) / len(root_shifts)
-
-        def raw_flex(x, y, fin=fin):
+def fin_root_shifts(fin, outline, section, profile):
+    root_shifts = []
+    for i, (x, y) in enumerate(outline):
+        shift = 0
+        if i in fin.get("roots", []):
             top, bottom, _ = section(max(profile[0][0], min(profile[-1][0], x)))
-            if fin["kind"] == "tail":
-                return max(0, profile[0][0] - x)
-            if fin["kind"] == "dorsal":
-                return max(0, top - y)
-            if fin["kind"] == "anal":
-                return max(0, y - bottom)
-            ax, ay = fin["attachment"]
-            return math.hypot(x - ax, y - ay)
+            shift = (top + 10 if fin["kind"] == "dorsal" else bottom - 10) - y
+        root_shifts.append(shift)
+    center_shift = sum(root_shifts) / len(root_shifts)
 
-        reach = max(1, max(raw_flex(x, y) for x, y in outline))
-        sign = -1 if fin["depth"] < 0 else 1
+    return root_shifts, center_shift
 
-        def flex(x, y, sign=sign, reach=reach, raw=raw_flex):
-            return sign * min(1, raw(x, y) / reach)
 
-        for back in (False, True):
-            offset = len(vertices)
-            thickness = -0.0015 if back else 0.0015
-            fin_vertex(
-                cx,
-                cy + center_shift,
-                fin["depth"] + fin["curve"] + thickness,
-                flex(cx, cy + center_shift),
-                skin_y=cy,
-            )
-            steps = 4
-            for radial in range(1, steps + 1):
-                t = radial / steps
-                for edge, (x, y) in enumerate(outline):
-                    skin_y = cy + (y - cy) * t
-                    attached_y = skin_y + center_shift * (1 - t) + root_shifts[edge] * t
-                    fin_vertex(
-                        cx + (x - cx) * t,
-                        attached_y,
-                        fin["depth"] + math.cos(t * math.pi * 0.5) * fin["curve"] + thickness,
-                        flex(cx + (x - cx) * t, attached_y),
-                        skin_y=skin_y,
-                    )
-            size = len(outline)
-            for edge in range(size):
-                a = offset + 1 + edge
-                b = offset + 1 + (edge + 1) % size
-                triangles.append((offset, b, a) if back else (offset, a, b))
-            for radial in range(steps - 1):
-                for edge in range(size):
-                    a = offset + 1 + radial * size + edge
-                    an = offset + 1 + radial * size + (edge + 1) % size
-                    b = a + size
-                    bn = an + size
-                    triangles.extend(
-                        [(a, an, b), (an, bn, b)] if back else [(a, b, an), (an, b, bn)]
-                    )
+def fin_distance(x, y, fin, section, profile):
+    top, bottom, _ = section(max(profile[0][0], min(profile[-1][0], x)))
+    if fin["kind"] == "tail":
+        return max(0, profile[0][0] - x)
+    if fin["kind"] == "dorsal":
+        return max(0, top - y)
+    if fin["kind"] == "anal":
+        return max(0, y - bottom)
+    ax, ay = fin["attachment"]
+    return math.hypot(x - ax, y - ay)
+
+
+def append_fin_vertex(fin, vertex, scale, x, y, z, flex_value, skin_y):
+    angle = math.radians(fin.get("rotate_x", 0))
+    pivot = fin.get("pivot_y", 0)
+    sign = -1 if flex_value < 0 or fin["depth"] < 0 else 1
+    membrane_flex = sign * (0.0001 + 0.9999 * abs(flex_value))
+    return vertex(
+        fin.get("pivot_x", 0) + (x - fin.get("pivot_x", 0)) * fin.get("mirror_x", 1),
+        pivot + (y - pivot) * math.cos(angle),
+        z - (y - pivot) * scale * math.sin(angle) * fin.get("span", 1),
+        membrane_flex,
+        y if skin_y is None else skin_y,
+        x,
+    )
+
+
+def append_membrane_indices(offset, size, steps, triangles, back):
+    for edge in range(size):
+        a = offset + 1 + edge
+        b = offset + 1 + (edge + 1) % size
+        triangles.append((offset, b, a) if back else (offset, a, b))
+    for radial in range(steps - 1):
+        for edge in range(size):
+            a = offset + 1 + radial * size + edge
+            an = offset + 1 + radial * size + (edge + 1) % size
+            b = a + size
+            bn = an + size
+            triangles.extend([(a, an, b), (an, bn, b)] if back else [(a, b, an), (an, b, bn)])
+
+
+def build_fin(fin, vertex, vertices, triangles, section, profile, scale):
+
+    def fin_vertex(x, y, z, flex_value=0, skin_y=None):
+        return append_fin_vertex(fin, vertex, scale, x, y, z, flex_value, skin_y)
+
+    if "ribbon" in fin:
+        build_ribbon(fin, fin_vertex, vertices, triangles)
+        return
+    outline = fin["outline"]
+    cx = sum(p[0] for p in outline) / len(outline)
+    cy = sum(p[1] for p in outline) / len(outline)
+    root_shifts, center_shift = fin_root_shifts(fin, outline, section, profile)
+
+    def raw_flex(x, y):
+        return fin_distance(x, y, fin, section, profile)
+
+    reach = max(1, max(raw_flex(x, y) for x, y in outline))
+    sign = -1 if fin["depth"] < 0 else 1
+
+    def flex(x, y, sign=sign, reach=reach, raw=raw_flex):
+        return sign * min(1, raw(x, y) / reach)
+
+    for back in (False, True):
+        offset = len(vertices)
+        thickness = -0.0015 if back else 0.0015
+        fin_vertex(
+            cx,
+            cy + center_shift,
+            fin["depth"] + fin["curve"] + thickness,
+            flex(cx, cy + center_shift),
+            skin_y=cy,
+        )
+        steps = 4
+        for radial in range(1, steps + 1):
+            t = radial / steps
+            for edge, (x, y) in enumerate(outline):
+                skin_y = cy + (y - cy) * t
+                attached_y = skin_y + center_shift * (1 - t) + root_shifts[edge] * t
+                fin_vertex(
+                    cx + (x - cx) * t,
+                    attached_y,
+                    fin["depth"] + math.cos(t * math.pi * 0.5) * fin["curve"] + thickness,
+                    flex(cx + (x - cx) * t, attached_y),
+                    skin_y=skin_y,
+                )
+        append_membrane_indices(offset, len(outline), steps, triangles, back)
+
+
+def build_ribbon(fin, fin_vertex, vertices, triangles):
+    points = fin["ribbon"]
+    sign = -1 if fin["depth"] < 0 else 1
+    for back in (False, True):
+        first = len(vertices)
+        for i, (x, y, width) in enumerate(points):
+            before = points[max(0, i - 1)]
+            after = points[min(len(points) - 1, i + 1)]
+            dx, dy = after[0] - before[0], after[1] - before[1]
+            length = max(0.001, math.hypot(dx, dy))
+            nx, ny = -dy / length, dx / length
+            t = i / (len(points) - 1)
+            z = fin["depth"] + math.sin(t * math.pi) * fin["curve"]
+            z += -0.0015 if back else 0.0015
+            for side in (-1, 1):
+                fin_vertex(x + side * nx * width, y + side * ny * width, z, sign * t)
+        for i in range(len(points) - 1):
+            a = first + i * 2
+            for triangle in [(a, a + 1, a + 3), (a, a + 3, a + 2)]:
+                av, bv, cv = [vertices[j] for j in triangle]
+                winding = (bv[0] - av[0]) * (cv[1] - av[1]) - (bv[1] - av[1]) * (cv[0] - av[0])
+                if (winding < 0) != back:
+                    triangle = (triangle[0], triangle[2], triangle[1])
+                triangles.append(triangle)
+
+
+def encode_mesh(vertices, triangles, front_skin):
     low = [min(v[axis] for v in vertices) for axis in range(3)]
     high = [max(v[axis] for v in vertices) for axis in range(3)]
     factor = 2 / (high[0] - low[0])
@@ -261,6 +257,45 @@ def build(species):
         output.extend(struct.pack("<9f", *v[:3], *n, *v[3:]))
     for triangle in triangles:
         output.extend(struct.pack("<3H", *triangle))
+    return low, high, factor, output
+
+
+def build(species):
+    cell, atlas_path, front_skin = build_skins(species)
+    x0, y0, x1, y1 = species["bounds"]
+    scale = 2 / (x1 - x0)
+    center = ((x0 + x1) / 2, (y0 + y1) / 2)
+    vertices = []
+    triangles = []
+
+    def vertex(x, y, z, flex=0, skin_y=None, skin_x=None):
+        index = len(vertices)
+        vertices.append(
+            [
+                (x - center[0]) * scale,
+                (center[1] - y) * scale,
+                z,
+                (x if skin_x is None else skin_x) / 512,
+                (y if skin_y is None else skin_y) / 512,
+                flex,
+            ]
+        )
+        return index
+
+    profile = species["body"]
+
+    def section(x):
+        for a, b in zip(profile[:-1], profile[1:], strict=True):
+            if a[0] <= x <= b[0]:
+                t = (x - a[0]) / (b[0] - a[0])
+                return [a[i] + (b[i] - a[i]) * t for i in range(1, 4)]
+        return list(profile[-1][1:])
+
+    build_body(profile, section, vertex, triangles)
+
+    for fin in species["fins"]:
+        build_fin(fin, vertex, vertices, triangles, section, profile, scale)
+    low, high, factor, output = encode_mesh(vertices, triangles, front_skin)
     (MODELS / (species["name"] + ".bin")).write_bytes(output)
     metadata = {
         "species": species["name"],

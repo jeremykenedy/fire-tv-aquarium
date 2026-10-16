@@ -78,11 +78,28 @@ public final class AquariumTest {
                     "Default settings never randomized");
     }
 
+    private static void verifySwimmingStep(
+            FishMotion.Pose fish, float previousX, float previousYaw) {
+        check(Float.isFinite(fish.x + fish.y + fish.z), "Long-running swimming stays finite");
+        check(
+                Math.abs(fish.x) <= 19
+                        && fish.y >= -4.4f
+                        && fish.y <= 6.1f
+                        && Math.abs(fish.z) <= 3.2f,
+                "Every swimmer stays inside the tank");
+        check(Math.abs(fish.x - previousX) < .12f, "Fish never wrap or teleport across the screen");
+        check(Math.abs(fish.yaw - previousYaw) <= .056f, "Turns stay gradual at each frame");
+    }
+
     private static void wanderingMotion() {
         FishMotion motion = new FishMotion(new java.util.Random(84));
         motion.update(0, .8f, false, 60);
-        float[] previousX = new float[60], previousY = new float[60], previousYaw = new float[60];
-        boolean[] reversed = new boolean[60], rose = new boolean[60], sank = new boolean[60];
+        float[] previousX = new float[60];
+        float[] previousY = new float[60];
+        float[] previousYaw = new float[60];
+        boolean[] reversed = new boolean[60];
+        boolean[] rose = new boolean[60];
+        boolean[] sank = new boolean[60];
         float[] initialDirection = new float[60];
         int pauses = 0;
         for (int i = 0; i < 60; i++) {
@@ -96,21 +113,7 @@ public final class AquariumTest {
             motion.update(frame * .05f, .8f, false, 60);
             for (int i = 0; i < 60; i++) {
                 FishMotion.Pose fish = motion.pose(i);
-                check(
-                        Float.isFinite(fish.x + fish.y + fish.z),
-                        "Long-running swimming stays finite");
-                check(
-                        Math.abs(fish.x) <= 19
-                                && fish.y >= -4.4f
-                                && fish.y <= 6.1f
-                                && Math.abs(fish.z) <= 3.2f,
-                        "Every swimmer stays inside the tank");
-                check(
-                        Math.abs(fish.x - previousX[i]) < .12f,
-                        "Fish never wrap or teleport across the screen");
-                check(
-                        Math.abs(fish.yaw - previousYaw[i]) <= .056f,
-                        "Turns stay gradual at each frame");
+                verifySwimmingStep(fish, previousX[i], previousYaw[i]);
                 if (Math.cos(fish.yaw) * (initialDirection[i] < 0 ? -1 : 1) < -.35f)
                     reversed[i] = true;
                 if (fish.y - previousY[i] > .001f) rose[i] = true;
@@ -131,7 +134,11 @@ public final class AquariumTest {
             check(rose[i] && sank[i], "Fish wander both up and down independently");
         }
         check(pauses > 50, "Independent fish occasionally slow to a near pause");
-        float slow = travelled(.45f), fast = travelled(1.35f);
+    }
+
+    private static void swimmingSpeedAndSchools() {
+        float slow = travelled(.45f);
+        float fast = travelled(1.35f);
         check(fast > slow * 2, "Saved swimming speed changes actual distance travelled");
         FishMotion school = new FishMotion(new java.util.Random(19));
         school.update(0, .8f, true, 32);
@@ -147,11 +154,15 @@ public final class AquariumTest {
                 "Resuming after a long pause does not fast-forward the fish");
         school.update(4999, .8f, true, 32);
         check(Float.isFinite(school.pose(0).x), "An earlier clock sample leaves a valid state");
+    }
+
+    private static void predatorContactAndReplenishment() {
         for (boolean flat : new boolean[] {false, true}) {
             FishMotion feeding = new FishMotion(new java.util.Random(flat ? 9 : 8));
             feeding.setFlatAppearance(flat);
             float feedingTime = seekHunt(feeding, 60);
-            FishMotion.Pose shark = feeding.pose(60), prey = feeding.pose(0);
+            FishMotion.Pose shark = feeding.pose(60);
+            FishMotion.Pose prey = feeding.pose(0);
             shark.x = -(flat ? 6.0016f : 3.9f);
             shark.y = flat ? .52907f : 0;
             shark.z = shark.yaw = shark.pitch = 0;
@@ -180,18 +191,25 @@ public final class AquariumTest {
                         Math.abs(feeding.pose(member).x) <= 19,
                         "School members stay inside the tank while their consumed leader returns"
                                 + " offscreen");
-            FishMotion dolphin = new FishMotion(new java.util.Random(41));
-            dolphin.setFlatAppearance(flat);
-            float dolphinTime = seekHunt(dolphin, 95);
-            dolphin.pose(95).x = -(flat ? 4.2504f : 3.6f);
-            dolphin.pose(95).y = flat ? -.6272f : 0;
-            dolphin.pose(95).z = dolphin.pose(95).yaw = dolphin.pose(95).pitch = 0;
-            dolphin.pose(0).x = dolphin.pose(0).y = dolphin.pose(0).z = 0;
-            dolphin.update(dolphinTime + .02f, .8f, false, 1, AquariumOptions.DOLPHIN);
-            check(
-                    !dolphin.pose(0).visible,
-                    "Dolphin feeding uses its own mouth geometry in both rendering styles");
+            dolphinContact(flat);
         }
+    }
+
+    private static void dolphinContact(boolean flat) {
+        FishMotion dolphin = new FishMotion(new java.util.Random(41));
+        dolphin.setFlatAppearance(flat);
+        float dolphinTime = seekHunt(dolphin, 95);
+        dolphin.pose(95).x = -(flat ? 4.2504f : 3.6f);
+        dolphin.pose(95).y = flat ? -.6272f : 0;
+        dolphin.pose(95).z = dolphin.pose(95).yaw = dolphin.pose(95).pitch = 0;
+        dolphin.pose(0).x = dolphin.pose(0).y = dolphin.pose(0).z = 0;
+        dolphin.update(dolphinTime + .02f, .8f, false, 1, AquariumOptions.DOLPHIN);
+        check(
+                !dolphin.pose(0).visible,
+                "Dolphin feeding uses its own mouth geometry in both rendering styles");
+    }
+
+    private static void cinematicWhaleContact() {
         FishMotion cinematicWhale = new FishMotion(new java.util.Random(7));
         cinematicWhale.setFlatAppearance(true);
         cinematicWhale.setMarineArtwork(1, 16f / 9);
@@ -208,6 +226,9 @@ public final class AquariumTest {
         check(
                 !cinematicWhale.pose(0).visible,
                 "A left-facing cinematic whale feeds at its raised atlas snout, not its belly");
+    }
+
+    private static void measuredModelContactAndAim() {
         FishMotion measured = new FishMotion(new java.util.Random(8));
         measured.setMeshMouth(0, 1, .2f, .3f, 4);
         float measuredTime = seekHunt(measured, 60);
@@ -233,6 +254,9 @@ public final class AquariumTest {
         check(
                 aiming.pose(0).visible && aimingShark.pitch < 0 && aimingShark.yaw > 0,
                 "Pursuit lowers and turns the model center to align its raised, offset mouth");
+    }
+
+    private static void depthAndNonPredators() {
         FishMotion depth = new FishMotion(new java.util.Random(8));
         float depthTime = seekHunt(depth, 60);
         depth.pose(60).x = -3.9f;
@@ -246,6 +270,9 @@ public final class AquariumTest {
         depth.pose(0).z = 0;
         depth.update(depthTime + .04f, .8f, false, 1, AquariumOptions.TURTLE);
         check(depth.pose(0).visible, "Non-predatory creatures never consume fish");
+    }
+
+    private static void whaleSchoolContact() {
         FishMotion whale = new FishMotion(new java.util.Random(7));
         float whaleTime = seekHunt(whale, 67);
         FishMotion.Pose hunter = whale.pose(67);
@@ -265,6 +292,9 @@ public final class AquariumTest {
         check(
                 whale.pose(67).captures == 6,
                 "A whale records the fish in its single schooling feed");
+    }
+
+    private static void mixedPredatorStability() {
         for (boolean flat : new boolean[] {false, true}) {
             FishMotion roaming = new FishMotion(new java.util.Random(31));
             roaming.setFlatAppearance(flat);
@@ -309,7 +339,10 @@ public final class AquariumTest {
             for (int frame = 1; frame <= 2400; frame++) {
                 motion.update(frame * .05f, .8f, false, 16);
                 if (frame % 200 != 0) continue;
-                float minX = 100, maxX = -100, minY = 100, maxY = -100;
+                float minX = 100;
+                float maxX = -100;
+                float minY = 100;
+                float maxY = -100;
                 for (int i = 0; i < 16; i++) {
                     FishMotion.Pose fish = motion.pose(i);
                     minX = Math.min(minX, fish.x);
@@ -323,9 +356,13 @@ public final class AquariumTest {
                 check(maxY - minY > 5, "Ordinary fish retain independent vertical distribution");
             }
         }
+    }
+
+    private static void independentPredatorWindows() {
         FishMotion predators = new FishMotion(new java.util.Random(32));
         predators.update(0, .8f, false, 0);
-        boolean[] rested = new boolean[5], hunted = new boolean[5];
+        boolean[] rested = new boolean[5];
+        boolean[] hunted = new boolean[5];
         int[] slots = {60, 61, 67, 95, 96};
         int independent = 0;
         for (int frame = 1; frame <= 2000; frame++) {
@@ -363,7 +400,9 @@ public final class AquariumTest {
         motion.update(0, speed, false, 24);
         float distance = 0;
         for (int frame = 1; frame <= 1200; frame++) {
-            float x = motion.pose(0).x, y = motion.pose(0).y, z = motion.pose(0).z;
+            float x = motion.pose(0).x;
+            float y = motion.pose(0).y;
+            float z = motion.pose(0).z;
             motion.update(frame * .05f, speed, false, 24);
             FishMotion.Pose fish = motion.pose(0);
             distance +=
@@ -378,7 +417,15 @@ public final class AquariumTest {
 
     public static void main(String[] args) {
         distributedSwimming();
+        independentPredatorWindows();
         wanderingMotion();
+        swimmingSpeedAndSchools();
+        predatorContactAndReplenishment();
+        cinematicWhaleContact();
+        measuredModelContactAndAim();
+        depthAndNonPredators();
+        whaleSchoolContact();
+        mixedPredatorStability();
         randomChoices();
         check(AquariumOptions.defaults().look == 0, "Realistic is the default appearance");
         check(AquariumOptions.defaults().time == 0, "Day is the default brightness");
