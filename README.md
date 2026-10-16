@@ -256,7 +256,7 @@ the new volume renderer remain pending. See [Verification](docs/VERIFICATION.md)
         <td valign="top" width="33%"><img src="art/screenshots/mermaid-inspired-google-tv.png" alt="Painted three-dimensional fish in soft illustrated underwater scenery" width="100%"><br>Little Mermaid inspired</td>
     </tr>
     <tr>
-        <td valign="top" width="33%"><img src="art/screenshots/settings-google-tv.png" alt="Remote-operated aquarium settings with the current three-dimensional fish preview" width="100%"><br>Settings and live preview</td>
+        <td valign="top" width="33%"><img src="art/screenshots/settings-google-tv.png" alt="Remote-operated aquarium appearance and population settings" width="100%"><br>Settings</td>
         <td valign="top" width="33%"><img src="art/screenshots/original-day-google-tv.png" alt="Bundled original aquarium footage in Day mode on the Google TV emulator" width="100%"><br>Original footage: Day</td>
         <td valign="top" width="33%"><img src="art/screenshots/original-night-google-tv.png" alt="Bundled original aquarium footage dimmed in Night mode on the Google TV emulator" width="100%"><br>Original footage: Night</td>
     </tr>
