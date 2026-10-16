@@ -91,6 +91,12 @@ public final class AquariumTest {
         check(Math.abs(fish.yaw - previousYaw) <= .056f, "Turns stay gradual at each frame");
     }
 
+    private static int observedPause(FishMotion.Pose fish, int frame) {
+        return frame > 100 && fish.vx * fish.vx + fish.vy * fish.vy + fish.vz * fish.vz < .015f
+                ? 1
+                : 0;
+    }
+
     private static void wanderingMotion() {
         FishMotion motion = new FishMotion(new java.util.Random(84));
         motion.update(0, .8f, false, 60);
@@ -118,9 +124,7 @@ public final class AquariumTest {
                     reversed[i] = true;
                 if (fish.y - previousY[i] > .001f) rose[i] = true;
                 if (previousY[i] - fish.y > .001f) sank[i] = true;
-                if (frame > 100
-                        && fish.vx * fish.vx + fish.vy * fish.vy + fish.vz * fish.vz < .015f)
-                    pauses++;
+                pauses += observedPause(fish, frame);
                 previousX[i] = fish.x;
                 previousY[i] = fish.y;
                 previousYaw[i] = fish.yaw;
@@ -174,25 +178,30 @@ public final class AquariumTest {
                             && shark.lastPrey == 0
                             && Math.abs(shark.lastCaptureSeconds - feedingTime) < .001f,
                     "A visible mouth capture increments only that predator's feeding count");
-            boolean returned = false;
-            for (int frame = 2; frame <= 3000; frame++) {
-                feeding.update(feedingTime + frame * .02f, .8f, true, 16, 0);
-                if (!returned && prey.visible) {
-                    check(
-                            Math.abs(prey.x) > 26,
-                            "Consumed fish return outside the visible frame without popping into"
-                                    + " the tank");
-                    returned = true;
-                }
-            }
-            check(returned, "The configured population returns gradually after feeding");
-            for (int member = 1; member < 16; member++)
-                check(
-                        Math.abs(feeding.pose(member).x) <= 19,
-                        "School members stay inside the tank while their consumed leader returns"
-                                + " offscreen");
+            verifyPopulationReturns(feeding, prey, feedingTime);
             dolphinContact(flat);
         }
+    }
+
+    private static void verifyPopulationReturns(
+            FishMotion feeding, FishMotion.Pose prey, float feedingTime) {
+        boolean returned = false;
+        for (int frame = 2; frame <= 3000; frame++) {
+            feeding.update(feedingTime + frame * .02f, .8f, true, 16, 0);
+            if (!returned && prey.visible) {
+                check(
+                        Math.abs(prey.x) > 26,
+                        "Consumed fish return outside the visible frame without popping into"
+                                + " the tank");
+                returned = true;
+            }
+        }
+        check(returned, "The configured population returns gradually after feeding");
+        for (int member = 1; member < 16; member++)
+            check(
+                    Math.abs(feeding.pose(member).x) <= 19,
+                    "School members stay inside the tank while their consumed leader returns"
+                            + " offscreen");
     }
 
     private static void dolphinContact(boolean flat) {

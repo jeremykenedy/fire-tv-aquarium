@@ -110,18 +110,22 @@ final class FishMotion {
         boolean whale = hunts(67, step);
         boolean dolphinA = hunts(95, step);
         boolean dolphinB = hunts(96, step);
-        if ((creatures & AquariumOptions.SHARK) != 0) {
-            if (sharkA)
-                hunt(60, count, flatAppearance ? 5.7f : 3.9f, flatAppearance ? .8f : .55f, false);
-            if (sharkB)
-                hunt(61, count, flatAppearance ? 5.7f : 3.9f, flatAppearance ? .8f : .55f, false);
-        }
+        if ((creatures & AquariumOptions.SHARK) != 0) feedSharks(count, sharkA, sharkB);
         if ((creatures & AquariumOptions.WHALE) != 0 && count >= 6 && whale)
             hunt(67, count, flatAppearance ? 8.8f : 8.2f, 1, true);
-        if ((creatures & AquariumOptions.DOLPHIN) != 0) {
-            if (dolphinA) hunt(95, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
-            if (dolphinB) hunt(96, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
-        }
+        if ((creatures & AquariumOptions.DOLPHIN) != 0) feedDolphins(count, dolphinA, dolphinB);
+    }
+
+    private void feedSharks(int count, boolean sharkA, boolean sharkB) {
+        if (sharkA)
+            hunt(60, count, flatAppearance ? 5.7f : 3.9f, flatAppearance ? .8f : .55f, false);
+        if (sharkB)
+            hunt(61, count, flatAppearance ? 5.7f : 3.9f, flatAppearance ? .8f : .55f, false);
+    }
+
+    private void feedDolphins(int count, boolean dolphinA, boolean dolphinB) {
+        if (dolphinA) hunt(95, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
+        if (dolphinB) hunt(96, count, flatAppearance ? 3.9f : 3.6f, .35f, false);
     }
 
     private boolean hunts(int index, float step) {
@@ -202,14 +206,9 @@ final class FishMotion {
         return new float[] {mouthX, mouthY, mouthZ};
     }
 
-    private void hunt(int index, int count, float nose, float radius, boolean school) {
-        float[] center = school ? feedingSchool(count) : new float[] {0, 0, 0};
-        if (center == null) return;
-        Pose predator = swimmers[index];
+    private Pose nearestPrey(Pose predator, int count, float radius, float[] mouth) {
         Pose nearest = null;
         float best = Float.MAX_VALUE;
-        float[] meshMouth = meshMouths[index == 67 ? 1 : index >= 95 ? 5 : 0];
-        float[] mouth = mouth(index, nose, meshMouth);
         float mouthX = mouth[0];
         float mouthY = mouth[1];
         float mouthZ = mouth[2];
@@ -239,6 +238,19 @@ final class FishMotion {
                 nearest = prey;
             }
         }
+        return nearest;
+    }
+
+    private void hunt(int index, int count, float nose, float radius, boolean school) {
+        float[] center = school ? feedingSchool(count) : new float[] {0, 0, 0};
+        if (center == null) return;
+        Pose predator = swimmers[index];
+        float[] meshMouth = meshMouths[index == 67 ? 1 : index >= 95 ? 5 : 0];
+        float[] mouth = mouth(index, nose, meshMouth);
+        float mouthX = mouth[0];
+        float mouthY = mouth[1];
+        float mouthZ = mouth[2];
+        Pose nearest = nearestPrey(predator, count, radius, mouth);
         if (nearest != null) {
             predator.pursuing = true;
             predator.targetX = school ? center[0] : nearest.x;

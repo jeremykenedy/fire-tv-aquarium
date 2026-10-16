@@ -89,14 +89,7 @@ def build_body(profile, section, vertex, triangles):
             b = a + sides
             bn = an + sides
             triangles.extend([(a, an, bn), (a, bn, b)])
-    for ring, reverse in [(0, True), (rings - 1, False)]:
-        x = profile[0 if reverse else -1][0]
-        top, bottom, _ = section(x)
-        cap = vertex(x, (top + bottom) * 0.5, 0)
-        for side in range(sides):
-            a = ring * sides + side
-            b = ring * sides + (side + 1) % sides
-            triangles.append((cap, b, a) if reverse else (cap, a, b))
+    close_body(profile, section, vertex, triangles, rings, sides)
 
 
 def fin_root_shifts(fin, outline, section, profile):
@@ -228,12 +221,43 @@ def build_ribbon(fin, fin_vertex, vertices, triangles):
 
 
 def encode_mesh(vertices, triangles, front_skin):
+    low, high, factor = normalize_vertices(vertices)
+    normals = mesh_normals(vertices, triangles)
+    if front_skin:
+        for v in vertices:
+            v[3] *= 0.5
+    output = bytearray(struct.pack("<4sIII", b"FISH", 2, len(vertices), len(triangles) * 3))
+    for v, n in zip(vertices, normals, strict=True):
+        length = math.sqrt(sum(x * x for x in n))
+        n = [x / length for x in n] if length > 1e-10 else [0, 0, 1]
+        output.extend(struct.pack("<9f", *v[:3], *n, *v[3:]))
+    for triangle in triangles:
+        output.extend(struct.pack("<3H", *triangle))
+    return low, high, factor, output
+
+
+def close_body(profile, section, vertex, triangles, rings, sides):
+    for ring, reverse in [(0, True), (rings - 1, False)]:
+        x = profile[0 if reverse else -1][0]
+        top, bottom, _ = section(x)
+        cap = vertex(x, (top + bottom) * 0.5, 0)
+        for side in range(sides):
+            a = ring * sides + side
+            b = ring * sides + (side + 1) % sides
+            triangles.append((cap, b, a) if reverse else (cap, a, b))
+
+
+def normalize_vertices(vertices):
     low = [min(v[axis] for v in vertices) for axis in range(3)]
     high = [max(v[axis] for v in vertices) for axis in range(3)]
     factor = 2 / (high[0] - low[0])
     for v in vertices:
         for axis in range(3):
             v[axis] = (v[axis] - (low[axis] + high[axis]) * 0.5) * factor
+    return low, high, factor
+
+
+def mesh_normals(vertices, triangles):
     normals = [[0.0, 0.0, 0.0] for _ in vertices]
     for indices in triangles:
         a, b, c = [vertices[i] for i in indices]
@@ -247,17 +271,59 @@ def encode_mesh(vertices, triangles, front_skin):
         for index in indices:
             for axis in range(3):
                 normals[index][axis] += n[axis]
+    return normals
+
+
+def model_metadata(species, atlas_path, cell, vertices, triangles, output):
+    metadata = {
+        "species": species["name"],
+        "format": ("FISH v2, stride 36, body finFlex 0; signed membrane finFlex 0.0001 to 1"),
+        "geometry": "Original distinct anatomical volume and curved fin surfaces",
+        "skin_source": "../../res/drawable-nodpi/" + atlas_path.name,
+        "license": "MIT",
+        "skin_origin": "Original project atlas",
+        "skin_source_commit": "96179f7163dd4dc44478f2ef9d94d679f1e1734c",
+        "skin_source_sha256": hashlib.sha256(atlas_path.read_bytes()).hexdigest(),
+        "atlas_cell": list(cell),
+        "vertices": len(vertices),
+        "triangles": len(triangles),
+        "mesh_sha256": hashlib.sha256(output).hexdigest(),
+        "status": "Native visual prototype pending review",
+    }
+    return metadata
+
+
+def add_front_metadata(metadata, front_skin, factor, low, high, scale, center):
     if front_skin:
-        for v in vertices:
-            v[3] *= 0.5
-    output = bytearray(struct.pack("<4sIII", b"FISH", 2, len(vertices), len(triangles) * 3))
-    for v, n in zip(vertices, normals, strict=True):
-        length = math.sqrt(sum(x * x for x in n))
-        n = [x / length for x in n] if length > 1e-10 else [0, 0, 1]
-        output.extend(struct.pack("<9f", *v[:3], *n, *v[3:]))
-    for triangle in triangles:
-        output.extend(struct.pack("<3H", *triangle))
-    return low, high, factor, output
+        metadata["frontal_skin"] = "../skin-sources/" + front_skin
+        metadata["skin_layout"] = "1024x512: original side skin left, frontal head skin right"
+        metadata["frontal_projection"] = {
+            "uv": [
+                0.5 / (factor * 0.66),
+                0.75 + (low[2] + high[2]) * 0.25 / 0.66,
+                -1 / (factor * scale * 140),
+                (center[1] - (low[1] + high[1]) * 0.5 / scale - 190) / 140,
+            ],
+            "blend_start": ((240 - center[0]) * scale - (low[0] + high[0]) * 0.5) * factor,
+            "blend_end": ((300 - center[0]) * scale - (low[0] + high[0]) * 0.5) * factor,
+        }
+
+
+def add_mouth_metadata(metadata, species, profile, center, scale, low, high, factor):
+    if "mouth_uv" in species:
+        metadata["mouth_uv"] = species["mouth_uv"]
+        nose = profile[-1]
+        mouth = [
+            (nose[0] - center[0]) * scale,
+            (center[1] - (nose[1] + nose[2]) * 0.5) * scale,
+            0,
+        ]
+        metadata["mouth_local"] = [
+            (mouth[axis] - (low[axis] + high[axis]) * 0.5) * factor for axis in range(3)
+        ]
+        metadata["tail_motion"] = (
+            "lateral" if species["name"] == "great-white-shark" else "vertical"
+        )
 
 
 def build(species):
@@ -297,48 +363,9 @@ def build(species):
         build_fin(fin, vertex, vertices, triangles, section, profile, scale)
     low, high, factor, output = encode_mesh(vertices, triangles, front_skin)
     (MODELS / (species["name"] + ".bin")).write_bytes(output)
-    metadata = {
-        "species": species["name"],
-        "format": ("FISH v2, stride 36, body finFlex 0; signed membrane finFlex 0.0001 to 1"),
-        "geometry": "Original distinct anatomical volume and curved fin surfaces",
-        "skin_source": "../../res/drawable-nodpi/" + atlas_path.name,
-        "license": "MIT",
-        "skin_origin": "Original project atlas",
-        "skin_source_commit": "96179f7163dd4dc44478f2ef9d94d679f1e1734c",
-        "skin_source_sha256": hashlib.sha256(atlas_path.read_bytes()).hexdigest(),
-        "atlas_cell": list(cell),
-        "vertices": len(vertices),
-        "triangles": len(triangles),
-        "mesh_sha256": hashlib.sha256(output).hexdigest(),
-        "status": "Native visual prototype pending review",
-    }
-    if front_skin:
-        metadata["frontal_skin"] = "../skin-sources/" + front_skin
-        metadata["skin_layout"] = "1024x512: original side skin left, frontal head skin right"
-        metadata["frontal_projection"] = {
-            "uv": [
-                0.5 / (factor * 0.66),
-                0.75 + (low[2] + high[2]) * 0.25 / 0.66,
-                -1 / (factor * scale * 140),
-                (center[1] - (low[1] + high[1]) * 0.5 / scale - 190) / 140,
-            ],
-            "blend_start": ((240 - center[0]) * scale - (low[0] + high[0]) * 0.5) * factor,
-            "blend_end": ((300 - center[0]) * scale - (low[0] + high[0]) * 0.5) * factor,
-        }
-    if "mouth_uv" in species:
-        metadata["mouth_uv"] = species["mouth_uv"]
-        nose = profile[-1]
-        mouth = [
-            (nose[0] - center[0]) * scale,
-            (center[1] - (nose[1] + nose[2]) * 0.5) * scale,
-            0,
-        ]
-        metadata["mouth_local"] = [
-            (mouth[axis] - (low[axis] + high[axis]) * 0.5) * factor for axis in range(3)
-        ]
-        metadata["tail_motion"] = (
-            "lateral" if species["name"] == "great-white-shark" else "vertical"
-        )
+    metadata = model_metadata(species, atlas_path, cell, vertices, triangles, output)
+    add_front_metadata(metadata, front_skin, factor, low, high, scale, center)
+    add_mouth_metadata(metadata, species, profile, center, scale, low, high, factor)
     (MODELS / (species["name"] + "-source.json")).write_text(json.dumps(metadata, indent=2) + "\n")
     print(species["name"], len(vertices), "vertices", len(triangles), "triangles")
 

@@ -88,15 +88,17 @@ def banner_tags(dark, mobile, text_x):
 
 
 def banner(dark, mobile, still):
-    width, height = (392, 408) if mobile else (800, 200)
+    width, height, text_x, title_y, tagline_y, title_size, subtitle_size, transform = (
+        (392, 408, 20, 76, 105, 36, 13, "translate(54 194) scale(1.6)")
+        if mobile
+        else (800, 200, 40, 80, 112, 40, 14, "translate(578 42)")
+    )
     title, subtitle = ("#fff", "#a8a29e") if dark else ("#0f172a", "#64748b")
     background = "url(#background)" if dark else "#fff"
-    text_x, title_y, tagline_y = (20, 76, 105) if mobile else (40, 80, 112)
     tags = banner_tags(dark, mobile, text_x)
     illustration = ILLUSTRATION
     if still:
         illustration = re.sub(r' class="[^"]+"', "", illustration)
-    transform = "translate(54 194) scale(1.6)" if mobile else "translate(578 42)"
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"
  viewBox="0 0 {width} {height}"
  role="img" aria-labelledby="title description">
@@ -119,10 +121,10 @@ Three-dimensional fish, six appearances, and an offline aquarium for your TV.
  stroke="{"#292524" if dark else "#e5e7eb"}"/>
 <g font-family="{FONT}">
 <text x="{text_x}" y="{title_y}"
- font-size="{36 if mobile else 40}" font-weight="700"
+ font-size="{title_size}" font-weight="700"
  letter-spacing="-.5" fill="{title}">Aquarium 4K</text>
 <text x="{text_x}" y="{tagline_y}"
- font-size="{13 if mobile else 14}" fill="{subtitle}">A living underwater scene for your TV.</text>
+ font-size="{subtitle_size}" fill="{subtitle}">A living underwater scene for your TV.</text>
 {"".join(tags)}</g>
 <g transform="{transform}">{illustration}</g>
 </svg>

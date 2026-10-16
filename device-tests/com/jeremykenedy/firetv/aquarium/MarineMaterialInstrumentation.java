@@ -188,13 +188,18 @@ public final class MarineMaterialInstrumentation extends Instrumentation {
                         + visible
                         + " -> "
                         + remaining);
+        reportContact(name, captured, hunter.captures, visible, remaining);
+    }
+
+    private void reportContact(
+            String name, int captured, int captures, int visible, int remaining) {
         android.util.Log.i(
                 "AquariumContact",
                 name
                         + " counter "
                         + captured
                         + " -> "
-                        + hunter.captures
+                        + captures
                         + "; prey pixels "
                         + visible
                         + " -> "
