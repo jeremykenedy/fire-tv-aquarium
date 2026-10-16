@@ -253,9 +253,15 @@ final class FishMotion {
         Pose nearest = nearestPrey(predator, count, radius, mouth);
         if (nearest != null) {
             predator.pursuing = true;
-            predator.targetX = school ? center[0] : nearest.x;
-            predator.targetY = school ? center[1] : nearest.y;
-            predator.targetZ = school ? center[2] : nearest.z;
+            if (school) {
+                predator.targetX = center[0];
+                predator.targetY = center[1];
+                predator.targetZ = center[2];
+            } else {
+                predator.targetX = nearest.x;
+                predator.targetY = nearest.y;
+                predator.targetZ = nearest.z;
+            }
             if (meshMouth != null) {
                 predator.targetX -= mouthX - predator.x;
                 predator.targetY -= mouthY - predator.y;
@@ -339,7 +345,11 @@ final class FishMotion {
             pitch += Math.max(-.3f * step, Math.min(.3f * step, desiredPitch - pitch));
         }
 
-        private void steer(float step, float dx, float dy, float dz, Pose leader) {
+        private void steer(
+                float step, float targetDx, float targetDy, float targetDz, Pose leader) {
+            float dx = targetDx;
+            float dy = targetDy;
+            float dz = targetDz;
             if (leader != null && leader != this) {
                 float distance = (leader.x - x) * (leader.x - x) + (leader.y - y) * (leader.y - y);
                 if (distance > 16) {
