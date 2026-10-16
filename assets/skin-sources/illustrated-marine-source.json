@@ -1,0 +1,10 @@
+{
+  "description": "Original illustrated marine repaint aligned to the anatomical model UV coordinates and remaining sea-life sprites",
+  "license": "MIT",
+  "reference": "../../res/drawable-nodpi/realistic_marine.png",
+  "reference_sha256": "34e3f4b1e8077fa7ac8a38c25dc9b983146657974130726086356c5d116574ce",
+  "image_sha256": "6f06d7f4380ebf9c8aa763d49548384e3423c61c78013451377f9ade49a3ffca",
+  "style_reference": "illustrated-fish.png",
+  "prompt": "Repaint the original marine atlas in polished ink and hand-painted traditional animation cel art matching the illustrated fish. Preserve exact 2 columns by 4 square cells, silhouettes, positions, scale, poses, UV landmarks, natural patterns and empty bottom-right cell. Keep bodies opaque and jellyfish translucent, actual transparent background, no extra subjects, text, logos or watermark.",
+  "verification": "Native UV and complete illustrated scene review pending"
+}

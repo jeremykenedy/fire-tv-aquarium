@@ -13,12 +13,13 @@ services. Its package is `com.jeremykenedy.firetv.aquarium`.
 | `AquariumDisplay` | Switch between animated and video content; display clock |
 | `AquariumSceneView` | Native 4K OpenGL surface and frame requests |
 | `AquariumAppearanceRenderer` | Appearance selection, artwork textures, depth layers, fish and sea-life placement |
-| `AquariumTextureShader` | Transparent surfaces, tail and arm movement, lighting, sunlight, bubbles |
-| `AquariumRenderer` | Original Cartoon camera, environment, fish, bubbles, lighting |
-| `AquariumMesh` | Original fish, plant, coral, rock, and tentacle geometry |
-| `AquariumShader` | Fish patterns, shading, movement, fog, sunlight highlights |
-| `MarineLife` | Optional larger animals and jellyfish |
-| `FishMotion` | Independent swimming and coordinated school paths |
+| `AquariumTextureShader` | Scenery, remaining sea-life surfaces, lighting, sunlight, bubbles |
+| `MarineMeshData` | Versioned indexed mesh decoding |
+| `TexturedMarineModel` | Persistent geometry buffers and natural or painted skin textures |
+| `MarineModelShader` | Textured volume, spinal waves, separate fin flutter, lighting and haze |
+| `MarineFishRenderer` | Six species with full yaw, pitch, and independent swimming poses |
+| `MarineVisitorRenderer` | Shark, humpback, dolphin models and measured mouth metadata |
+| `FishMotion` | Independent wandering, separation, loose schooling, pursuit, feeding and replenishment |
 | `AquariumPlayback` | Muted, looping platform MediaPlayer video playback |
 | `AquariumDreamService` | System-managed idle screensaver lifecycle |
 | `install.py` | Checksum verification, installation, activation, restore |
@@ -30,11 +31,20 @@ starts content when dreaming begins and stops on dreaming end or detachment.
 Switching modes releases the old content before constructing its replacement.
 The idle dream is non-interactive, allowing the system to exit on a remote key.
 
-Preferences are immutable snapshots passed to the renderer through a volatile
+Preferences are immutable snapshots passed to the renderer through an atomic
 reference. UI changes do not mutate structures while the GL thread reads them.
 Meshes and shaders are rebuilt when a GL context is created. Artwork textures
 load lazily on the GL thread and are released when the selected family or
-background changes. See [Artwork](ARTWORK.md).
+background changes. Fish geometry remains uploaded while natural and painted skins
+switch as a set. Large visitor models load only when their existing sea-life
+switch is enabled. See [Artwork](ARTWORK.md).
+
+All six looks use the same volume renderer for fish. Cartoon uses the drawn
+background family and painted animals with cel shading; it no longer selects the
+former primitive scenery renderer. The shark, humpback and dolphin mouth point
+comes from the same mesh metadata used during authoring. Feeding transforms that
+point with the rendered scale, pitch and yaw, rather than estimating contact from
+the center of a picture.
 
 ## Resolution
 

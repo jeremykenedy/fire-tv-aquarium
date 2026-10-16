@@ -1,12 +1,9 @@
 <p align="center">
-    <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.svg">
-        <source media="(prefers-color-scheme: light)" srcset="art/banner-light.svg">
-        <img src="art/banner-light.svg" alt="Fire TV Aquarium" width="800">
-    </picture>
+  <a href="https://github.com/jeremykenedy/fire-tv-aquarium#gh-light-mode-only"><picture><source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="art/banner-mobile-still-light.4ef0c2bdf5ed.svg"><source media="(prefers-reduced-motion: reduce)" srcset="art/banner-still-light.5e60a932b856.svg"><source media="(max-width: 600px)" srcset="art/banner-mobile-light.d679d55b0165.svg"><img src="art/banner-light.d8cfb166a80e.svg#gh-light-mode-only" alt="Aquarium 4K" width="800"></picture></a>
+  <a href="https://github.com/jeremykenedy/fire-tv-aquarium#gh-dark-mode-only"><picture><source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="art/banner-mobile-still-dark.fdee691fd14c.svg"><source media="(prefers-reduced-motion: reduce)" srcset="art/banner-still-dark.c7de54eabab8.svg"><source media="(max-width: 600px)" srcset="art/banner-mobile-dark.9b72349c831e.svg"><img src="art/banner-dark.5137df092c8c.svg#gh-dark-mode-only" alt="Aquarium 4K" width="800"></picture></a>
 </p>
 
-<p align="center">An offline 4K aquarium screensaver for Fire TV, Android TV, and Google TV with customizable fish, sea life, backgrounds, and sunlight.</p>
+<p align="center">An offline aquarium screensaver for Fire TV, Android TV, and Google TV with three-dimensional fish, sea life, six looks, and sunlight.</p>
 
 <p align="center">
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases"><img src="https://img.shields.io/github/downloads/jeremykenedy/fire-tv-aquarium/total?label=Downloads" alt="Total release asset downloads"></a>
@@ -56,13 +53,13 @@
 
 The same APK runs on Fire TV, Android TV, and Google TV using Android platform
 APIs, a TV launcher entry, D-pad controls, and a system DreamService. Android API
-23 or newer and OpenGL ES 2.0 are required. Physical 4K TVs use a native 3840x2160
-surface; other TVs render at their supported display resolution. Original footage
+23 or newer and OpenGL ES 2.0 are required. The animated surface requests 3840x2160 when the TV advertises a supported 4K
+mode; other TVs use their supported physical display resolution. Original footage
 uses a bundled 1080p copy when 4K decoding is unavailable or fails.
 
 | Platform | Installation and controls | Verified environment |
 |---|---|---|
-| Fire TV | ADB install, TV app entry, remote settings, system idle screensaver | Physical API 30 Fire TV with native 4K display composition |
+| Fire TV | ADB install, TV app entry, remote settings, system idle screensaver | Earlier releases checked on API 30; current volume candidate awaits physical 4K verification |
 | Android TV | Same APK and installer, D-pad settings, system idle screensaver | Official API 31 emulator at 1080p |
 | Google TV | Same APK and installer, D-pad settings, ADB screensaver selection | Official API 34 emulator at 1080p |
 
@@ -164,7 +161,7 @@ key exits the idle screensaver. **Reset aquarium** restores the default options.
 
 ## Features
 
-- Native 3840x2160 output on 4K TVs, with lower-resolution display and video fallbacks.
+- Native display surface selection up to 3840x2160, with supported display and video fallbacks.
 - One APK for Fire TV, Android TV, and Google TV.
 - Random version selection with an editable pool of the six looks and original footage.
 - Random choices for every aquarium setting, chosen once per showing.
@@ -172,9 +169,11 @@ key exits the idle screensaver. **Reset aquarium** restores the default options.
   and Little Mermaid inspired appearances.
 - Reef, Fish tank, Ocean, Kelp forest, and Deep sea backgrounds.
 - A few, A handful, A lot, A ton, Schools, or an exact count from 0 to 60 fish.
-- Six fish species or a mixed aquarium, with coordinated groups in Schools mode.
+- Six distinct fish models or a mixed aquarium, with independent wandering and loose schools.
 - A saved Day / Night switch dims every animated look and the original video.
-- Independent sharks, whales, octopuses, turtles, rays, dolphins, and jellyfish.
+- Separate sharks, whales, octopuses, turtles, rays, dolphins, and jellyfish switches.
+- Three-dimensional sharks, humpbacks, and dolphins with measured feeding contact,
+  prey evasion, non-graphic captures, and gradual population replenishment.
 - Fish size, swimming speed, lighting, bubbles, and sunlight shimmer from above.
 - An optional 12-hour or 24-hour clock.
 - Remote-operated settings with a live preview and saved preferences.
@@ -183,9 +182,10 @@ key exits the idle screensaver. **Reset aquarium** restores the default options.
 
 Realistic is the default. Appearance changes the fish and environment together
 while keeping your population, background selection, and sea-life switches.
-Textured appearances animate detailed artwork on deforming surfaces; Cartoon
-uses the original simple 3D geometry. The animation renders to a native 4K
-surface; bundled texture artwork has its own source resolution. Frame rate
+Every look uses textured fish volume with separate fins and actual turns through
+depth. Natural and painted skins give the looks distinct materials; Cartoon uses
+illustrated scenery with cel shading. Octopuses, turtles, rays and jellyfish retain
+animated artwork surfaces. Bundled artwork has its own source resolution. Frame rate
 depends on the device and settings. **Original 4K footage** preserves the real
 aquarium video from the first version installed on the TV;
 the fish and scenery controls apply to animated mode. The clock works in both.
@@ -240,40 +240,27 @@ change the animals or scenery inside recorded footage.
 
 ## Screenshots
 
-Most images are captures from the Fire TV. Its screenshot output is 1920x1080; the
-actual aquarium surface and display composition were verified at 3840x2160.
+Current signed build, captured on a Google TV emulator at an actual 1920x1080
+surface. Physical Fire TV 3840x2160 composition and performance verification of
+the new volume renderer remain pending. See [Verification](docs/VERIFICATION.md).
 
 <table>
     <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/random-settings.png" alt="Random version selection on the Google TV emulator" width="100%"><br>Google TV: Random version</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/android-tv-footage.png" alt="Local 1080p footage fallback on the Android TV emulator" width="100%"><br>Android TV: local footage fallback</td>
+        <td valign="top" width="33%"><img src="art/screenshots/realistic-google-tv.png" alt="Natural textured three-dimensional fish above the reef" width="100%"><br>Realistic</td>
+        <td valign="top" width="33%"><img src="art/screenshots/classic-google-tv.png" alt="Three-dimensional fish in the cool classic aquarium appearance" width="100%"><br>Classic Windows aquarium</td>
+        <td valign="top" width="33%"><img src="art/screenshots/animated-3d-google-tv.png" alt="Natural textured fish in cinematic underwater scenery" width="100%"><br>Animated 3D</td>
     </tr>
     <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/settings.png" alt="Remote-operated aquarium settings with live reef preview" width="100%"><br>Settings and live preview</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/night.png" alt="Night mode dims the aquarium while settings remain readable" width="100%"><br>Night mode</td>
+        <td valign="top" width="33%"><img src="art/screenshots/cartoon-google-tv.png" alt="Painted three-dimensional fish and illustrated reef scenery" width="100%"><br>Cartoon</td>
+        <td valign="top" width="33%"><img src="art/screenshots/nemo-inspired-google-tv.png" alt="Painted three-dimensional fish in warm cinematic scenery" width="100%"><br>Finding Nemo inspired</td>
+        <td valign="top" width="33%"><img src="art/screenshots/mermaid-inspired-google-tv.png" alt="Painted three-dimensional fish in soft illustrated underwater scenery" width="100%"><br>Little Mermaid inspired</td>
     </tr>
     <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/original-day.png" alt="Original real 4K aquarium footage in Day mode" width="100%"><br>Original 4K footage: Day</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/original-night.png" alt="Original real 4K aquarium footage dimmed in Night mode" width="100%"><br>Original 4K footage: Night</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/realistic.png" alt="Realistic fish above a detailed reef" width="100%"><br>Realistic</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/classic.png" alt="Classic Windows inspired aquarium with cool water and a glass frame" width="100%"><br>Classic Windows aquarium</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/animated-3d.png" alt="Cinematic fish and underwater scenery" width="100%"><br>Animated 3D</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/cartoon.png" alt="Original geometric cartoon fish and reef" width="100%"><br>Cartoon</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/nemo-inspired.png" alt="Warm cinematic underwater appearance" width="100%"><br>Finding Nemo inspired</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/mermaid-inspired.png" alt="Classic drawn fish and painted underwater scenery" width="100%"><br>Little Mermaid inspired</td>
+        <td valign="top" width="33%"><img src="art/screenshots/settings-google-tv.png" alt="Remote-operated aquarium settings with the current three-dimensional fish preview" width="100%"><br>Settings and live preview</td>
+        <td valign="top" width="33%"><img src="art/screenshots/original-day-google-tv.png" alt="Bundled original aquarium footage in Day mode on the Google TV emulator" width="100%"><br>Original footage: Day</td>
+        <td valign="top" width="33%"><img src="art/screenshots/original-night-google-tv.png" alt="Bundled original aquarium footage dimmed in Night mode on the Google TV emulator" width="100%"><br>Original footage: Night</td>
     </tr>
 </table>
-
-Random selection and fallback images are emulator captures, as labeled.
-The remaining settings and video images are Fire TV screen captures. The six appearance
-images were rendered on the same TV's GPU into native 3840x2160 offscreen
-surfaces. All documentation images are 1920x1080. See [Verification](docs/VERIFICATION.md).
 
 ## Documentation
 

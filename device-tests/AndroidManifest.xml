@@ -5,4 +5,6 @@
         android:targetPackage="com.jeremykenedy.firetv.aquarium" />
     <instrumentation android:name="com.jeremykenedy.firetv.aquarium.DisplayInstrumentation"
         android:targetPackage="com.jeremykenedy.firetv.aquarium" />
+    <instrumentation android:name="com.jeremykenedy.firetv.aquarium.MarineMaterialInstrumentation"
+        android:targetPackage="com.jeremykenedy.firetv.aquarium" />
 </manifest>

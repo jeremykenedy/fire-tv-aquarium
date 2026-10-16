@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="392" height="408"
+ viewBox="0 0 392 408"
+ role="img" aria-labelledby="title description">
+<title id="title">Aquarium 4K</title>
+<desc id="description">
+Three-dimensional fish, six appearances, and an offline aquarium for your TV.
+</desc>
+<style>
+@keyframes swim{0%,100%{transform:translateX(-12px) scaleX(1)}
+35%{transform:translateX(16px) scaleX(1)}
+45%{transform:translateX(16px) scaleX(-1)}
+80%{transform:translateX(-12px) scaleX(-1)}
+90%{transform:translateX(-12px) scaleX(1)}}
+@keyframes rise{0%{transform:translateY(0);opacity:0}
+20%{opacity:.8}
+80%{opacity:.6}
+100%{transform:translateY(-70px);opacity:0}}
+.fish,.bubble{transform-box:fill-box;transform-origin:center}
+.fish{animation:swim 6.4s ease-in-out infinite}
+.second{animation-duration:8.2s;animation-delay:-3.1s}
+.bubble{animation:rise 3.6s linear infinite}
+.later{animation-duration:4.4s;animation-delay:-2.2s}
+@media(prefers-reduced-motion:reduce){.fish,.bubble{animation:none}}
+</style>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#0c0a09"/>
+<stop offset="1" stop-color="#1c1917"/>
+</linearGradient>
+<linearGradient id="water" x2="0" y2="1">
+<stop stop-color="#3b82f6"/>
+<stop offset="1" stop-color="#1e40af"/>
+</linearGradient>
+</defs>
+<rect width="392" height="408" rx="16" fill="url(#background)"
+ stroke="#292524"/>
+<g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+<text x="20" y="76"
+ font-size="36" font-weight="700"
+ letter-spacing="-.5" fill="#fff">Aquarium 4K</text>
+<text x="20" y="105"
+ font-size="13" fill="#a8a29e">A living underwater scene for your TV.</text>
+<g transform="translate(20 128)"><rect width="64" height="22" rx="11" fill="#1a1a1a" stroke="#60a5fa" stroke-width=".8"/><text x="32.0" y="15" font-size="9" font-weight="500" text-anchor="middle" fill="#60a5fa">3D fish</text></g><g transform="translate(92 128)"><rect width="70" height="22" rx="11" fill="#1a1a1a" stroke="#a78bfa" stroke-width=".8"/><text x="35.0" y="15" font-size="9" font-weight="500" text-anchor="middle" fill="#a78bfa">Six looks</text></g><g transform="translate(170 128)"><rect width="62" height="22" rx="11" fill="#1a1a1a" stroke="#4ade80" stroke-width=".8"/><text x="31.0" y="15" font-size="9" font-weight="500" text-anchor="middle" fill="#4ade80">Offline</text></g><g transform="translate(240 128)"><rect width="62" height="22" rx="11" fill="#1a1a1a" stroke="#fbbf24" stroke-width=".8"/><text x="31.0" y="15" font-size="9" font-weight="500" text-anchor="middle" fill="#fbbf24">No ads</text></g></g>
+<g transform="translate(54 194) scale(1.6)"><rect width="174" height="116" rx="14"
+ fill="url(#water)"/>
+<path d="M35 0 L62 116 M98 0 L123 116 M133 0 L159 116"
+ stroke="#60a5fa" stroke-width="12" opacity=".15"/>
+<path d="M12 110 Q18 74 9 66 M22 111 Q30 65 23 49 M149 111 Q154 71 166 59"
+ fill="none"
+ stroke="#4ade80" stroke-width="4"/>
+<g transform="translate(65 38)">
+<g class="fish">
+<path d="M-19 0 L-32 -13 L-32 13 Z"
+ fill="#fbbf24"/>
+<ellipse rx="23" ry="13"
+ fill="#f59e0b"/>
+<path d="M-6 -11 L-6 11 M8 -11 L8 11"
+ stroke="#fff" stroke-width="5"/>
+<circle cx="14" cy="-2" r="2.5"
+ fill="#0f172a"/>
+</g>
+</g>
+<g transform="translate(119 78)">
+<g class="fish second">
+<path d="M-19 0 L-32 -13 L-32 13 Z"
+ fill="#a78bfa"/>
+<ellipse rx="23" ry="13"
+ fill="#60a5fa"/>
+<path d="M-8 -11 Q1 -19 10 -10"
+ fill="#3b82f6"/>
+<circle cx="14" cy="-2" r="2.5"
+ fill="#0f172a"/>
+</g>
+</g>
+<circle class="bubble" cx="146" cy="94" r="3"
+ fill="none"
+ stroke="#c4b5fd" opacity=".7"/>
+<circle class="bubble later" cx="137" cy="86" r="4"
+ fill="none"
+ stroke="#c4b5fd" opacity=".7"/></g>
+</svg>

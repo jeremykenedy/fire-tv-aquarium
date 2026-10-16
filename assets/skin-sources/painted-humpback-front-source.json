@@ -1,0 +1,18 @@
+{
+  "asset": "painted-humpback-front.png",
+  "purpose": "Original frontal skin for anatomical head projection",
+  "license": "MIT",
+  "reference": "assets/models/painted-humpback-whale.png",
+  "reference_sha256": "05468449b24b04d92af8067fdf4d26c134014842055c1b6901813f1bd990f8c0",
+  "description": "Style transfer of humpback-front.png to the crisp hand-painted blue-white natural-history illustration style of the original illustrated whale side skin. Preserve exact UV composition, skin landmarks, closed mouth and edge-to-edge fill; no scene, text, transparency or geometry changes.",
+  "status": "Native projection visual review pending",
+  "reference_atlas": "assets/skin-sources/illustrated-marine.png",
+  "reference_atlas_cell": [
+    1,
+    0
+  ],
+  "reference_crop_size": [
+    512,
+    512
+  ]
+}

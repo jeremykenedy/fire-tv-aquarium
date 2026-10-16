@@ -1,0 +1,28 @@
+{
+  "species": "great-white-shark",
+  "format": "FISH v2, stride 36, body finFlex 0; signed membrane finFlex 0.0001 to 1",
+  "geometry": "Original distinct anatomical volume and curved fin surfaces",
+  "skin_source": "../../res/drawable-nodpi/realistic_marine.png",
+  "license": "MIT",
+  "skin_origin": "Original project atlas",
+  "skin_source_commit": "96179f7163dd4dc44478f2ef9d94d679f1e1734c",
+  "skin_source_sha256": "34e3f4b1e8077fa7ac8a38c25dc9b983146657974130726086356c5d116574ce",
+  "atlas_cell": [
+    0,
+    0
+  ],
+  "vertices": 1728,
+  "triangles": 3360,
+  "mesh_sha256": "3e9a6bf4d4384bcf79410e3d9d9a12536382ff062069869f31f3de3033895089",
+  "status": "Native visual prototype pending review",
+  "mouth_uv": [
+    497,
+    249
+  ],
+  "mouth_local": [
+    0.9999999999999999,
+    0.020449897750511245,
+    0.10128163003676031
+  ],
+  "tail_motion": "lateral"
+}

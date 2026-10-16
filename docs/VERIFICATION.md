@@ -2,6 +2,50 @@
 
 Aquarium 4K 1.3.6 verification, October 10, 2026
 
+## Unreleased volume and swimming rework
+
+This candidate is under native quality review and has no release tag. The Android
+package, signing key and saved setting values are preserved. Recorded results
+below apply to the measured candidate, not every later asset revision.
+
+- Google TV API 34 ARM64 emulator: actual OpenGL surface `1920x1080`, as advertised
+  by that emulator. Six looks were captured at 6 and 12 seconds with 16 fish.
+- The volume renderer sustained about 29.4 to 29.9 FPS with 16 fish, and 29.67 to
+  29.96 FPS with 60 fish on that emulator. The 60-fish motion recording contains
+  360 frames over 12.0208 seconds at 1280x720 capture resolution.
+- The revised Cartoon look rendered all five illustrated backgrounds. Look,
+  background and population settings were restored and read back after capture.
+- A separate native EGL pixel test verified that transparent body texels close
+  the mesh while transparent and translucent fin membranes, including rigid fin
+  roots, retain their alpha. It reported no OpenGL errors.
+- Controlled native GPU contact tests drew the actual packaged predator and prey
+  meshes. Shark, humpback and dolphin capture counters increased, and visible
+  prey pixels changed from 1,203, 1,142 and 1,221 respectively to zero after contact.
+  This proves the controlled contact path, rather than every natural encounter.
+- A 60.040-second product recording with 60 fish and all three predators contains
+  1,786 frames. Logged intervals stayed around 29.4 to 30 FPS, with one 28.386 FPS
+  interval. Shark and whale captures occurred; no dolphin capture was observed
+  during that recording. Capture resolution was 1280x720, rendering was 1920x1080.
+- The current signed build was captured in all six looks, settings, and original
+  footage Day and Night modes. Natural and painted humpbacks were also recorded
+  through continuous turns and checked from the opposite side. These checks are
+  part of visual review and do not establish final user acceptance.
+- Host regressions cover independent wandering, changes of direction and depth,
+  loose schools, predator pursuit, measured mouth transforms, capture and gradual
+  replenishment. Renderer tests cover all six looks, five backgrounds, lighting
+  choices and consumed-fish visibility.
+- Shark, whale and dolphin assets are still under front, side and tail review.
+  New geometry and skin revisions require another native check before release.
+- Required host coverage passed with 1,294 Java lines and 686 branches covered,
+  and 207 Python statements and 98 branches covered, with zero misses. Style,
+  documentation and offline APK checks passed; all 36 runtime marine assets
+  matched source bytes in the signed candidate.
+
+The current candidate requests the supported native display surface. Physical
+3840x2160 surface and composition, final visitor feeding contact, worst-case
+performance, idle Dream activation and remote navigation remain required checks.
+The emulator results above establish no physical Fire TV 4K performance claim.
+
 ## Version 1.3.6 release checks
 
 The signed APK uses version name `1.3.6`, version code `10`, and the existing

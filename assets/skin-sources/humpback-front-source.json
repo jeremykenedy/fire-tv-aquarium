@@ -1,0 +1,18 @@
+{
+  "asset": "humpback-front.png",
+  "purpose": "Original frontal skin for anatomical head projection",
+  "license": "MIT",
+  "reference": "assets/models/humpback-whale.png",
+  "reference_sha256": "09392ed37b186283d80a0b4bdb84c3af0d5c98f6d584b47452e399f5dccbc487",
+  "description": "Dedicated symmetric closed-mouth frontal humpback albedo. Edge-to-edge slate crown, pale ventral throat with longitudinal pleats, natural skin mottling and restrained tubercles. No water, scene, text, silhouette or directional shadows. Match original side skin material. Mouth closed across upper quarter; never an open bucket.",
+  "status": "Native projection visual review pending",
+  "reference_atlas": "res/drawable-nodpi/realistic_marine.png",
+  "reference_atlas_cell": [
+    1,
+    0
+  ],
+  "reference_crop_size": [
+    512,
+    512
+  ]
+}

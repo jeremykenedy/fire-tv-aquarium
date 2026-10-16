@@ -64,12 +64,12 @@ Changing Look retains the other aquarium settings.
 
 | Look | Appearance |
 |---|---|
-| Realistic | Detailed natural fish artwork and realistic underwater scenery |
+| Realistic | Textured three-dimensional fish and realistic underwater scenery |
 | Classic Windows aquarium | Natural fish with a cool aquarium palette and subtle glass framing |
-| Animated 3D | Polished cinematic 3D artwork with soft underwater depth |
-| Cartoon | The original simple 3D fish, plants, rocks, and coral |
-| Finding Nemo inspired | Expressive cinematic fish, colorful reef scenery, and a warmer vivid palette |
-| Little Mermaid inspired | Classic drawn fish and matching painted underwater backgrounds |
+| Animated 3D | Textured fish volume, cinematic scenery and soft underwater depth |
+| Cartoon | Painted fish volume with cel shading and vivid illustrated scenery |
+| Finding Nemo inspired | Painted fish volume, colorful cinematic scenery and a warmer vivid palette |
+| Little Mermaid inspired | Painted fish volume and underwater scenery with a softer palette |
 
 The cinematic and drawn appearances use original animals and scenery. Look names
 describe their visual direction. The same fish can swim left or right with
@@ -86,8 +86,8 @@ See [Artwork](ARTWORK.md) for rendering and source-resolution details.
 | Kelp forest | Tall moving plants, rocks, green water |
 | Deep sea | Dark open water |
 
-Each background has realistic, cinematic, and drawn artwork. Cartoon uses original
-geometry. Animals remain available in every background so you can create your
+Each background has realistic, cinematic, and drawn artwork. Cartoon uses the
+drawn scenery with its own material palette. Animals remain available in every background so you can create your
 own combinations.
 
 ## Optional sea life

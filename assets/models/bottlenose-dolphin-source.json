@@ -1,0 +1,28 @@
+{
+  "species": "bottlenose-dolphin",
+  "format": "FISH v2, stride 36, body finFlex 0; signed membrane finFlex 0.0001 to 1",
+  "geometry": "Original distinct anatomical volume and curved fin surfaces",
+  "skin_source": "../../res/drawable-nodpi/realistic_marine.png",
+  "license": "MIT",
+  "skin_origin": "Original project atlas",
+  "skin_source_commit": "96179f7163dd4dc44478f2ef9d94d679f1e1734c",
+  "skin_source_sha256": "34e3f4b1e8077fa7ac8a38c25dc9b983146657974130726086356c5d116574ce",
+  "atlas_cell": [
+    1,
+    2
+  ],
+  "vertices": 2236,
+  "triangles": 4368,
+  "mesh_sha256": "3bde8817d83f248d8bba092f3277914dfaf4ac085d1e0c0ccfbbaf2d092b1351",
+  "status": "Native visual prototype pending review",
+  "mouth_uv": [
+    497,
+    221
+  ],
+  "mouth_local": [
+    1.0,
+    0.0066214905413056755,
+    0.061124792601574225
+  ],
+  "tail_motion": "vertical"
+}

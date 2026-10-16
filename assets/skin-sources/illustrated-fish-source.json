@@ -1,0 +1,9 @@
+{
+  "description": "Original illustrated repaint of the project fish atlas, aligned to the anatomical mesh UV coordinates",
+  "license": "MIT",
+  "reference": "../../res/drawable-nodpi/realistic_fish.png",
+  "reference_sha256": "c044322f65205c2bdc6c5fb3ec24f814f302da3364fba99733958ee2604f981c",
+  "image_sha256": "2ac7f5f084272d09e447e9c2b77af500d4c59aeb0355d298e1fc6d310dcf717e",
+  "prompt": "Repaint original fish atlas as polished hand-painted traditional animation cels with clean ink contours, expressive anatomically placed eyes, soft painted shading and fine fin rays. Preserve exact canvas, 2 by 3 cell arrangement, species silhouettes, right-facing pose, proportions, positions and UV landmarks. Transparent outside fish. No text, logos or extra objects.",
+  "verification": "Native clownfish, blue tang and betta anatomy previews reviewed; complete illustrated scene review pending"
+}

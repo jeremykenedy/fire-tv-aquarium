@@ -28,6 +28,11 @@ class PackagingTests(unittest.TestCase):
         missing=None,
         compressed=False,
         missing_dex=False,
+        missing_model=False,
+        missing_license=False,
+        missing_painted=False,
+        missing_illustrated=False,
+        authoring_source=False,
         policy='cleartextTrafficPermitted=(type 0x12)0x0 src="system"',
     ):
         with tempfile.TemporaryDirectory() as directory:
@@ -46,6 +51,39 @@ class PackagingTests(unittest.TestCase):
                         name = f"{family}_{asset}.png"
                         if name != missing:
                             archive.writestr("res/drawable/" + name, b"artwork")
+                for species in (
+                    "clownfish",
+                    "yellow-tang",
+                    "blue-tang",
+                    "angelfish",
+                    "neon-tetra",
+                    "betta",
+                    "great-white-shark",
+                    "humpback-whale",
+                    "bottlenose-dolphin",
+                ):
+                    for suffix in (".bin", ".png", "-source.json"):
+                        if not missing_model or species != "clownfish":
+                            archive.writestr("assets/models/" + species + suffix, b"model")
+                if not missing_painted:
+                    for species in (
+                        "clownfish",
+                        "yellow-tang",
+                        "blue-tang",
+                        "angelfish",
+                        "neon-tetra",
+                        "betta",
+                        "great-white-shark",
+                        "humpback-whale",
+                        "bottlenose-dolphin",
+                    ):
+                        archive.writestr("assets/models/painted-" + species + ".png", b"skin")
+                if not missing_illustrated:
+                    archive.writestr("res/drawable-nodpi/illustrated_marine.png", b"illustrated")
+                if not missing_license:
+                    archive.writestr("assets/licenses/MIT.txt", b"MIT")
+                if authoring_source:
+                    archive.writestr("assets/source-models/reference.glb", b"authoring")
             with (
                 zipfile.ZipFile(apk) as archive,
                 patch.object(zipfile, "ZipFile", return_value=archive),
@@ -63,6 +101,11 @@ class PackagingTests(unittest.TestCase):
             {"badging": "another.package"},
             {"compressed": True},
             {"missing_dex": True},
+            {"missing_model": True},
+            {"missing_license": True},
+            {"missing_painted": True},
+            {"missing_illustrated": True},
+            {"authoring_source": True},
             {"policy": 'cleartextTrafficPermitted=(type 0x12)0xffffffff src="system"'},
             {"policy": 'cleartextTrafficPermitted=(type 0x12)0x0 src="user"'},
             {"policy": 'cleartextTrafficPermitted=(type 0x12)0x0 src="system" src="user"'},
@@ -109,6 +152,24 @@ class DocumentationTests(unittest.TestCase):
             )
             with patch.object(docs, "ROOT", root), self.assertRaises(DTDForbidden):
                 docs.check_banners()
+
+    def test_github_svg_theme_fragments_preserve_other_anchor_checks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            self.fixture(root)
+            readme = root / "README.md"
+            with patch.object(docs, "ROOT", root):
+                for mode in ("light", "dark"):
+                    readme.write_text(f"![Banner](art/banner-{mode}.svg#gh-{mode}-mode-only)")
+                    self.assertEqual(docs.check_links(readme), 1)
+                for target in (
+                    "art/banner-light.svg#missing",
+                    "docs/guide.md#gh-light-mode-only",
+                    "art/missing.svg#gh-dark-mode-only",
+                ):
+                    readme.write_text(f"[Invalid]({target})")
+                    with self.assertRaises(SystemExit):
+                        docs.check_links(readme)
 
     def test_local_links_anchors_license_banners_and_action_pins(self):
         with tempfile.TemporaryDirectory() as directory:

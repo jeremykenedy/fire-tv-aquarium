@@ -11,6 +11,8 @@ final class AquariumSceneView extends GLSurfaceView implements Runnable {
         super(context);
         setEGLContextClientVersion(2);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        int[] output = AquariumOutput.size(context);
+        getHolder().setFixedSize(output[0], output[1]);
         setPreserveEGLContextOnPause(true);
         renderer = new AquariumAppearanceRenderer(context.getResources(), options);
         setRenderer(renderer);

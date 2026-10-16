@@ -48,10 +48,20 @@ if [[ ! -f "$KEYSTORE" ]]; then
 fi
 [[ -s "$KEYPASS" ]] || { echo "Restore the signing-key password file." >&2; exit 1; }
 
+rm -rf "$OUT/marine-assets"
+mkdir -p "$OUT/marine-assets/models" "$OUT/marine-assets/licenses"
+for species in clownfish yellow-tang blue-tang angelfish neon-tetra betta \
+  great-white-shark humpback-whale bottlenose-dolphin; do
+  cp "$HERE/assets/models/$species.bin" "$HERE/assets/models/$species.png" \
+    "$HERE/assets/models/$species-source.json" "$HERE/assets/models/painted-$species.png" \
+    "$OUT/marine-assets/models/"
+done
+cp "$HERE/LICENSE" "$OUT/marine-assets/licenses/MIT.txt"
+
 "$BUILD_TOOLS/aapt2" compile --dir "$HERE/res" -o "$OUT/res.zip"
 "$BUILD_TOOLS/aapt2" link -o "$OUT/unsigned.apk" -I "$ANDROID_JAR" \
   --manifest "$HERE/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 36 \
-  --version-code 10 --version-name 1.3.6 -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
+  --version-code 10 --version-name 1.3.6 -A "$OUT/marine-assets" -0 mp4 --java "$OUT/generated" "$OUT/res.zip"
 find "$HERE/src" "$OUT/generated" -name '*.java' > "$OUT/sources.txt"
 javac -nowarn -Xlint:-options -source 8 -target 8 -bootclasspath "$ANDROID_JAR" \
   -d "$OUT/classes" @"$OUT/sources.txt"

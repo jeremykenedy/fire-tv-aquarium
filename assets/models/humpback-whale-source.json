@@ -1,0 +1,40 @@
+{
+  "species": "humpback-whale",
+  "format": "FISH v2, stride 36, body finFlex 0; signed membrane finFlex 0.0001 to 1",
+  "geometry": "Original distinct anatomical volume and curved fin surfaces",
+  "skin_source": "../../res/drawable-nodpi/realistic_marine.png",
+  "license": "MIT",
+  "skin_origin": "Original project atlas",
+  "skin_source_commit": "96179f7163dd4dc44478f2ef9d94d679f1e1734c",
+  "skin_source_sha256": "34e3f4b1e8077fa7ac8a38c25dc9b983146657974130726086356c5d116574ce",
+  "atlas_cell": [
+    1,
+    0
+  ],
+  "vertices": 1980,
+  "triangles": 3864,
+  "mesh_sha256": "92c2d5db40ef3394ad7988277f82b9cd0bd6741baafb7802dd8336e76b53d48c",
+  "status": "Native visual prototype pending review",
+  "frontal_skin": "../skin-sources/humpback-front.png",
+  "skin_layout": "1024x512: original side skin left, frontal head skin right",
+  "frontal_projection": {
+    "uv": [
+      0.7545148454239363,
+      0.6623167898792572,
+      -1.7607142857142857,
+      0.6640732359066196
+    ],
+    "blend_start": -0.06693711967545639,
+    "blend_end": 0.1764705882352941
+  },
+  "mouth_uv": [
+    496,
+    225
+  ],
+  "mouth_local": [
+    0.9999999999999999,
+    0.2290882475737392,
+    0.11621137828173088
+  ],
+  "tail_motion": "vertical"
+}

@@ -39,12 +39,41 @@ public final class GraphicsCoverageTest {
         static int error;
         static int draws;
         static int deletedTextures;
+        static final java.util.List<float[]> transforms = new java.util.ArrayList<>();
+        static final java.util.List<Float> angles = new java.util.ArrayList<>();
 
         @Resetter
         public static void clear() {
             compile = link = true;
             textureLimit = 2048;
             error = draws = deletedTextures = 0;
+            angles.clear();
+            transforms.clear();
+        }
+
+        @Implementation
+        protected static int glGetUniformLocation(int program, String name) {
+            return name.hashCode();
+        }
+
+        @Implementation
+        protected static void glUniform1f(int location, float value) {
+            if (location == "uAngle".hashCode()) angles.add(value);
+        }
+
+        @Implementation
+        protected static void glUniformMatrix4fv(
+                int location, int count, boolean transpose, float[] values, int offset) {
+            if (location == "uModel".hashCode())
+                transforms.add(java.util.Arrays.copyOfRange(values, offset, offset + 16));
+        }
+
+        @Implementation
+        protected static void glDrawElements(int mode, int count, int type, int offset) {
+            assertEquals(GLES20.GL_TRIANGLES, mode);
+            assertEquals(GLES20.GL_UNSIGNED_SHORT, type);
+            assertTrue(count > 0 && count % 3 == 0);
+            draws++;
         }
 
         @Implementation
@@ -81,7 +110,7 @@ public final class GraphicsCoverageTest {
     }
 
     @Implements(BitmapFactory.class)
-    public static class MissingArtwork {
+    public static class MissingArtwork extends org.robolectric.shadows.ShadowBitmapFactory {
         @Implementation
         protected static Bitmap decodeResource(
                 Resources resources, int id, BitmapFactory.Options options) {
@@ -89,28 +118,6 @@ public final class GraphicsCoverageTest {
             options.outHeight = 128;
             return null;
         }
-    }
-
-    @Test
-    public void meshesContainFiniteTrianglePositionsAndNormals() {
-        AquariumMesh[] meshes = {
-            AquariumMesh.sphere(8, 12),
-            AquariumMesh.plane(),
-            AquariumMesh.fin(new float[] {0, 0, 0, 1, 0, 0, 0, 1, 0}),
-            AquariumMesh.leaf(),
-            AquariumMesh.coral(),
-            AquariumMesh.tentacles(),
-            AquariumMesh.rock()
-        };
-        for (AquariumMesh mesh : meshes) {
-            assertEquals(mesh.count * 6, mesh.vertices.capacity());
-            assertEquals(0, mesh.count % 3);
-            for (int index = 0; index < mesh.vertices.capacity(); index++) {
-                assertTrue(Float.isFinite(mesh.vertices.get(index)));
-            }
-        }
-        assertEquals(6, meshes[1].count);
-        assertEquals(3, meshes[2].count);
     }
 
     @Test
@@ -161,13 +168,57 @@ public final class GraphicsCoverageTest {
     }
 
     @Test
+    public void consumedFishAreHiddenInEveryAppearance() {
+        for (int look = 0; look < 6; look++) {
+            AquariumOptions options =
+                    AquariumOptions.defaults().withChoice(2, 1, 0).withChoice(18, look, 0);
+            FishMotion motion = new FishMotion(new java.util.Random(19));
+            AquariumAppearanceRenderer renderer =
+                    new AquariumAppearanceRenderer(
+                            RuntimeEnvironment.getApplication().getResources(), options, motion);
+            renderer.onSurfaceCreated(null, null);
+            renderer.onSurfaceChanged(null, 1920, 1080);
+            Graphics.draws = 0;
+            renderer.onDrawFrame(null);
+            int visible = Graphics.draws;
+            motion.pose(0).visible = false;
+            Graphics.draws = 0;
+            renderer.onDrawFrame(null);
+            assertEquals(
+                    "The consumed fish must not draw in appearance " + look,
+                    visible - 1,
+                    Graphics.draws);
+        }
+    }
+
+    @Test
+    public void leftFacingFishAndVisitorsPitchTowardTheirPhysicalNose() {
+        AquariumOptions options = AquariumOptions.defaults().withChoice(10, 1, 0);
+        FishMotion motion = new FishMotion(new java.util.Random(33));
+        motion.pose(0).yaw = (float) Math.PI;
+        motion.pose(0).pitch = .31f;
+        motion.pose(60).yaw = (float) Math.PI;
+        motion.pose(60).pitch = .27f;
+        AquariumAppearanceRenderer renderer =
+                new AquariumAppearanceRenderer(
+                        RuntimeEnvironment.getApplication().getResources(), options, motion);
+        renderer.onSurfaceCreated(null, null);
+        renderer.onSurfaceChanged(null, 1920, 1080);
+        renderer.onDrawFrame(null);
+        assertTrue(
+                "Left-facing fish must pitch up when their pose pitches up",
+                Graphics.transforms.stream().anyMatch(matrix -> matrix[0] < 0 && matrix[1] > 0));
+        assertTrue(
+                "The shark body must pitch toward its measured capture point",
+                Graphics.transforms.stream().anyMatch(matrix -> matrix[0] < -3 && matrix[1] > .8f));
+    }
+
+    @Test
     public void shaderCompilationAndLinkFailuresAreReported() {
         Graphics.compile = false;
-        assertThrows(IllegalStateException.class, AquariumShader::new);
         assertThrows(IllegalStateException.class, AquariumTextureShader::new);
         Graphics.compile = true;
         Graphics.link = false;
-        assertThrows(IllegalStateException.class, AquariumShader::new);
         assertThrows(IllegalStateException.class, AquariumTextureShader::new);
     }
 

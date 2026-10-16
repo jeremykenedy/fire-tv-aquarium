@@ -33,7 +33,11 @@ def check_links(path):
         linked = (path.parent / name).resolve() if name else path
         if not linked.is_relative_to(ROOT) or not linked.is_file():
             raise SystemExit(f"{path.name}: missing {target}")
-        if fragment and fragment not in anchors(linked):
+        theme_fragment = linked.suffix == ".svg" and fragment in (
+            "gh-light-mode-only",
+            "gh-dark-mode-only",
+        )
+        if fragment and not theme_fragment and fragment not in anchors(linked):
             raise SystemExit(f"{path.name}: missing anchor {target}")
         checked += 1
     return checked
