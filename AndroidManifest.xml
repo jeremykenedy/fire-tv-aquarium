@@ -9,6 +9,9 @@
         android:allowBackup="false" android:usesCleartextTraffic="false"
         android:networkSecurityConfig="@xml/network_security_config"
         android:hardwareAccelerated="true" android:icon="@drawable/icon" android:banner="@drawable/banner">
+        <provider android:name=".SettingsProvider"
+            android:authorities="com.jeremykenedy.firetv.aquarium.settings"
+            android:exported="true" />
         <activity android:name=".AquariumActivity" android:exported="true"
             android:screenOrientation="landscape">
             <intent-filter>

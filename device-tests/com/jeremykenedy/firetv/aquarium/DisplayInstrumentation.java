@@ -114,7 +114,7 @@ public final class DisplayInstrumentation extends Instrumentation {
             int[] output = AquariumOutput.size(getTargetContext());
             check(
                     output[0] > 0 && output[1] > 0,
-                    "Physical display resolution: " + output[0] + "x" + output[1]);
+                    "Active composition metrics: " + output[0] + "x" + output[1]);
             report.append("UHD decode selected: ")
                     .append(AquariumOutput.supportsUhdVideo(getTargetContext()))
                     .append('\n');

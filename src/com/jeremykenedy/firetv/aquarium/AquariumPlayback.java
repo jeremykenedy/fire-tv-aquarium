@@ -31,7 +31,7 @@ final class AquariumPlayback extends FrameLayout
         video = new SurfaceView(context);
         addView(video, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         video.getHolder().addCallback(this);
-        // Fire TV can keep its UI at 1080p while the video surface is native UHD.
+        // Choose media dimensions for the active composition, not an unused panel mode.
         int[] output = AquariumOutput.size(context);
         video.getHolder().setFixedSize(output[0], output[1]);
         hd = !AquariumOutput.supportsUhdVideo(context);

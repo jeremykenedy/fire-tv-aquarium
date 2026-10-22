@@ -58,6 +58,7 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
     private final AtomicReference<AquariumOptions> options;
     private final FishMotion motion;
     private AquariumTextureShader shader;
+    private AquariumTextureShader backgroundShader;
     private int width;
     private int height;
     private int loadedFamily = -1;
@@ -88,6 +89,7 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         shader = new AquariumTextureShader();
+        backgroundShader = new AquariumTextureShader(true);
         loadedFamily = loadedScene = loadedMarine = -1;
         background = marine = null;
         fish = new MarineFishRenderer(resources.getAssets());
@@ -134,15 +136,16 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
                 settings.count,
                 settings.creatures);
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-        GLES20.glEnable(GLES20.GL_BLEND);
+        // Background artwork is opaque RGB; blending only adds a full-surface read.
+        GLES20.glDisable(GLES20.GL_BLEND);
         // Android decodes and uploads premultiplied RGBA textures.
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        shader.frame(settings, seconds, WATER[settings.scene]);
+        backgroundShader.frame(settings, seconds, WATER[settings.scene]);
         float cropWidth = Math.min(1, ((float) width / height) / background.aspect);
         float cropHeight = Math.min(1, background.aspect / ((float) width / height));
-        shader.draw(
+        backgroundShader.draw(
                 background.id,
                 0,
                 0,

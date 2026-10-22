@@ -3,10 +3,11 @@ package com.jeremykenedy.firetv.aquarium;
 import android.content.Context;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
-/** Uses the physical TV mode, which can differ from the resolution of the launcher UI. */
+/** Chooses media for the active composition instead of an unused supported panel mode. */
 final class AquariumOutput {
     private AquariumOutput() {}
 
@@ -14,13 +15,10 @@ final class AquariumOutput {
         Display display =
                 ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                         .getDefaultDisplay();
-        for (Display.Mode mode : display.getSupportedModes()) {
-            if (mode.getPhysicalWidth() == 3840 && mode.getPhysicalHeight() == 2160)
-                return new int[] {3840, 2160};
-        }
-        Display.Mode current = display.getMode();
-        int width = current.getPhysicalWidth();
-        int height = current.getPhysicalHeight();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getRealMetrics(metrics);
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
         float scale = Math.min(1f, Math.min(3840f / width, 2160f / height));
         return new int[] {Math.max(1, (int) (width * scale)), Math.max(1, (int) (height * scale))};
     }

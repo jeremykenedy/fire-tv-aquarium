@@ -1,259 +1,104 @@
 # Device verification
 
-Aquarium 4K 1.4.0 release candidate verification, October 16, 2026
+Aquarium 4K 1.4.0, verified October 22, 2026.
 
-## Version 1.4.0 volume and swimming rework
+## Release identity
 
-Version 1.4.0 uses Android version code 11 and the existing release signing
-certificate. This candidate is under physical quality review and has no release tag. The Android
-package, signing key and saved setting values are preserved. Recorded results
-below apply to the measured candidate, not every later asset revision.
+The tested signed APK uses version code 11 and package
+`com.jeremykenedy.firetv.aquarium`.
 
-- Google TV API 34 ARM64 emulator: actual OpenGL surface `1920x1080`, as advertised
-  by that emulator. Six looks were captured at 6 and 12 seconds with 16 fish.
-- The volume renderer sustained about 29.4 to 29.9 FPS with 16 fish, and 29.67 to
-  29.96 FPS with 60 fish on that emulator. The 60-fish motion recording contains
-  360 frames over 12.0208 seconds at 1280x720 capture resolution.
-- The revised Cartoon look rendered all five illustrated backgrounds. Look,
-  background and population settings were restored and read back after capture.
-- A separate native EGL pixel test verified that transparent body texels close
-  the mesh while transparent and translucent fin membranes, including rigid fin
-  roots, retain their alpha. It reported no OpenGL errors.
-- Controlled native GPU contact tests drew the actual packaged predator and prey
-  meshes. Shark, humpback and dolphin capture counters increased, and visible
-  prey pixels changed from 1,203, 1,142 and 1,221 respectively to zero after contact.
-  This proves the controlled contact path, rather than every natural encounter.
-- A 60.040-second product recording with 60 fish and all three predators contains
-  1,786 frames. Logged intervals stayed around 29.4 to 30 FPS, with one 28.386 FPS
-  interval. Shark and whale captures occurred; no dolphin capture was observed
-  during that recording. Capture resolution was 1280x720, rendering was 1920x1080.
-- The frozen signed 1.4.0 candidate, SHA-256
-  `b8dda54ca5d3381fd7a954061b103351d9247f9d4237570fe88d8f83ca1968bf`,
-  was captured in all six looks, settings, and original footage Day and Night modes.
-  These nine gallery images use the actual 1920x1080 emulator surface. The selected
-  Dream, enabled state and other three screensaver settings remained unchanged;
-  appearance, mode and Day / Night settings were restored before returning Home. Natural and painted humpbacks were also recorded
-  through continuous turns and checked from the opposite side. These checks are
-  part of visual review and do not establish final user acceptance.
-- Host regressions cover independent wandering, changes of direction and depth,
-  loose schools, predator pursuit, measured mouth transforms, capture and gradual
-  replenishment. Renderer tests cover all six looks, five backgrounds, lighting
-  choices and consumed-fish visibility.
-- Shark, whale and dolphin assets are still under front, side and tail review.
-  New geometry and skin revisions require another native check before release.
-- Required host coverage passed with 1,344 Java lines and 686 branches covered,
-  and 211 Python statements and 100 branches covered, with zero misses. Style,
-  documentation and offline APK checks passed; all 36 runtime marine assets
-  matched source bytes in the signed candidate.
+- APK SHA-256: `5e9b482e5238e183f8d8d07eeecd0b13b7cd411948937c39a0dfbc0806ba8eba`.
+- Signing certificate SHA-256: `719244d625fa38f30d48e1a14aedfe18ce2d97183743046cceeb2ee04555859a`.
+- Stable package, certificate and all 16 stored preferences survive in-place upgrades.
+- No requested Android permissions, network access or third-party runtime libraries.
 
-The current candidate requests the supported native display surface. Physical
-3840x2160 surface and composition, final visitor feeding contact, worst-case
-performance, idle Dream activation and remote navigation remain required checks.
-The emulator results above establish no physical Fire TV 4K performance claim.
+## Physical Fire TV
 
-## Version 1.3.6 release checks
+A physical Fire TV running API 30 rendered all six looks with 60 Large fish,
+five marine visitors, Lively speed, bubbles and sunlight enabled. SurfaceFlinger
+presentation timestamps measured the real app surface; screen-recording frame
+counts and renderer logs were not substituted for presented-frame pacing.
 
-The signed APK uses version name `1.3.6`, version code `10`, and the existing
-release signing certificate. The animated OpenGL view now uses the size Android
-assigns to its view rather than forcing a 3840x2160 surface buffer.
-
-| Platform | Environment | Signed release checks |
+| Appearance | Presented FPS | Median interval, ms |
 |---|---|---|
-| Fire TV | Physical API 30 TV with 4K panel | In-place signed upgrade; Fire TV UI 1.1.1 showed Aquarium 4K selected and Screensaver On; DreamActivity rendered continuously at about 30 FPS on a 1920x1080 surface; display remained Awake/ON |
-| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Not retested for this surface-size change |
-| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this surface-size change |
+| Realistic | 30.121 | 33.334 |
+| Classic Windows aquarium | 30.121 | 33.328 |
+| Animated 3D | 30.120 | 33.337 |
+| Cartoon | 30.121 | 33.327 |
+| Finding Nemo inspired | 30.121 | 33.335 |
+| Little Mermaid inspired | 30.240 | 33.335 |
 
-The APK requests no permissions and has no network access. The 4K panel uses
-the system compositor to scale the view to its output mode. The Fire TV's
-settings page remained available after the in-place upgrade.
+Every sample used an actual 1920x1080 buffer, crop and layer bounds, with an
+identity 1x1 transform and DEVICE composition. These results establish native
+1080p composition, not native 4K output. The same scene with an unnecessary
+3840x2160 buffer had previously failed the minimum 24 FPS acceptance gate.
+The release follows its real app window instead of selecting an unused supported
+4K panel mode. No model, geometry, texture or motion reduction was needed.
 
-## Version 1.3.5 release checks
+The first normal DreamService session ran input-free for at least 45 seconds.
+The system Somnambulator started the selected non-test DreamService manually;
+this is not proof of automatic inactivity activation. No idle or sleep timer
+was changed. Vendor-specific automatic activation remains a separate device
+integration check.
 
-The signed APK uses version name `1.3.5`, version code `9`, and the existing
-release signing certificate. The DreamService leaves the Fire TV display mode
-at the platform-selected value instead of forcing a preferred mode.
+Preview, Menu return, Back return and Home exit passed. Before and after the
+checks, the 16 raw aquarium fields, eight relevant system fields, Fire TV UI
+protection state and its saved backup matched exactly. The original selected
+normal aquarium Dream and Dreaming power state were restored.
 
-| Platform | Environment | Signed release checks |
-|---|---|---|
-| Fire TV | Physical API 30 TV with 4K panel | Signed install, saved aquarium options retained, Fire TV UI settings and preview, `AquariumDreamService` remained animated during a 15-second preview, selection and enabled state survived the protection service, Home returned to AT4K |
-| Android unit tests | Robolectric | Lifecycle regression asserts the screensaver does not request a preferred display mode |
-| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this display-mode change |
+The ordinary saved Realistic profile, with 16 fish and no large visitors, was
+captured in an 8.057-second recording and two stills eight seconds apart. Stored
+Random size and lighting choices remained Random. Review showed independent
+spacing, headings and turns, dimensional fish, and no incidental text, watermark
+or obvious motion stall. The recording was captured at 1280x720; that encoder
+resolution does not replace the surface or pacing measurements above.
 
-The installer now uses Fire TV UI's screensaver selection receiver when that
-receiver is installed. This updates the protected selection preference along
-with Android's secure setting, so the UI guard does not revert the aquarium or
-disable it. The installer falls back to verified secure-setting writes when
-Fire TV UI is absent. ADB captures are 1920x1080; Android reports the active
-physical display mode as 3840x2160 at 60 Hz. ADB capture does not independently
-verify what is visible on the television panel.
+Physical logs recorded shark and whale captures. Controlled native GPU tests
+also draw the packaged predator and prey meshes at measured mouth contact:
+visible prey pixels disappear after capture. Those controlled tests establish
+the contact path, not every possible natural encounter. Independent wandering,
+pauses, depth, gradual turns, escape and population replenishment have focused
+long-running host regressions.
 
-## Version 1.3.4 release checks
+## Native gallery and settings
 
-The signed APK uses version name `1.3.4`, version code `8`, and the existing
-release signing certificate. Full-screen preview sets `FLAG_KEEP_SCREEN_ON`;
-returning to settings or leaving the activity clears it. This keeps the display
-awake only while the user is watching the aquarium preview.
+The same signed APK was upgraded in place on the Google TV API 34 emulator.
+The [gallery](GALLERY.md) contains all six ordinary 16-fish looks and the original
+video in Day and Night modes, captured at 1920x1080. The current settings panel
+capture comes from the physical Fire TV. The Night video capture averages about
+40 percent of Day brightness across moving frames. These are actual native
+captures, not mockups or maximum-load marketing images.
 
-| Platform | Environment | Signed release checks |
-|---|---|---|
-| Fire TV | Physical API 30 TV with 4K panel | In-place signed upgrade, settings launch, full-screen preview, `KEEP_SCREEN_ON` window flag, display remained Awake/ON for 20 seconds, renderer active at 12 FPS |
-| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Lifecycle regression test verifies preview sets the keep-screen-on flag and Back clears it |
-| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this preview lifecycle change |
+The Google TV capture run restored all 16 raw Aquarium fields, all 18 Aquarium
+Live fields and eight system values exactly, and returned Home. The settings
+interface preserves integer and boolean types, latent Random values and shuffle
+masks. Invalid or mixed invalid batches are rejected atomically. Physical
+cross-TV settings transfer is a separate deployment check.
 
-ADB frame capture confirmed the animated surface was producing frames. The
-physical panel could not be independently observed by this capture; the user
-reported the TV remained black before this fix. No permission, preference
-schema, minimum Android version, or network-access changes.
+## Source checks
 
-## Version 1.3.3 release checks
+- Host swimming/settings suite: 1,524,930 checks passed.
+- Python installer and tooling tests passed.
+- Java coverage: 1,434 lines and 750 branches, zero missed.
+- Python coverage: 211 statements and 100 branches, zero missed.
+- Style, documentation, Android build, APK policy and signing checks passed.
+- Native sunlight comparison covers multiple timestamps, lighting and ray settings.
+- The specialized opaque background matched the original GPU pixels in 108 cases.
+- Native body and fin tests distinguish opaque body surfaces from transparent fin membranes.
 
-The signed APK uses version name `1.3.3`, version code `7`, and the existing
-release signing certificate. The settings Activity no longer requests the
-screensaver's immersive 4K window mode or runs the animated surface underneath
-its controls. Its initial window uses the same dark background as the settings
-panel. Preview starts the animation; Menu or Back returns to settings.
+Coverage does not establish physical visual quality or automatic idle behavior.
+CI builds use temporary signing keys; the public upgrade uses the tested stable
+certificate above.
 
-| Platform | Environment | Signed release checks |
-|---|---|---|
-| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Settings opened directly and through the Fire TV UI picker, stable panel, Preview animation, Menu return, no crash |
-| Fire TV | Physical API 30 TV with 4K panel | Installed and tested after release. Settings panel and preview launch were checked; the later user report identified the preview display turning black. |
-| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Not retested for this settings-only change |
+## Platform limits
 
-Emulator screenshots confirmed the dark startup window, controls visible before
-Preview, the aquarium rendering after Preview, and Menu restoring the settings
-panel. The 1.3.3 release has no permission, preference schema, minimum Android
-version, or network-access changes.
+Android API 23 and OpenGL ES 2.0 remain the minimum. Android TV API 31 emulator
+checks from earlier releases are historical; the final 1.4.0 APK was not retested
+on that platform. Physical Android TV and Google TV models still need their own
+validation. Native 3840x2160 window and display composition remain unverified.
+A panel mode or oversized render buffer alone does not prove that capability.
 
-## Version 1.3.2 release checks
-
-The signed APK uses version name `1.3.2`, version code `6`, and the existing
-release signing certificate. The DreamService keeps the Random options
-resolved when its display is attached instead of resolving and configuring a
-second time when the dream starts.
-
-| Platform | Environment | Signed release checks |
-|---|---|---|
-| Fire TV | Physical API 30 TV with 4K panel | In-place upgrade, settings controls, randomized 15-second idle startup, active AquariumDreamService, rendered aquarium capture, remote navigation and preview return |
-| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Signed APK installation, settings and preview startup, remote navigation, saved options after reopening, preview return |
-| Google TV | Official API 34 ARM64 emulator, 1920x1080 | In-place upgrade, settings and preview startup, remote navigation, saved options after reopening, preview return |
-
-Only Fire TV is physical hardware. Android TV and Google TV results are from
-emulators; physical models still need hardware testing. No preference schema,
-minimum Android version, requested permissions, or network access changed.
-
-## Version 1.3.1 release checks
-
-The signed APK has version name `1.3.1` and version code `5`. Its signing
-certificate matches the previous official 1.3.0 release. APK verification
-confirmed zero requested permissions, blocked cleartext traffic, system-only
-certificate trust, bundled footage, artwork, and executable classes.
-
-| Platform | Environment | Signed release checks |
-|---|---|---|
-| Fire TV | Physical API 30 TV with 4K panel | In-place upgrade, saved settings, remote navigation, random controls, day/night, reopening, UHD playback, all native appearance checks, native 3840x2160 dream surface, automatic idle activation and Back exit |
-| Android TV | Official API 31 ARM64 emulator, 1920x1080 | In-place installation, cold-start saved settings comparison, native remote controls, random controls, day/night, reopening, local HD playback, automatic idle activation and Back exit |
-| Google TV | Official API 34 ARM64 emulator, 1920x1080 | In-place upgrade, saved settings, native remote controls, random controls, day/night, reopening, local HD playback, automatic idle activation and Back exit |
-
-All native display check runners passed. The Fire TV appearance runner passed
-all looks, backgrounds, species, and sea-life checks. Test runners restored
-preferences, screensaver selections, timeout settings, and prior sleep states.
-The Android TV comparison was repeated with fresh activity starts so retained
-view state did not affect the settings comparison.
-
-Only Fire TV hardware was connected. Physical Android TV and Google TV
-verification remains unavailable and is not claimed by these emulator results.
-Source CI enforces 100% Java and Python line and branch coverage. The tested
-release APK is kept separately from CI's temporary-key validation APKs.
-
-## Local checks
-
-- Twenty Python tooling tests passed, including checksum rejection, shell quoting,
-  preservation of original settings, invalid-device rejection, rollback, compiled
-  certificate policy checks, and unsafe documentation XML rejection.
-- 575,155 Java assertions passed for corrupt settings, population and appearance
-  bounds, random choices, shuffle exclusions, fixed-option preservation, day/night brightness, species distribution, school direction and
-  spacing, and day-long swim paths.
-- Android SDK build succeeded; APK signature verification succeeded.
-- Built APK requests zero permissions and stores the video uncompressed.
-- Java/Python formatting, ShellCheck, documentation links, Bandit, and Gitleaks
-  checks passed for the documentation and CI setup.
-
-## Version 1.3.0 platform checks
-
-| Platform | Environment | Result |
-|---|---|---|
-| Fire TV | Physical API 30 TV with 4K panel | Remote controls, Random settings and shuffle exclusions, preferences, UHD video playback, native 4K display composition, automatic idle activation and Back exit |
-| Android TV | Official API 31 ARM64 emulator, 1920x1080 | Native settings and preview, day/night, random controls and persistence, 1080p rendering and local video playback, automatic idle activation and Back exit |
-| Google TV | Official API 34 ARM64 emulator, 1920x1080 | Native settings and preview, day/night, random controls and persistence, 1080p rendering and local video playback, automatic idle activation and Back exit |
-
-Android TV and Google TV are verified on emulators; additional physical TV models
-still need hardware testing. Both emulators reported and played muted, looping
-1920x1080 footage. Physical Fire TV detection selected UHD. The APK targets SDK
-36, installs on both emulators without the older-target Play Protect warning,
-and has the same signing certificate as version 1.2.0.
-
-Idle checks temporarily used a 15-second timeout, confirmed the aquarium's active
-DreamService and Dreaming power state, and checked the return to Awake after Back.
-Screensaver selections, idle timeouts, and stay-awake settings were restored.
-Screenshots confirmed rendered aquarium content in both emulator dreams.
-
-The physical Fire TV was temporarily awakened for final screen captures. Its
-animated dream used a 3840x2160 SurfaceView buffer, full 3840x2160 source and
-physical display frame, and hardware composition. The player reported muted,
-looping 3840x2160 footage. Native controls, random preferences, shuffle exclusions,
-and reopening passed while the screen was awake. The TV's original asleep state
-was restored afterward. The fallback on an actual UHD decoder error is implemented
-but was not induced during these checks.
-
-## Fire TV checks
-
-Version 1.2.0, on the connected Android SDK 30 Fire TV:
-
-- All 30 combinations of six looks and five backgrounds rendered with no GL
-  errors on a native 3840x2160 offscreen GPU surface.
-- Each of six fish species and seven optional sea-life types changed the
-  rendered pixels in all three artwork families: 18 species and 21 sea-life
-  checks. Captures were visually checked for transparent edges and backgrounds.
-- Appearance, background, population, species, and sea-life preferences saved
-  and read back correctly, with prior settings restored after the check.
-- Day / Night was reached through the activity's remote key dispatch and Right
-  selected Night. All six look changes retained the Night selection.
-- The brightness control remained enabled for Original 4K footage while
-  animated-only controls were disabled. Night and footage selections survived
-  closing and reopening the settings activity.
-- Actual screen captures showed animated Night brightness at 0.400 of Day in
-  a clear-water region. Original footage measured 0.413 across moving frames.
-- SHA-256 of the bundled video matches the first installed prototype's video
-  exactly: `9e28c6c8b84443a24f28c0e40bd8f50700629d9723d5c105868f82f948f1fccb`.
-
-The separate native checks are documented in [Building](BUILDING.md). They are
-compiled in CI; GPU execution and display captures require the physical TV.
-
-The following lifecycle, remote-option, and idle-activation checks were completed
-for version 1.1.0 before the appearance and day/night additions:
-
-Fire OS / Android SDK 30, connected 4K panel:
-
-- Every population preset, exact count adjustment, fish species, background,
-  speed, size, lighting, bubbles, sunlight shimmer, clock, and sea-life switch
-  operated through remote key events and reflected in the settings screen.
-- All seven optional sea-life types rendered in the Ocean preview.
-- Preferences survived force-stopping and reopening the app.
-- Full-screen preview, Back/Menu navigation, reset, and switching between
-  animated and real-footage modes worked. Footage-only mode disabled the
-  controls for animated fish and scenery, while retaining their saved values.
-- Native SurfaceView buffers were 3840x2160, with hardware display composition
-  using full 3840x2160 source crop and display frame, despite the 1080p UI.
-- DreamService started automatically after a temporary 15-second idle timeout.
-  A remote key exited the dream. The prior idle and sleep timeouts were restored.
-- Native 3840x2160 hardware-decoded footage played muted and looping.
-
-Settings and footage screenshots are device captures at 1920x1080. Appearance
-images are captured from the TV's offscreen 3840x2160 GPU surface and reduced to
-1920x1080. SurfaceFlinger verified full-screen aquarium surfaces at native 4K.
-Artwork resolution is documented in [Artwork](ARTWORK.md). Frame rate varies by
-device and settings; the realistic preview sampled about 16 fps on this TV.
-
-GitHub Actions builds the APK and runs the installer, swimming-path, and
-permission checks. CI generates its own temporary signing key for verification.
-The downloadable release APK is signed with the stable local application key.
+Previous release results remain in their tagged source history. In particular,
+[1.3.6 verification](https://github.com/jeremykenedy/fire-tv-aquarium/blob/v1.3.6/docs/VERIFICATION.md)
+also recorded a physical 1920x1080 surface. Earlier claims based on a 3840x2160
+buffer should not be read as fresh confirmation of end-to-end native 4K output.

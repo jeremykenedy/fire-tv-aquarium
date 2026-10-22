@@ -11,7 +11,7 @@ services. Its package is `com.jeremykenedy.firetv.aquarium`.
 | `AquariumOutput` | Physical display size and local H.264 decoder capabilities |
 | `AquariumPreferences` | Private on-device settings storage |
 | `AquariumDisplay` | Switch between animated and video content; display clock |
-| `AquariumSceneView` | Native 4K OpenGL surface and frame requests |
+| `AquariumSceneView` | OpenGL surface matching the actual window and frame requests |
 | `AquariumAppearanceRenderer` | Appearance selection, artwork textures, depth layers, fish and sea-life placement |
 | `AquariumTextureShader` | Scenery, remaining sea-life surfaces, lighting, sunlight, bubbles |
 | `MarineMeshData` | Versioned indexed mesh decoding |
@@ -48,12 +48,16 @@ the center of a picture.
 
 ## Resolution
 
-Both animated and video surfaces request a fixed 3840x2160 buffer on a TV with
-a supported 4K mode; other TVs use their physical display size, capped at 4K. The window
-prefers a supported 4K display mode. Fire TV can render its UI at 1080p while
-compositing that separate aquarium surface at 4K. Device verification checks
-actual SurfaceFlinger buffer, crop, display frame, and hardware composition;
-a manifest declaration alone does not establish native 4K output.
+The animated surface follows its actual window size. A supported 4K panel mode
+does not establish a 4K app window. Rendering an oversized buffer into a 1080p
+composition adds sampling cost without establishing native 4K output. Local video
+selection uses the active display metrics, capped at 3840x2160, and requires a
+compatible hardware decoder before choosing the UHD clip.
+
+Device verification records the actual SurfaceFlinger buffer, crop, display
+frame, and composition transform. A 3840x2160 buffer scaled into a 1920x1080
+composition is supersampling, not native 4K output. Native 4K remains unverified
+until an actual 3840x2160 window and display composition are measured.
 
 Original video checks local codec capabilities before choosing UHD or the bundled
 1080p derivative. A failed UHD playback retries the HD copy once. Both are muted

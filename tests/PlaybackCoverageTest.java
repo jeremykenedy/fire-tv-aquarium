@@ -36,6 +36,8 @@ import org.robolectric.util.ReflectionHelpers;
 public final class PlaybackCoverageTest {
     @Before
     public void localClipsCanPrepare() {
+        OutputPolicyTest.DisplayModes.realWidth = 1920;
+        OutputPolicyTest.DisplayModes.realHeight = 1080;
         OutputPolicyTest.DisplayModes.current = OutputPolicyTest.mode(1, 1920, 1080);
         OutputPolicyTest.DisplayModes.supported = new android.view.Display.Mode[0];
         OutputPolicyTest.CodecList.broken = false;
@@ -83,6 +85,8 @@ public final class PlaybackCoverageTest {
 
     @Test
     public void uhdFailureRetriesHdOnceThenDisplaysTheError() {
+        OutputPolicyTest.DisplayModes.realWidth = 3840;
+        OutputPolicyTest.DisplayModes.realHeight = 2160;
         OutputPolicyTest.DisplayModes.supported =
                 new android.view.Display.Mode[] {OutputPolicyTest.mode(7, 3840, 2160)};
         ShadowMediaCodecList.addCodec(

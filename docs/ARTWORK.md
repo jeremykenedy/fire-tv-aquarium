@@ -43,14 +43,16 @@ replaces the skin textures without rebuilding the meshes.
 
 ## Resolution
 
-The aquarium surface requests 3840x2160 when Android advertises a supported 4K
-mode, otherwise the supported physical display size. Native surface and display
-composition must be checked on the target TV; the current model candidate has
-been measured on a 1920x1080 emulator surface. Background textures are approximately
-1672x941, fish atlases are 1024x1536, and sea-life atlases are 887x1774. These
-are source artwork dimensions, distinct from the 4K rendering surface. The
-bundled recorded video is native 3840x2160. Device screenshots are 1920x1080
-because that is the Fire TV's capture resolution.
+The animated surface follows its actual app window. The tested Fire TV uses
+1920x1080 buffers with identity display composition; native 3840x2160 output
+is not established by an advertised panel mode or a larger intermediate buffer.
+See [Verification](VERIFICATION.md) for the measured output and pacing.
+
+Background textures are approximately 1672x941, original fish atlases are
+1024x1536, and sea-life atlases are 887x1774. Volume models use individual natural
+and painted skins. Artwork dimensions differ from the render viewport. The
+recorded source video is 3840x2160, with a local 1920x1080 derivative selected for
+HD output or decoder fallback. Current documentation captures are 1920x1080.
 
 Textures load without Android density scaling, preserve alpha, and use linear
 filtering. Images are center-cropped to fill the display without stretching.

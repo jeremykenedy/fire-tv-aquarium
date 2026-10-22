@@ -17,9 +17,13 @@ sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
 ## Build and test
 
 ```bash
+python3 -m pip install -r requirements-dev.txt
 bash test.sh
+bash scripts/check-style.sh
+python3 scripts/check-docs.py
 bash build.sh
 python3 check_apk.py
+bash scripts/test-coverage.sh
 ```
 
 `build.sh` compiles resources with AAPT2, Java with `javac`, and DEX with D8,

@@ -178,3 +178,45 @@ Random is saved as a choice; the randomly resolved result is not saved over it.
 Reset aquarium returns app choices to defaults. Clearing Android app data or
 uninstalling also removes preferences. The computer's screensaver backup is
 separate and is not used to store aquarium choices.
+
+## Typed settings transfer
+
+The app exposes its 16 saved choices through an app-owned content provider.
+Local apps and authorized ADB tools can read or update these non-secret choices.
+The interface cannot access other app data, credentials or Android system settings.
+This includes the underlying values retained by Random choices, the random
+choice bitmask, and the enabled Shuffle versions. Export reads saved choices
+without rolling a new random aquarium.
+
+```bash
+adb -s DEVICE_SERIAL shell content query \
+  --uri content://com.jeremykenedy.firetv.aquarium.settings/schema
+adb -s DEVICE_SERIAL shell content query \
+  --uri content://com.jeremykenedy.firetv.aquarium.settings/settings
+```
+
+The schema describes each key, its title, storage type, default and bounds.
+Settings rows contain `key`, `value`, and `type`. Fourteen fields use integer
+storage and two use boolean storage. Preserve those types when importing.
+Android's `content` command uses `i` for integers and `b` for booleans.
+
+A single setting can use the shared key/value protocol:
+
+```bash
+adb -s DEVICE_SERIAL shell content update \
+  --uri content://com.jeremykenedy.firetv.aquarium.settings/settings \
+  --bind key:s:clock --bind value:s:0
+```
+
+For an exact transfer, export all 16 source values, then submit all destination
+fields in one update, using one typed `--bind KEY:TYPE:VALUE` argument per field.
+The provider validates the complete batch before committing it. Unknown keys,
+invalid types, empty version masks and values outside the schema bounds are
+rejected without a partial import. Read back all destination values and compare
+them with the source export.
+
+Batch imports preserve the stored count and population values together without
+cycling the user interface. Stop the app before importing and reopen it to use
+the transferred choices. An already running preview or dream retains the options
+loaded for that showing. Screensaver selection and system idle timers remain
+separate device settings.
