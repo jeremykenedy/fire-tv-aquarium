@@ -49,7 +49,7 @@ public final class SettingsProviderTest {
                 String text = cursor.getString(1);
                 Object value =
                         "boolean".equals(cursor.getString(2))
-                                ? Boolean.valueOf(text)
+                                ? (Object) Boolean.valueOf(text)
                                 : Integer.valueOf(text);
                 values.put(cursor.getString(0), value);
             }

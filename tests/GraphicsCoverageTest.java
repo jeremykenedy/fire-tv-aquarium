@@ -269,9 +269,12 @@ public final class GraphicsCoverageTest {
         java.nio.FloatBuffer vertices = Graphics.surface;
         double area = 0;
         for (int offset = 0; offset < Graphics.surfaceVertices * 4; offset += 12) {
-            float ax = vertices.get(offset), ay = vertices.get(offset + 1);
-            float bx = vertices.get(offset + 4), by = vertices.get(offset + 5);
-            float cx = vertices.get(offset + 8), cy = vertices.get(offset + 9);
+            float ax = vertices.get(offset);
+            float ay = vertices.get(offset + 1);
+            float bx = vertices.get(offset + 4);
+            float by = vertices.get(offset + 5);
+            float cx = vertices.get(offset + 8);
+            float cy = vertices.get(offset + 9);
             double triangle = Math.abs((bx - ax) * (cy - ay) - (by - ay) * (cx - ax)) / 2;
             assertTrue("Every background triangle has area", triangle > 0);
             assertTrue(

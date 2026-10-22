@@ -140,6 +140,18 @@ public final class SettingsProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] arguments) {
         if (!"/settings".equals(route(uri)) || values == null || values.size() == 0)
             throw new IllegalArgumentException("Settings are required");
+        ContentValues typed = normalized(values);
+        SharedPreferences.Editor editor = getContext().getSharedPreferences("aquarium", 0).edit();
+        // Import raw choices together: UI adjustments deliberately couple count and population.
+        for (String key : typed.keySet()) {
+            Object value = typed.get(key);
+            if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
+            else editor.putInt(key, (Integer) value);
+        }
+        return editor.commit() ? typed.size() : 0;
+    }
+
+    private static ContentValues normalized(ContentValues values) {
         ContentValues typed = new ContentValues();
         if (values.containsKey("key")) {
             if (values.size() != 2 || !values.containsKey("value"))
@@ -150,14 +162,7 @@ public final class SettingsProvider extends ContentProvider {
                 throw new IllegalArgumentException("Too many settings");
             for (String key : values.keySet()) add(typed, key, values.get(key));
         }
-        SharedPreferences.Editor editor = getContext().getSharedPreferences("aquarium", 0).edit();
-        // Import raw choices together: UI adjustments deliberately couple count and population.
-        for (String key : typed.keySet()) {
-            Object value = typed.get(key);
-            if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
-            else editor.putInt(key, (Integer) value);
-        }
-        return editor.commit() ? typed.size() : 0;
+        return typed;
     }
 
     private static void add(ContentValues target, String key, Object value) {
