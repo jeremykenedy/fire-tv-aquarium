@@ -5,7 +5,9 @@ Captured October 22, 2026 from the signed 1.4.0 APK, SHA-256
 All captures are 1920x1080. The six looks and recorded footage use the Google TV
 API 34 emulator; Settings uses the physical API 30 Fire TV. Animated scenes use
 the ordinary 16-fish profile. See [Verification](VERIFICATION.md) for physical
-maximum-load pacing and the limits of these captures.
+maximum-load pacing and the limits of these captures. The final release only
+refactors settings-update normalization; every rendering source and packaged
+artwork byte matches this captured candidate.
 
 <!-- markdownlint-disable MD033 -->
 <table>

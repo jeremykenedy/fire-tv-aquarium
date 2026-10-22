@@ -7,10 +7,17 @@ Aquarium 4K 1.4.0, verified October 22, 2026.
 The tested signed APK uses version code 11 and package
 `com.jeremykenedy.firetv.aquarium`.
 
-- APK SHA-256: `5e9b482e5238e183f8d8d07eeecd0b13b7cd411948937c39a0dfbc0806ba8eba`.
+- Release APK SHA-256: `d262793ed6f465855c5c16079a96bc26ef5e54db54100f9f7cb70706d05ef785`.
 - Signing certificate SHA-256: `719244d625fa38f30d48e1a14aedfe18ce2d97183743046cceeb2ee04555859a`.
 - Stable package, certificate and all 16 stored preferences survive in-place upgrades.
 - No requested Android permissions, network access or third-party runtime libraries.
+
+The physical measurements and gallery below use signed candidate
+`5e9b482e5238e183f8d8d07eeecd0b13b7cd411948937c39a0dfbc0806ba8eba`.
+The final release only extracts settings-update normalization into a focused
+helper. All other runtime source inputs and every packaged artwork/resource
+entry are byte-identical. Its settings and native lifecycle were checked again
+after a same-signer in-place upgrade.
 
 ## Physical Fire TV
 
@@ -62,7 +69,8 @@ long-running host regressions.
 
 ## Native gallery and settings
 
-The same signed APK was upgraded in place on the Google TV API 34 emulator.
+The physically measured signed candidate was upgraded in place on the Google TV
+API 34 emulator.
 The [gallery](GALLERY.md) contains all six ordinary 16-fish looks and the original
 video in Day and Night modes, captured at 1920x1080. The current settings panel
 capture comes from the physical Fire TV. The Night video capture averages about
@@ -75,11 +83,19 @@ interface preserves integer and boolean types, latent Random values and shuffle
 masks. Invalid or mixed invalid batches are rejected atomically. Physical
 cross-TV settings transfer is a separate deployment check.
 
+The final settings-only refactor received another signed-upgrade check on that
+emulator: all 16 fields and both primitive types, retained Random values,
+single-key updates, and invalid range/type/unknown-key/mixed-protocol batches.
+Every invalid batch left the stored snapshot unchanged. Native background, body,
+fin and predator-contact pixel tests passed again, as did Preview / Menu / Back /
+Home. Aquarium 16, Aquarium Live 18, Jellyfish Drift 6 and eight system values
+matched their original snapshots exactly after the check.
+
 ## Source checks
 
 - Host swimming/settings suite: 1,524,930 checks passed.
 - Python installer and tooling tests passed.
-- Java coverage: 1,434 lines and 750 branches, zero missed.
+- Java coverage: 1,436 lines and 750 branches, zero missed.
 - Python coverage: 211 statements and 100 branches, zero missed.
 - Style, documentation, Android build, APK policy and signing checks passed.
 - Native sunlight comparison covers multiple timestamps, lighting and ray settings.
