@@ -12,23 +12,22 @@ sideloaded APK. See [Installation](../INSTALLATION.md).
 
 Yes. Fire TV, Android TV, and Google TV use the same Java-only APK, Android
 platform APIs, D-pad controls, and DreamService. Android API 23 or newer and
-OpenGL ES 2.0 are required. Native 4K also requires a suitable physical display.
+OpenGL ES 2.0 are required. Native 4K also requires an actual 4K app window and composition.
 Vendor restrictions can affect automatic screensaver activation. Physical Fire
 TV and emulator Android TV / Google TV results are distinguished in
 [Verification](VERIFICATION.md).
 
 ## Is the aquarium actually 4K?
 
-On a compatible 4K TV the app requests a native 3840x2160 surface. This has been
-verified through the actual buffer and hardware display composition on Fire TV,
-even though that TV's UI and screenshots are 1080p. Animation texture sources have
-their own resolution; see [Artwork](ARTWORK.md). On a lower-resolution display,
-the surface uses the supported physical resolution, capped at 4K.
+The original recorded source is 3840x2160. Animated output follows the actual
+app window, and its artwork has separate source dimensions; see
+[Artwork](ARTWORK.md). A 4K panel mode or an oversized buffer does not prove native
+4K composition. The verified physical 1.4.0 scene uses 1920x1080 output at about
+30 FPS; end-to-end native 4K output remains unverified.
 
-The original video is 3840x2160. A bundled 1920x1080 copy is used when the display
-or hardware decoder does not support UHD, or after a UHD playback failure. Both
-copies are local, muted, and looping. The software does not promise a particular
-frame rate on every TV.
+A bundled 1920x1080 video copy is used when the active output or hardware decoder
+cannot use UHD, or after a UHD playback failure. Both copies are local, muted and
+looping. Performance on other TVs needs separate measurement.
 
 ## Is there any tracking, analytics, or advertising?
 

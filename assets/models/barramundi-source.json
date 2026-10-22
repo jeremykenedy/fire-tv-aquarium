@@ -1,0 +1,22 @@
+{
+  "name": "Barramundi Fish",
+  "author": "Microsoft",
+  "license": "CC0-1.0",
+  "upstream_commit": "edc7c9e67c639d230715049ee31f9a96a6babbbe",
+  "source": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/BarramundiFish",
+  "source_sha256": "ecc3bafb6b00f2c8b810863c388e3768a7b7ea0d0335e8cb8c574c266e571f4a",
+  "license_file": "../source-models/BarramundiFish-LICENSE.md",
+  "transform": "Proper rotation from source -Z nose to +X nose, bbox centered, total length 2 units; normals and UV preserved",
+  "vertex_count": 2188,
+  "triangle_count": 3864,
+  "texture_source_dimensions": [
+    2048,
+    2048
+  ],
+  "texture_dimensions": [
+    2048,
+    2048
+  ],
+  "mesh_sha256": "e55b9ade2fdc25e129ea5d9ba5e7cd2525d9b77e85acf0a71813ecda1ef0f8a6",
+  "texture_sha256": "80f0ff2da77e3cdf078d8a5a58337248d9c544ef82a4b5fb2586d1e2f3aac6a1"
+}

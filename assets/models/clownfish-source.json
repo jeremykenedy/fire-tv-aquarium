@@ -1,0 +1,18 @@
+{
+  "species": "clownfish",
+  "format": "FISH v2, stride 36, body finFlex 0; signed membrane finFlex 0.0001 to 1",
+  "geometry": "Original distinct anatomical volume and curved fin surfaces",
+  "skin_source": "../../res/drawable-nodpi/realistic_fish.png",
+  "license": "MIT",
+  "skin_origin": "Original project atlas",
+  "skin_source_commit": "96179f7163dd4dc44478f2ef9d94d679f1e1734c",
+  "skin_source_sha256": "c044322f65205c2bdc6c5fb3ec24f814f302da3364fba99733958ee2604f981c",
+  "atlas_cell": [
+    0,
+    0
+  ],
+  "vertices": 1968,
+  "triangles": 3780,
+  "mesh_sha256": "8124e12817424fae731f825ee1409860a12791bc9192e0e123b60957dc39557f",
+  "status": "Native visual prototype pending review"
+}

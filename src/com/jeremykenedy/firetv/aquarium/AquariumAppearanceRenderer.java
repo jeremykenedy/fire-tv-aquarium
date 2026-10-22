@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -39,11 +40,11 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
             R.drawable.drawn_deep
         }
     };
-    private static final int[] FISH_ARTWORK = {
-        R.drawable.realistic_fish, R.drawable.cinematic_fish, R.drawable.drawn_fish
-    };
     private static final int[] MARINE_ARTWORK = {
-        R.drawable.realistic_marine, R.drawable.cinematic_marine, R.drawable.drawn_marine
+        R.drawable.realistic_marine,
+        R.drawable.cinematic_marine,
+        R.drawable.drawn_marine,
+        R.drawable.illustrated_marine
     };
     private static final float[][] WATER = {
         {0.015f, 0.14f, 0.24f},
@@ -55,22 +56,30 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
     private final Resources resources;
     private final long started = SystemClock.elapsedRealtime();
     private final AtomicReference<AquariumOptions> options;
+    private final FishMotion motion;
     private AquariumTextureShader shader;
-    private AquariumRenderer cartoon;
-    private EGLConfig eglConfig;
+    private AquariumTextureShader backgroundShader;
     private int width;
     private int height;
     private int loadedFamily = -1;
     private int loadedScene = -1;
+    private int loadedMarine = -1;
     private Texture background;
-    private Texture fish;
+    private MarineFishRenderer fish;
+    private MarineVisitorRenderer visitors;
+    private final float[] fishCamera = new float[16];
     private Texture marine;
     private long sampled;
     private int frames;
 
     AquariumAppearanceRenderer(Resources resources, AquariumOptions options) {
+        this(resources, options, new FishMotion());
+    }
+
+    AquariumAppearanceRenderer(Resources resources, AquariumOptions options, FishMotion motion) {
         this.resources = resources;
         this.options = new AtomicReference<>(options);
+        this.motion = motion;
     }
 
     void configure(AquariumOptions options) {
@@ -79,11 +88,12 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        eglConfig = config;
         shader = new AquariumTextureShader();
-        cartoon = null;
-        loadedFamily = loadedScene = -1;
-        background = fish = marine = null;
+        backgroundShader = new AquariumTextureShader(true);
+        loadedFamily = loadedScene = loadedMarine = -1;
+        background = marine = null;
+        fish = new MarineFishRenderer(resources.getAssets());
+        visitors = new MarineVisitorRenderer(resources.getAssets());
         Log.i("Aquarium4K", "Offline appearance renderer initialized");
     }
 
@@ -91,32 +101,23 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         this.width = width;
         this.height = height;
+        Matrix.orthoM(fishCamera, 0, -22, 22, -12, 12, -10, 10);
         GLES20.glViewport(0, 0, width, height);
-        if (cartoon != null) cartoon.onSurfaceChanged(gl, width, height);
         Log.i("Aquarium4K", "Appearance surface " + width + "x" + height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         AquariumOptions settings = options.get();
-        if (settings.look == 3) {
-            if (cartoon == null) {
-                cartoon = new AquariumRenderer(settings);
-                cartoon.onSurfaceCreated(gl, eglConfig);
-                cartoon.onSurfaceChanged(gl, width, height);
-            }
-            GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-            GLES20.glDisable(GLES20.GL_BLEND);
-            cartoon.configure(settings);
-            cartoon.onDrawFrame(gl);
-            return;
-        }
-        int family = settings.look == 5 ? 2 : settings.look == 2 || settings.look == 4 ? 1 : 0;
-        if (family != loadedFamily) {
-            release(fish);
+        int family =
+                settings.look == 3 || settings.look == 5
+                        ? 2
+                        : settings.look == 2 || settings.look == 4 ? 1 : 0;
+        int marineFamily = settings.look >= 3 ? 3 : family;
+        if (marineFamily != loadedMarine) {
             release(marine);
-            fish = load(FISH_ARTWORK[family]);
-            marine = load(MARINE_ARTWORK[family]);
+            marine = load(MARINE_ARTWORK[marineFamily]);
+            loadedMarine = marineFamily;
         }
         if (family != loadedFamily || settings.scene != loadedScene) {
             release(background);
@@ -125,16 +126,26 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
         }
         loadedFamily = family;
         float seconds = (SystemClock.elapsedRealtime() - started) / 1000f;
+        visitors.prepare(motion, settings);
+        motion.setFlatAppearance(true);
+        motion.setMarineArtwork(family, (float) width / height);
+        motion.update(
+                seconds,
+                settings.swimmingSpeed(),
+                settings.schools(),
+                settings.count,
+                settings.creatures);
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-        GLES20.glEnable(GLES20.GL_BLEND);
+        // Background artwork is opaque RGB; blending only adds a full-surface read.
+        GLES20.glDisable(GLES20.GL_BLEND);
         // Android decodes and uploads premultiplied RGBA textures.
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         GLES20.glClearColor(0, 0, 0, 1);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        shader.frame(settings, seconds, WATER[settings.scene]);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        backgroundShader.frame(settings, seconds, WATER[settings.scene]);
         float cropWidth = Math.min(1, ((float) width / height) / background.aspect);
         float cropHeight = Math.min(1, background.aspect / ((float) width / height));
-        shader.draw(
+        backgroundShader.draw(
                 background.id,
                 0,
                 0,
@@ -150,13 +161,10 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
                 0,
                 0,
                 1);
-        // Back-to-front layers retain translucent fin edges without a depth buffer.
-        for (int layer = 0; layer < 6; layer++)
-            for (int i = 0; i < settings.count; i++) {
-                float z = settings.schools() ? FishMotion.schoolDepth(i) : FishMotion.depth(i);
-                if (Math.min(5, Math.max(0, (int) (z + 3))) == layer)
-                    drawFish(i, settings, seconds, z);
-            }
+        fish.draw(motion, settings, seconds, fishCamera, WATER[settings.scene], 1.65f);
+        visitors.draw(motion, settings, seconds, fishCamera, WATER[settings.scene]);
+        GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+        shader.frame(settings, seconds, WATER[settings.scene]);
         visitors(settings, seconds);
         if (settings.bubbles) bubbles(seconds);
         if (++frames == 180) {
@@ -169,69 +177,41 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
                                 + ", look="
                                 + AquariumOptions.LOOKS[settings.look]
                                 + ", fish="
-                                + settings.count);
+                                + settings.count
+                                + ", shark_captures="
+                                + (motion.pose(60).captures + motion.pose(61).captures)
+                                + ", whale_captures="
+                                + motion.pose(67).captures
+                                + ", whale_capture_s="
+                                + motion.pose(67).lastCaptureSeconds
+                                + ", whale_prey="
+                                + motion.pose(67).lastPrey
+                                + ", elapsed_s="
+                                + seconds
+                                + ", dolphin_captures="
+                                + (motion.pose(95).captures + motion.pose(96).captures));
             sampled = now;
             frames = 0;
         }
     }
 
-    private void drawFish(int index, AquariumOptions settings, float seconds, float depth) {
-        int species = FishMotion.species(settings.schools() ? index / 16 : index, settings.species);
-        float x =
-                settings.schools()
-                        ? FishMotion.schoolX(index, seconds, settings.swimmingSpeed())
-                        : FishMotion.x(index, seconds, settings.swimmingSpeed());
-        float y =
-                settings.schools()
-                        ? FishMotion.schoolY(index, seconds)
-                        : FishMotion.y(index, seconds);
-        float scale = (settings.schools() ? 0.64f : FishMotion.scale(index)) * settings.fishScale();
-        scale *= 0.86f + (depth + 3) * 0.045f;
-        float size = 0.18f * scale;
-        float rotation = (float) Math.sin(seconds * 0.4f + index) * 0.025f;
-        sprite(
-                fish,
-                species,
-                3,
-                x / 22,
-                y / 12,
-                size * FishMotion.direction(index, settings.schools()),
-                size * ((float) width / height),
-                1,
-                index,
-                rotation,
-                Math.max(0, (3 - depth) * 0.012f),
-                1);
-    }
-
     private void visitors(AquariumOptions settings, float seconds) {
-        float pace = settings.swimmingSpeed();
         for (int type = 0; type < 7; type++) {
-            if (!settings.hasCreature(1 << type)) continue;
-            int count = type == 0 || type == 5 ? 2 : type == 6 ? 5 : 1;
+            if (type == 0 || type == 1 || type == 5 || !settings.hasCreature(1 << type)) continue;
+            int count = type == 6 ? 5 : 1;
             for (int i = 0; i < count; i++) {
                 int index = 60 + type * 7 + i;
-                float x = FishMotion.x(index, seconds, pace * (type == 1 ? 0.55f : 0.8f)) / 22;
-                float y =
-                        (type == 2
-                                ? -0.32f
-                                : type == 1 ? 0.35f : -0.3f + FishMotion.phase(index + 3) * 0.8f);
-                y += (float) Math.sin(seconds * 0.2f + index) * 0.035f;
-                float size =
-                        type == 1
-                                ? 0.64f
-                                : type == 0
-                                        ? 0.40f
-                                        : type == 5
-                                                ? 0.33f
-                                                : type == 2 ? 0.20f : type == 6 ? 0.11f : 0.25f;
-                int direction = type == 2 || type == 6 ? 1 : FishMotion.direction(index, false);
+                FishMotion.Pose pose = motion.pose(index);
+                float x = pose.x / 22;
+                float y = type == 2 ? -.40f + pose.y * .012f : pose.y / 12;
+                float size = type == 2 ? .20f : type == 6 ? .11f : .25f;
+                float facing = (float) Math.cos(pose.yaw);
+                float widthScale = Math.copySign(Math.max(.16f, Math.abs(facing)), facing);
+                float angle = pose.pitch;
                 if (type == 6) {
-                    x =
-                            -0.8f
-                                    + FishMotion.phase(index) * 1.6f
-                                    + (float) Math.sin(seconds * .2f + i) * .025f;
                     y = (seconds * .027f + i * .44f) % 2.5f - 1.25f;
+                    widthScale = 1;
+                    angle = 0;
                 }
                 sprite(
                         marine,
@@ -239,13 +219,13 @@ final class AquariumAppearanceRenderer implements GLSurfaceView.Renderer {
                         4,
                         x,
                         y,
-                        size * direction,
+                        size * widthScale,
                         size * ((float) width / height),
-                        type == 2 || type == 6 ? 1.8f : 0.8f,
+                        type == 2 || type == 6 ? 1.8f : .8f,
                         index,
-                        0,
-                        type == 1 ? 0.17f : 0.06f,
-                        type == 6 ? 0.75f : 1);
+                        angle,
+                        Math.max(0, (3 - pose.z) * .012f),
+                        type == 6 ? .75f : 1);
             }
         }
     }

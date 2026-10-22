@@ -1,12 +1,9 @@
 <p align="center">
-    <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.svg">
-        <source media="(prefers-color-scheme: light)" srcset="art/banner-light.svg">
-        <img src="art/banner-light.svg" alt="Fire TV Aquarium" width="800">
-    </picture>
+  <a href="https://github.com/jeremykenedy/fire-tv-aquarium#gh-light-mode-only"><picture><source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="art/banner-mobile-still-light.4ef0c2bdf5ed.svg"><source media="(prefers-reduced-motion: reduce)" srcset="art/banner-still-light.5e60a932b856.svg"><source media="(max-width: 600px)" srcset="art/banner-mobile-light.d679d55b0165.svg"><img src="art/banner-light.d8cfb166a80e.svg#gh-light-mode-only" alt="Aquarium 4K" width="800"></picture></a>
+  <a href="https://github.com/jeremykenedy/fire-tv-aquarium#gh-dark-mode-only"><picture><source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="art/banner-mobile-still-dark.fdee691fd14c.svg"><source media="(prefers-reduced-motion: reduce)" srcset="art/banner-still-dark.c7de54eabab8.svg"><source media="(max-width: 600px)" srcset="art/banner-mobile-dark.9b72349c831e.svg"><img src="art/banner-dark.5137df092c8c.svg#gh-dark-mode-only" alt="Aquarium 4K" width="800"></picture></a>
 </p>
 
-<p align="center">An offline 4K aquarium screensaver for Fire TV, Android TV, and Google TV with customizable fish, sea life, backgrounds, and sunlight.</p>
+<p align="center">An offline aquarium screensaver for Fire TV, Android TV, and Google TV with three-dimensional fish, sea life, six looks, and sunlight.</p>
 
 <p align="center">
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/releases"><img src="https://img.shields.io/github/downloads/jeremykenedy/fire-tv-aquarium/total?label=Downloads" alt="Total release asset downloads"></a>
@@ -36,61 +33,52 @@
 
 ## Table of Contents
 
-- [TV Support](#tv-support)
+- [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Upgrades and Restoration](#upgrades-and-restoration)
 - [Quick Start](#quick-start)
-- [Features](#features)
-- [Configuration](#configuration)
+- [Upgrades and Restoration](#upgrades-and-restoration)
+- [TV Support](#tv-support)
 - [Screenshots](#screenshots)
 - [Documentation](#documentation)
-- [Troubleshooting](#troubleshooting)
-- [Testing](#testing)
-- [Continuous Integration](#continuous-integration)
 - [Privacy](#privacy)
-- [Media License](#media-license)
 - [License](#license)
 
-## TV Support
+## Features
 
-The same APK runs on Fire TV, Android TV, and Google TV using Android platform
-APIs, a TV launcher entry, D-pad controls, and a system DreamService. Android API
-23 or newer and OpenGL ES 2.0 are required. Physical 4K TVs use a native 3840x2160
-surface; other TVs render at their supported display resolution. Original footage
-uses a bundled 1080p copy when 4K decoding is unavailable or fails.
-
-| Platform | Installation and controls | Verified environment |
+| Feature | What you get | Guide |
 |---|---|---|
-| Fire TV | ADB install, TV app entry, remote settings, system idle screensaver | Physical API 30 Fire TV with native 4K display composition |
-| Android TV | Same APK and installer, D-pad settings, system idle screensaver | Official API 31 emulator at 1080p |
-| Google TV | Same APK and installer, D-pad settings, ADB screensaver selection | Official API 34 emulator at 1080p |
+| Textured 3D fish | Six distinct species with fins, depth and independent turns | [Artwork](docs/ARTWORK.md) |
+| Natural movement | Wandering, pauses, loose schools and predator escape | [Configuration](docs/CONFIGURATION.md) |
+| Larger animals | Three-dimensional sharks, humpbacks and dolphins with non-graphic feeding | [Configuration](docs/CONFIGURATION.md) |
+| Personal aquarium | Six looks, five environments, 0-60 fish, lighting, size and speed | [Configuration](docs/CONFIGURATION.md) |
+| Original footage | The original recorded aquarium loop, with Day / Night and a clock | [Configuration](docs/CONFIGURATION.md) |
+| Saved choices | Fixed or Random options, shuffle exclusions and exact settings transfer | [Configuration](docs/CONFIGURATION.md) |
+| TV controls | D-pad settings, full-screen preview and reversible screensaver selection | [Installation](INSTALLATION.md) |
+| Offline operation | No accounts, ads, analytics, network permission or runtime downloads | [Privacy](#privacy) |
 
-Android TV and Google TV hardware testing is still needed. Emulator results do
-not establish automatic idle activation or native 4K output on every vendor's TV.
-
-Some Google TV models hide third-party screensaver selection in their settings.
-The ADB installer selects the service and verifies the saved values. Vendor
-restrictions can still affect automatic idle activation. See
-[Installation](INSTALLATION.md) and [device verification](docs/VERIFICATION.md).
+Realistic is the default. All looks use fish volume; natural and painted skins,
+lighting and scenery give them different appearances. Octopuses, turtles, rays
+and jellyfish retain animated artwork surfaces. Original footage is recorded
+video, so fish and scenery controls apply to animated mode.
 
 ## Requirements
 
-- A Fire TV, Android TV, or Google TV with OpenGL ES 2.0 and Android API 23 or newer.
-- A physical 4K display and compatible decoder for native 4K footage.
-- A computer with Python 3.10 or newer and Android Platform Tools (`adb`).
-- ADB debugging enabled on the TV and a connection from your computer.
-- An internet connection on your computer to download the public release assets.
+- Fire TV, Android TV or Google TV with Android API 23 or newer and OpenGL ES 2.0.
+- Android Platform Tools (`adb`) and an authorized debugging connection to the TV.
+- Python 3.10 or newer for the included installer.
+- Internet access on the computer to download the release. The app stays offline.
 
-The app has been tested on a Fire TV running Android API 30 with a 4K panel.
-Android TV and Google TV emulator checks are documented in verification.
-Additional physical models and OS versions need device verification. Build requirements
-are listed in [Building](docs/BUILDING.md).
+The animated surface follows its actual app window. A supported 4K panel mode
+alone does not establish a 4K window or composition. The tested Fire TV renders
+at 1920x1080; native 3840x2160 output remains unverified. Recorded footage uses
+the bundled HD copy when the active output or decoder cannot use UHD.
 
 ## Installation
 
-Clone the repository, download the signed APK and its checksum, and connect to
-ADB. Replace `DEVICE_IP` with your TV's address:
+Download the signed APK and checksum from the
+[latest release](https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest).
+The installer verifies both assets, upgrades in place and selects the screensaver:
 
 ```bash
 git clone https://github.com/jeremykenedy/fire-tv-aquarium.git
@@ -102,276 +90,97 @@ adb connect DEVICE_IP:5555
 python3 install.py --device DEVICE_IP:5555
 ```
 
-The installer verifies the checksum, installs or upgrades Aquarium 4K, and
-selects it as the idle screensaver. It keeps your existing idle and sleep
-timeouts and saves the original screensaver settings in ignored
-`device-state.json`. Keep that backup to restore your previous screensaver.
+GitHub CLI requires authentication; the public release downloads do not require
+a GitHub account. Replace `DEVICE_IP` with the connected TV's address. For
+another TV, give `--state-file` a separate path. See [Installation](INSTALLATION.md)
+for developer mode, device pairing and manual downloads.
 
-The repository and releases are public. You can download the APK and checksum
-directly from the [latest release](https://github.com/jeremykenedy/fire-tv-aquarium/releases/latest)
-without repository access or a GitHub account. GitHub CLI commands require CLI
-authentication; the release page provides a browser download alternative.
+## Quick Start
 
-See [Installation](INSTALLATION.md) for developer mode, upgrades, restoring the
-previous screensaver, and removing the app.
+Open **Aquarium 4K** from the TV app list. Up / Down selects a setting, Left /
+Right adjusts it, and Select advances an option. **Show aquarium** opens the
+preview. Menu or Back returns to settings; Back again exits.
 
-For a second TV, use `--state-file device-states/bedroom.json` with a unique path
-and reuse that path for upgrades and restoration. Paired wireless ADB can use
-ports other than 5555; use the connected serial shown by `adb devices`.
+Changes save immediately. Random choices roll once per showing and stay steady
+for that session. A remote key exits the non-interactive idle screensaver.
+See [Configuration](docs/CONFIGURATION.md) for every control and default.
 
 ## Upgrades and Restoration
 
-Download both assets from the same release before upgrading:
+Download the APK and checksum from the same release, then run the installer
+again. The stable package and signing identity retain saved preferences.
+Version 1.4.0 keeps the existing options and adds a strict local settings
+interface for copying their exact stored values between TVs.
 
-```bash
-gh release download --repo jeremykenedy/fire-tv-aquarium \
-  --pattern aquarium-4k.apk --pattern aquarium-4k.apk.sha256 --dir build --clobber
-python3 install.py --device DEVICE_IP:5555
-```
-
-The installer uses an in-place upgrade. Matching package and signing identity
-retain aquarium preferences, and the first saved screensaver backup remains the
-restore baseline. Version 1.3.2 keeps the signing identity and minimum Android
-version unchanged. Existing choices remain fixed until you select Random.
-
-To select the previous screensaver again:
+The installer preserves idle and sleep timeouts and keeps the first saved
+screensaver backup. To restore the previous selection without deleting Aquarium:
 
 ```bash
 python3 install.py --device DEVICE_IP:5555 --restore
 ```
 
-If installation used `--state-file`, include the same flag when restoring.
-Restore leaves Aquarium installed. To remove it, restore first and then follow
-the [uninstall instructions](INSTALLATION.md#uninstall). Uninstalling deletes
-aquarium preferences. Idle and sleep timeouts are preserved throughout.
+Include the same `--state-file` used during installation. Android can reject an
+older version code; restoring the previous screensaver is safer than uninstalling
+an upgrade when preferences must survive. See [Installation](INSTALLATION.md).
 
-## Quick Start
+## TV Support
 
-Open **Aquarium 4K** from your TV app list.
-
-| Remote button | Action |
+| Platform | Current verification |
 |---|---|
-| Up / Down | Select a setting |
-| Left / Right | Adjust the selected setting |
-| Select | Advance an option or activate a button |
-| Menu | Open settings from the full-screen preview |
-| Back | Return to settings, or exit when settings are already visible |
+| Fire TV | Physical API 30: all six looks at about 30 presented FPS with 60 Large fish, five visitors, bubbles and sunlight; actual 1080p composition; Preview / Menu / Back / Home checked |
+| Google TV | API 34 emulator: signed 1.4.0, six looks, recorded Day / Night footage and exact settings restoration at 1080p |
+| Android TV | Same API 23+ APK; earlier API 31 emulator checks, final 1.4.0 hardware validation still needed |
 
-Changes are saved immediately. **Show aquarium** opens the full-screen preview.
-Random settings are picked again on Show aquarium and on each idle activation.
-Fixed choices stay fixed. A remote
-key exits the idle screensaver. **Reset aquarium** restores the default options.
-
-## Features
-
-- Native 3840x2160 output on 4K TVs, with lower-resolution display and video fallbacks.
-- One APK for Fire TV, Android TV, and Google TV.
-- Random version selection with an editable pool of the six looks and original footage.
-- Random choices for every aquarium setting, chosen once per showing.
-- Realistic, Classic Windows aquarium, Animated 3D, Cartoon, Finding Nemo inspired,
-  and Little Mermaid inspired appearances.
-- Reef, Fish tank, Ocean, Kelp forest, and Deep sea backgrounds.
-- A few, A handful, A lot, A ton, Schools, or an exact count from 0 to 60 fish.
-- Six fish species or a mixed aquarium, with coordinated groups in Schools mode.
-- A saved Day / Night switch dims every animated look and the original video.
-- Independent sharks, whales, octopuses, turtles, rays, dolphins, and jellyfish.
-- Fish size, swimming speed, lighting, bubbles, and sunlight shimmer from above.
-- An optional 12-hour or 24-hour clock.
-- Remote-operated settings with a live preview and saved preferences.
-- Reversible screensaver selection, with no launcher changes.
-- No ads, analytics, tracking SDKs, accounts, network permission, or runtime downloads.
-
-Realistic is the default. Appearance changes the fish and environment together
-while keeping your population, background selection, and sea-life switches.
-Textured appearances animate detailed artwork on deforming surfaces; Cartoon
-uses the original simple 3D geometry. The animation renders to a native 4K
-surface; bundled texture artwork has its own source resolution. Frame rate
-depends on the device and settings. **Original 4K footage** preserves the real
-aquarium video from the first version installed on the TV;
-the fish and scenery controls apply to animated mode. The clock works in both.
-
-## Configuration
-
-| Setting | Options | Default |
-|---|---|---|
-| Mode | Animated aquarium, Original 4K footage, Random version | Animated aquarium |
-| Look | Realistic, Classic Windows aquarium, Animated 3D, Cartoon, Finding Nemo inspired, Little Mermaid inspired | Realistic |
-| Day / Night | Day, Night (40% brightness) | Day |
-| Population | Custom, A few, A handful, A lot, A ton, Schools | A handful |
-| Fish | Exact count from 0 to 60 | 16 |
-| Species | Mixed, Clownfish, Yellow tang, Blue tang, Angelfish, Neon tetra, Betta | Mixed |
-| Background | Reef, Fish tank, Ocean, Kelp forest, Deep sea | Reef |
-| Swimming | Calm, Gentle, Lively | Gentle |
-| Fish size | Small, Medium, Large | Medium |
-| Lighting | Daylight, Warm, Moonlight | Daylight |
-| Bubbles | On, Off | On |
-| Sunlight shimmer | On, Off | On |
-| Sharks, Whales, Octopuses, Turtles, Rays, Dolphins, Jellyfish | Independent On / Off switches | Off |
-| Clock | Hidden, 12-hour, 24-hour | Hidden |
-
-Every aquarium setting offers **Random** after its fixed choices. **Random version**
-uses the enabled **Shuffle** switches to choose a look or original footage; at
-least one version must remain enabled. **Look: Random** shuffles only animated
-looks while keeping Mode fixed. Random population chooses one of the five presets;
-Random Fish chooses an exact 0-60 count and selects Custom. Random changes take
-effect in the live preview and roll again on each showing. Choices stay steady
-throughout that session and are saved as Random for the next session.
-
-**A few** uses 6 fish, **A handful** 16, **A lot** 32, **A ton** 60, and
-**Schools** 48 fish in three coordinated groups. Adjusting the exact count
-selects **Custom**. Large animals are additional to this ordinary fish count.
-
-See [Configuration](docs/CONFIGURATION.md) for backgrounds, saved settings,
-school behavior, and the sea-life switches.
-
-Common combinations:
-
-| Goal | Settings |
-|---|---|
-| Different versions each time | Mode: Random version; enable the Shuffle versions you want |
-| Original footage every time | Mode: Original 4K footage; optionally choose Night and Clock |
-| Same look, different scenery | Mode: Animated aquarium; fixed Look; Background: Random |
-| A dim aquarium with changing fish | Day / Night: Night; Species: Random; Population: Random |
-| Only two animated looks | Mode: Random version; enable those two Shuffle switches and disable the other five |
-
-Shuffle exclusions apply to **Mode: Random version**. **Look: Random** uses all
-six animated looks. Fish controls customize generated animation; they cannot
-change the animals or scenery inside recorded footage.
+A manually started normal DreamService ran for at least 45 seconds. That does
+not prove automatic inactivity activation. Vendor screensaver restrictions and
+protected idle timers require separate device checks. See [Verification](docs/VERIFICATION.md).
 
 ## Screenshots
 
-Most images are captures from the Fire TV. Its screenshot output is 1920x1080; the
-actual aquarium surface and display composition were verified at 3840x2160.
+Current signed 1.4.0 captures at 1920x1080: representative Google TV emulator
+scenes and the physical Fire TV settings panel. These are ordinary profiles,
+not the maximum-population performance fixture.
 
+<!-- markdownlint-disable MD033 -->
 <table>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/random-settings.png" alt="Random version selection on the Google TV emulator" width="100%"><br>Google TV: Random version</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/android-tv-footage.png" alt="Local 1080p footage fallback on the Android TV emulator" width="100%"><br>Android TV: local footage fallback</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/settings.png" alt="Remote-operated aquarium settings with live reef preview" width="100%"><br>Settings and live preview</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/night.png" alt="Night mode dims the aquarium while settings remain readable" width="100%"><br>Night mode</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/original-day.png" alt="Original real 4K aquarium footage in Day mode" width="100%"><br>Original 4K footage: Day</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/original-night.png" alt="Original real 4K aquarium footage dimmed in Night mode" width="100%"><br>Original 4K footage: Night</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/realistic.png" alt="Realistic fish above a detailed reef" width="100%"><br>Realistic</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/classic.png" alt="Classic Windows inspired aquarium with cool water and a glass frame" width="100%"><br>Classic Windows aquarium</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/animated-3d.png" alt="Cinematic fish and underwater scenery" width="100%"><br>Animated 3D</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/cartoon.png" alt="Original geometric cartoon fish and reef" width="100%"><br>Cartoon</td>
-    </tr>
-    <tr>
-        <td valign="top" width="50%"><img src="docs/screenshots/nemo-inspired.png" alt="Warm cinematic underwater appearance" width="100%"><br>Finding Nemo inspired</td>
-        <td valign="top" width="50%"><img src="docs/screenshots/mermaid-inspired.png" alt="Classic drawn fish and painted underwater scenery" width="100%"><br>Little Mermaid inspired</td>
-    </tr>
+<tr>
+<td width="33%"><img src="art/screenshots/realistic-google-tv.png" alt="Realistic textured three-dimensional fish in the reef" width="100%"><br>Realistic</td>
+<td width="33%"><img src="art/screenshots/cartoon-google-tv.png" alt="Painted three-dimensional fish in illustrated reef scenery" width="100%"><br>Cartoon</td>
+<td width="33%"><img src="art/screenshots/settings-fire-tv.png" alt="Aquarium settings operated with the Fire TV remote" width="100%"><br>Settings</td>
+</tr>
 </table>
+<!-- markdownlint-enable MD033 -->
 
-Random selection and fallback images are emulator captures, as labeled.
-The remaining settings and video images are Fire TV screen captures. The six appearance
-images were rendered on the same TV's GPU into native 3840x2160 offscreen
-surfaces. All documentation images are 1920x1080. See [Verification](docs/VERIFICATION.md).
+See the [full gallery](docs/GALLERY.md) for all six looks and original footage.
 
 ## Documentation
 
-- [Installation, upgrades, restore, and uninstall](INSTALLATION.md)
-- [Build tools and signing keys](docs/BUILDING.md)
-- [Aquarium configuration](docs/CONFIGURATION.md)
+- [Installation, upgrades, restore and uninstall](INSTALLATION.md)
+- [Settings, defaults and exact settings transfer](docs/CONFIGURATION.md)
+- [Screenshot gallery](docs/GALLERY.md)
 - [Frequently asked questions](docs/FAQ.md)
-- [Appearance artwork and rendering](docs/ARTWORK.md)
+- [Artwork and media resolution](docs/ARTWORK.md)
 - [Architecture and lifecycle](docs/ARCHITECTURE.md)
+- [Device verification and limitations](docs/VERIFICATION.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Building and signing](docs/BUILDING.md)
 - [CI and quality checks](docs/CI.md)
 - [Release process](docs/RELEASING.md)
-- [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [Device verification](docs/VERIFICATION.md)
 - [Contributing](CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
-
-## Troubleshooting
-
-| Symptom | First check |
-|---|---|
-| TV is unauthorized or offline | Accept its ADB authorization prompt and confirm its serial with `adb devices` |
-| Aquarium is missing from screensaver settings | Use the installer, then verify actual idle activation on that TV |
-| Fish or scenery settings are disabled | They apply to animation; switch Mode to Animated aquarium |
-| Look is disabled in Random version | The enabled Shuffle switches choose the look instead |
-| Random choices repeat | Choices hold for one showing and can repeat by chance; Show aquarium rolls again |
-| Video looks lower resolution | The offline 1080p fallback is selected when UHD display or decoding is unavailable |
-| Upgrade reports a signature mismatch | Use the release APK or the original signing key; uninstalling removes preferences |
-
-See [Troubleshooting](docs/TROUBLESHOOTING.md) for diagnostics and
-[FAQ](docs/FAQ.md) for capability and privacy details.
-
-## Testing
-
-```bash
-python3 -m pip install -r requirements-dev.txt
-bash test.sh
-bash build.sh
-python3 check_apk.py
-bash scripts/test-coverage.sh
-```
-
-The tests cover installer integrity, rollback, settings bounds, species
-selection, random bounds, fixed-choice preservation, shuffle exclusions,
-long-running swimming paths, and school formation. APK verification
-checks the package, absence of requested permissions, blocked cleartext traffic,
-system-only certificate trust, bundled video storage, and signature through
-the build. Device testing covers the remote controls,
-persistence, preview, idle activation, exit, and actual 4K display composition.
-
-The coverage suite exercises every Java application source file and each Python
-installer and verification script. CI requires 100% line and branch coverage.
-Android tests cover lifecycle callbacks, remote navigation, every rendering
-style, shader and artwork failures, muted local playback, and UHD-to-HD fallback.
-JaCoCo measures the actual app classes; coverage.py measures the Python scripts.
-The gate also checks source-file membership so an omitted file cannot inflate
-the result. Generated Android resource classes are excluded.
-
-Coverage tests require JDK 21, Android SDK 36, Python 3.10 or newer, and network
-access for the first tool download. The runner verifies the pinned Gradle
-archive and keeps dependencies and reports under `build/coverage/`. Its Gradle,
-JUnit, and Robolectric dependencies are used only for testing. The shipping APK
-continues to use Android platform APIs without third-party runtime libraries.
-Open `build/coverage/java-html/index.html` for the Java report; `coverage.xml`
-contains the Python report. Coverage does not replace tests on a real TV.
-
-## Continuous Integration
-
-GitHub Actions runs the test suite, Android build, APK verification, code style,
-static analysis, secret detection, and documentation checks. Actions are pinned
-to immutable commits. CI builds use temporary signing keys; release APKs use the
-stable application key.
-
-GitGuardian and SonarQube Cloud scans are enabled. Sonar analyzes the Java and
-Python source with compiled Android classes and measured Java/Python coverage,
-and CI waits for its processed quality gate. Codacy, CodeFactor, and Aikido are
-registered for this public repository. Scrutinizer configuration is prepared,
-but its repository import fails with a provider-side gateway timeout. Its build
-and quality badges are omitted until registration and analysis succeed.
-Checks that require a paid plan and badges for unrelated technology are omitted.
-See [CI](docs/CI.md) for workflow details, scan scope, and external service setup.
+- [Video source and license](MEDIA_LICENSE.txt)
 
 ## Privacy
 
-All animation, video, preferences, and time display stay on the TV. The Android
-manifest requests no permissions. The app contains no ad or analytics libraries,
-network clients, remote content, or telemetry uploads. Local renderer and player
-logs help diagnose playback and never leave the device through the app.
+Animation, video, preferences and time display stay on the TV. The APK requests
+no permissions and includes no network clients or analytics. Local diagnostic
+logs do not upload themselves. The exported app-owned settings interface accepts
+only the documented non-secret aquarium choices; it cannot change system timers
+or other apps' settings.
 
-Development and repository CI services analyze source code outside the app.
-They are not included in the APK.
-
-## Media License
-
-The software and original animated assets use MIT. The bundled aquarium video
-uses the separate Pixabay Content License; its source, attribution, and terms
-are documented in [MEDIA_LICENSE.txt](MEDIA_LICENSE.txt). The software license
-does not relicense that footage. No assets or code from the supplied third-party
-wallpaper APKs are included.
+The software and original animated assets use MIT. The recorded video has the
+separate [Pixabay Content License](MEDIA_LICENSE.txt). Repository CI services
+analyze source outside the app and are not included in the APK.
 
 ## License
 

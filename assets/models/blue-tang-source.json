@@ -1,0 +1,18 @@
+{
+  "species": "blue-tang",
+  "format": "FISH v2, stride 36, body finFlex 0; signed membrane finFlex 0.0001 to 1",
+  "geometry": "Original distinct anatomical volume and curved fin surfaces",
+  "skin_source": "../../res/drawable-nodpi/realistic_fish.png",
+  "license": "MIT",
+  "skin_origin": "Original project atlas",
+  "skin_source_commit": "96179f7163dd4dc44478f2ef9d94d679f1e1734c",
+  "skin_source_sha256": "c044322f65205c2bdc6c5fb3ec24f814f302da3364fba99733958ee2604f981c",
+  "atlas_cell": [
+    0,
+    1
+  ],
+  "vertices": 1756,
+  "triangles": 3402,
+  "mesh_sha256": "fe3c3749fbafa18fb3e90c0543a17510a62943cfb5f7e75f088b6696721a62c7",
+  "status": "Native visual prototype pending review"
+}

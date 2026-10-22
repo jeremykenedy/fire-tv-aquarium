@@ -8,12 +8,12 @@ resolve after publishing. Never put access tokens in badge URLs.
 Release APKs use the stable local signing key. CI builds are validation builds
 and use temporary keys.
 
-1. Update the version name and integer version code in `build.sh`.
+1. Update the version name and integer version code in `build.sh`, `AndroidManifest.xml`, and the APK identity regression in `check_apk.py` and `test_tooling.py`.
 2. Update [CHANGELOG.md](../CHANGELOG.md).
 3. Run tests, style checks, documentation checks, and the Android build.
 4. Verify APK permissions and signature, and test the signed build on the relevant TV platforms.
-5. Commit and push the verified source to the remote primary branch.
-6. Create a release at the full source commit SHA and upload both output files.
+5. Refresh native screenshots from the signed release build, verify the public gallery, and merge the checked source into the remote primary branch.
+6. Fetch the remote primary branch and verify its exact tip before tagging and publishing the tested APK and checksum.
 
 ```bash
 bash test.sh
@@ -22,10 +22,16 @@ python3 scripts/check-docs.py
 bash build.sh
 python3 check_apk.py
 
-gh release create v1.3.5 \
+git fetch origin main
+test "$(git branch --show-current)" = main
+test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+git tag v1.4.0
+git push origin v1.4.0
+
+gh release create v1.4.0 \
   build/aquarium-4k.apk build/aquarium-4k.apk.sha256 \
   --repo jeremykenedy/fire-tv-aquarium \
-  --target "$(git rev-parse HEAD)" --title 'Aquarium 4K 1.3.5' \
+  --verify-tag --title 'Aquarium 4K 1.4.0' \
   --notes-file build/release-notes.txt
 ```
 
@@ -51,9 +57,9 @@ tested release APK, and never publish CI's temporary-key APK as an upgrade.
 After publishing, download the two uploaded assets into a separate directory:
 
 ```bash
-gh release download v1.3.5 --repo jeremykenedy/fire-tv-aquarium \
+gh release download v1.4.0 --repo jeremykenedy/fire-tv-aquarium \
   --pattern aquarium-4k.apk --pattern aquarium-4k.apk.sha256 \
-  --dir build/release-1.3.5
+  --dir build/release-1.4.0
 ```
 
 Compare the downloaded APK's SHA-256 with the downloaded checksum and locally

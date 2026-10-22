@@ -85,7 +85,7 @@ for existing installations.
 
 This is the bundled offline fallback. Native 4K requires both a supported physical
 4K display and a compatible decoder. A 4K playback failure retries 1080p once.
-Animated backgrounds use the physical display size independently of the video
+Animated backgrounds follow the actual app window independently of the video
 codec. No media is streamed or downloaded.
 
 ## The screensaver was selected but does not start

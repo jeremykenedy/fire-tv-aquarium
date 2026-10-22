@@ -17,6 +17,8 @@ if "uses-permission:" in permissions:
 badging = subprocess.check_output([str(aapt), "dump", "badging", str(apk)], text=True)
 if "package: name='com.jeremykenedy.firetv.aquarium'" not in badging:
     raise SystemExit("Unexpected APK package identity")
+if "versionCode='11' versionName='1.4.0'" not in badging:
+    raise SystemExit("APK release identity must be 1.4.0 with version code 11")
 policy = subprocess.check_output(
     [str(aapt), "dump", "xmltree", str(apk), "res/xml/network_security_config.xml"], text=True
 )
@@ -35,4 +37,38 @@ with zipfile.ZipFile(apk) as archive:
         for asset in ("reef", "tank", "ocean", "kelp", "deep", "fish", "marine"):
             if f"{family}_{asset}.png" not in packaged:
                 raise SystemExit(f"Missing artwork: {family}_{asset}")
-print("APK verified: zero requested permissions, UHD footage, all artwork, expected package")
+    for species in (
+        "clownfish",
+        "yellow-tang",
+        "blue-tang",
+        "angelfish",
+        "neon-tetra",
+        "betta",
+        "great-white-shark",
+        "humpback-whale",
+        "bottlenose-dolphin",
+    ):
+        for suffix in (".bin", ".png", "-source.json"):
+            name = "assets/models/" + species + suffix
+            if name not in archive.namelist():
+                raise SystemExit(f"Missing marine model asset: {name}")
+    for species in (
+        "clownfish",
+        "yellow-tang",
+        "blue-tang",
+        "angelfish",
+        "neon-tetra",
+        "betta",
+        "great-white-shark",
+        "humpback-whale",
+        "bottlenose-dolphin",
+    ):
+        if "assets/models/painted-" + species + ".png" not in archive.namelist():
+            raise SystemExit(f"Missing illustrated marine skin: {species}")
+    if "illustrated_marine.png" not in packaged:
+        raise SystemExit("Illustrated marine artwork is missing")
+    if "assets/licenses/MIT.txt" not in archive.namelist():
+        raise SystemExit("Marine artwork license is missing")
+    if any(name.startswith("assets/source-models/") for name in archive.namelist()):
+        raise SystemExit("Authoring source models must not be bundled")
+print("APK verified: offline permissions, UHD footage, artwork, marine models, expected package")

@@ -8,7 +8,7 @@ The app uses platform APIs and original meshes and shaders. Do not add network
 permissions, runtime services, ad libraries, analytics, or tracking. Avoid adding
 runtime dependencies for functionality already available in Android.
 
-Run the commands in [Testing](README.md#testing) and [CI](docs/CI.md), then verify
+Run the commands in [Build and test](docs/BUILDING.md#build-and-test) and [CI](docs/CI.md), then verify
 behavior changes on the relevant Fire TV, Android TV, and Google TV environments.
 Check both directions of remote navigation,
 persistence after restarting the process, preview, mode switching, automatic

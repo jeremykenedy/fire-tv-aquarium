@@ -64,12 +64,12 @@ Changing Look retains the other aquarium settings.
 
 | Look | Appearance |
 |---|---|
-| Realistic | Detailed natural fish artwork and realistic underwater scenery |
+| Realistic | Textured three-dimensional fish and realistic underwater scenery |
 | Classic Windows aquarium | Natural fish with a cool aquarium palette and subtle glass framing |
-| Animated 3D | Polished cinematic 3D artwork with soft underwater depth |
-| Cartoon | The original simple 3D fish, plants, rocks, and coral |
-| Finding Nemo inspired | Expressive cinematic fish, colorful reef scenery, and a warmer vivid palette |
-| Little Mermaid inspired | Classic drawn fish and matching painted underwater backgrounds |
+| Animated 3D | Textured fish volume, cinematic scenery and soft underwater depth |
+| Cartoon | Painted fish volume with cel shading and vivid illustrated scenery |
+| Finding Nemo inspired | Painted fish volume, colorful cinematic scenery and a warmer vivid palette |
+| Little Mermaid inspired | Painted fish volume and underwater scenery with a softer palette |
 
 The cinematic and drawn appearances use original animals and scenery. Look names
 describe their visual direction. The same fish can swim left or right with
@@ -86,8 +86,8 @@ See [Artwork](ARTWORK.md) for rendering and source-resolution details.
 | Kelp forest | Tall moving plants, rocks, green water |
 | Deep sea | Dark open water |
 
-Each background has realistic, cinematic, and drawn artwork. Cartoon uses original
-geometry. Animals remain available in every background so you can create your
+Each background has realistic, cinematic, and drawn artwork. Cartoon uses the
+drawn scenery with its own material palette. Animals remain available in every background so you can create your
 own combinations.
 
 ## Optional sea life
@@ -178,3 +178,45 @@ Random is saved as a choice; the randomly resolved result is not saved over it.
 Reset aquarium returns app choices to defaults. Clearing Android app data or
 uninstalling also removes preferences. The computer's screensaver backup is
 separate and is not used to store aquarium choices.
+
+## Typed settings transfer
+
+The app exposes its 16 saved choices through an app-owned content provider.
+Local apps and authorized ADB tools can read or update these non-secret choices.
+The interface cannot access other app data, credentials or Android system settings.
+This includes the underlying values retained by Random choices, the random
+choice bitmask, and the enabled Shuffle versions. Export reads saved choices
+without rolling a new random aquarium.
+
+```bash
+adb -s DEVICE_SERIAL shell content query \
+  --uri content://com.jeremykenedy.firetv.aquarium.settings/schema
+adb -s DEVICE_SERIAL shell content query \
+  --uri content://com.jeremykenedy.firetv.aquarium.settings/settings
+```
+
+The schema describes each key, its title, storage type, default and bounds.
+Settings rows contain `key`, `value`, and `type`. Fourteen fields use integer
+storage and two use boolean storage. Preserve those types when importing.
+Android's `content` command uses `i` for integers and `b` for booleans.
+
+A single setting can use the shared key/value protocol:
+
+```bash
+adb -s DEVICE_SERIAL shell content update \
+  --uri content://com.jeremykenedy.firetv.aquarium.settings/settings \
+  --bind key:s:clock --bind value:s:0
+```
+
+For an exact transfer, export all 16 source values, then submit all destination
+fields in one update, using one typed `--bind KEY:TYPE:VALUE` argument per field.
+The provider validates the complete batch before committing it. Unknown keys,
+invalid types, empty version masks and values outside the schema bounds are
+rejected without a partial import. Read back all destination values and compare
+them with the source export.
+
+Batch imports preserve the stored count and population values together without
+cycling the user interface. Stop the app before importing and reopen it to use
+the transferred choices. An already running preview or dream retains the options
+loaded for that showing. Screensaver selection and system idle timers remain
+separate device settings.

@@ -50,9 +50,10 @@ the installer selects Aquarium using ADB and reads back its screensaver settings
 Check actual idle activation on your model, as a vendor can restrict or replace
 third-party dreams. Full-screen Show aquarium remains available from the app.
 
-The app uses native 4K surfaces on a supported 4K display. On other displays it
-uses the physical display size. Original footage uses a bundled 1080p fallback
-when the device lacks a compatible hardware 4K decoder or 4K playback fails.
+The animated surface follows the actual app window. An advertised 4K panel mode
+does not establish a native 4K window. The tested Fire TV uses 1920x1080 output.
+Original footage uses a bundled HD copy when the active output or hardware
+decoder cannot use UHD, or after UHD playback fails.
 
 ## Multiple TVs
 

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
+import android.util.DisplayMetrics;
 import android.view.Display;
 
 import org.junit.Before;
@@ -36,7 +37,16 @@ import org.robolectric.util.ReflectionHelpers.ClassParameter;
 public final class OutputPolicyTest {
     @Implements(Display.class)
     public static class DisplayModes extends ShadowDisplay {
+        static int realWidth = 1920;
+        static int realHeight = 1080;
         static Display.Mode current;
+
+        @Implementation
+        protected void getRealMetrics(DisplayMetrics metrics) {
+            metrics.widthPixels = realWidth;
+            metrics.heightPixels = realHeight;
+        }
+
         static Display.Mode[] supported;
 
         @Implementation
@@ -114,6 +124,8 @@ public final class OutputPolicyTest {
 
     @Before
     public void resetOutput() {
+        DisplayModes.realWidth = 1920;
+        DisplayModes.realHeight = 1080;
         DisplayModes.current = mode(1, 1920, 1080);
         DisplayModes.supported = new Display.Mode[0];
         CodecList.broken = false;
@@ -121,12 +133,24 @@ public final class OutputPolicyTest {
     }
 
     @Test
-    public void physicalModesSelectNativeUhdAndBoundOtherPanels() {
+    public void supportedUhdModeDoesNotOverrideFullHdComposition() {
+        DisplayModes.current = mode(7, 3840, 2160);
+        DisplayModes.supported = new Display.Mode[] {DisplayModes.current};
+        assertArrayEquals(
+                new int[] {1920, 1080}, AquariumOutput.size(RuntimeEnvironment.getApplication()));
+    }
+
+    @Test
+    public void activeCompositionSelectsNativeOutputAndBoundsLargerViewports() {
         assertArrayEquals(
                 new int[] {1920, 1080}, AquariumOutput.size(RuntimeEnvironment.getApplication()));
         assertFalse(AquariumOutput.supportsUhdVideo(RuntimeEnvironment.getApplication()));
+        DisplayModes.realWidth = 3840;
+        DisplayModes.realHeight = 1080;
         DisplayModes.current = mode(1, 3840, 1080);
         assertFalse(AquariumOutput.supportsUhdVideo(RuntimeEnvironment.getApplication()));
+        DisplayModes.realWidth = 7680;
+        DisplayModes.realHeight = 4320;
         DisplayModes.current = mode(1, 7680, 4320);
         assertArrayEquals(
                 new int[] {3840, 2160}, AquariumOutput.size(RuntimeEnvironment.getApplication()));
@@ -137,7 +161,16 @@ public final class OutputPolicyTest {
     }
 
     @Test
+    public void incompleteZeroViewportNeverProducesInvalidMediaDimensions() {
+        DisplayModes.realWidth = DisplayModes.realHeight = 0;
+        assertArrayEquals(
+                new int[] {1, 1}, AquariumOutput.size(RuntimeEnvironment.getApplication()));
+    }
+
+    @Test
     public void onlyCapableHardwareAvcDecodersSelectUhd() {
+        DisplayModes.realWidth = 3840;
+        DisplayModes.realHeight = 2160;
         DisplayModes.supported = new Display.Mode[] {mode(7, 3840, 2160)};
         ShadowMediaCodecList.addCodec(
                 codec(
@@ -179,6 +212,8 @@ public final class OutputPolicyTest {
 
     @Test
     public void decoderResolutionAndBrokenVendorReportingSelectFallback() {
+        DisplayModes.realWidth = 3840;
+        DisplayModes.realHeight = 2160;
         DisplayModes.supported = new Display.Mode[] {mode(7, 3840, 2160)};
         ShadowMediaCodecList.reset();
         ShadowMediaCodecList.addCodec(
