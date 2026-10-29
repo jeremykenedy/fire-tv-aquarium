@@ -12,17 +12,7 @@
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/style.yml/badge.svg?branch=main" alt="Code style"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/docs.yml/badge.svg?branch=main" alt="Documentation"></a>
     <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/security.yml/badge.svg?branch=main" alt="Security"></a>
-    <a href="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/gitguardian.yml/badge.svg?branch=main" alt="GitGuardian scan"></a>
-    <a href="https://sonarcloud.io/dashboard?id=jeremykenedy_fire-tv-aquarium"><img src="https://github.com/jeremykenedy/fire-tv-aquarium/actions/workflows/sonarcloud.yml/badge.svg?branch=main" alt="SonarQube Cloud scan"></a>
-    <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=alert_status" alt="Quality Gate Status"></a>
-    <a href="https://sonarcloud.io/summary/new_code?id=jeremykenedy_fire-tv-aquarium"><img src="https://sonarcloud.io/api/project_badges/measure?project=jeremykenedy_fire-tv-aquarium&amp;metric=coverage" alt="Coverage"></a>
-    <a href="https://www.codefactor.io/repository/github/jeremykenedy/fire-tv-aquarium"><img src="https://www.codefactor.io/repository/github/jeremykenedy/fire-tv-aquarium/badge" alt="CodeFactor"></a>
-    <a href="https://app.codacy.com/gh/jeremykenedy/fire-tv-aquarium/dashboard"><img src="https://app.codacy.com/project/badge/Grade/68dd126aa1d24b81808768dffa2f0df3" alt="Codacy Badge"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-</p>
-
-<p align="center">
-    <a href="https://app.aikido.dev/repositories/3327480"><img src="https://app.aikido.dev/assets/badges/full-light-theme.svg" alt="Secured by Aikido" height="32"></a>
 </p>
 
 <p align="center">

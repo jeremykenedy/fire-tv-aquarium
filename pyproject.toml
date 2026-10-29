@@ -1,5 +1,5 @@
 [tool.ruff]
-required-version = "0.16.10"
+required-version = "0.17.1"
 target-version = "py310"
 line-length = 100
 exclude = ["build", ".git", ".verity"]
